@@ -4,127 +4,99 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Minh Thy | Portfoliracle</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Pinyon+Script&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Italianno&family=Cinzel+Decorative:wght@400;700&family=Cormorant+Garamond:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <div class="stars"></div>
+    <div id="magic-cursor"></div>
+    <div id="magic-cursor-trail"></div>
+    <div class="noise-overlay"></div>
+
+    <nav class="floating-nav">
+        <span class="logo" onclick="showPage('home')">M.T</span>
+        <div class="nav-links">
+            <button onclick="showPage('home')">Home</button>
+            <button onclick="showPage('projects-list')">Wonderland</button>
+            <button onclick="showPage('about')">The Alice</button>
+        </div>
+    </nav>
 
     <main>
-        <section class="hero">
-            <div class="hero-content fade-in">
-                <h1 class="magic-title">Portfoliracle</h1>
-                <p class="quote">“I can't explain myself because I'm not myself, you see.”</p>
-                <div class="divider">❦</div>
-                <h2 class="role">Data Analyst & Project Manager</h2>
-                <p class="sub-quote">Creating order in the madness.</p>
+        <section id="home" class="page active-page">
+            <div class="hero-container">
+                <div class="hero-visual">
+                    <img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=1000&auto=format&fit=crop" class="floating-img main-img">
+                    <img src="https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=500&auto=format&fit=crop" class="floating-img sec-img">
+                </div>
+                <div class="hero-text">
+                    <p class="pre-title">Welcome to the</p>
+                    <h1 class="grand-title">Portfoliracle</h1>
+                    <p class="sub-quote">"I can't explain myself, because I'm not myself, you see."</p>
+                    <button class="explore-btn" onclick="showPage('projects-list')">Enter the Rabbit Hole</button>
+                </div>
             </div>
         </section>
 
-        <section class="about section-pad">
-            <div class="glass-card fade-in">
-                <div class="about-grid">
-                    <div class="about-img">
-                        <img src="https://images.unsplash.com/photo-1596230529625-7ee4ebf53af9?q=80&w=1000&auto=format&fit=crop" alt="Alice Aesthetic">
-                    </div>
-                    <div class="about-text">
-                        <h2 class="section-title">Who is Thy?</h2>
-                        <p>Like <i>Alice in Wonderland</i>, I step into each project as if entering a new world: curious, daring, and eager to make sense of the unexpected.</p>
-                        
-                        <div class="stats-grid">
-                            <div class="stat-item">
-                                <h3>8.83</h3>
-                                <p>GPA @ FTU</p>
-                            </div>
-                            <div class="stat-item">
-                                <h3>7.5</h3>
-                                <p>IELTS</p>
-                            </div>
-                            <div class="stat-item">
-                                <h3>3+</h3>
-                                <p>Years Exp</p>
-                            </div>
-                        </div>
-
-                        <div class="skills-list">
-                            <span>Project Management</span>
-                            <span>Data Analysis</span>
-                            <span>Concept Development</span>
-                            <span>Copywriting</span>
-                        </div>
+        <section id="projects-list" class="page">
+            <h2 class="page-title">The Gallery of Wonders</h2>
+            <div class="projects-container">
+                
+                <div class="project-card tilt-card" onclick="openProject('tedx')">
+                    <div class="card-image" style="background-image: url('https://images.unsplash.com/photo-1514525253440-b393452e8d26?q=80&w=800');"></div>
+                    <div class="card-content">
+                        <span class="card-cat">Content Leader</span>
+                        <h3>TEDxFTU 2025</h3>
+                        <p>De Rubik Code</p>
                     </div>
                 </div>
-            </div>
-        </section>
 
-        <section class="projects section-pad">
-            <h2 class="section-title center-text">My Wonderland Journey</h2>
-            
-            <div class="project-row fade-in">
-                <div class="project-info">
-                    <span class="project-year">01 — Content Leader</span>
-                    <h3>TEDxFTU 2025</h3>
-                    <p class="concept-name">Concept: "De Rubik Code"</p>
-                    <p>Led a 5-member content team to build plans with WBS and OKRs. Developed event concepts "Back to the Essence", managed stage flow, scripts, and visual cues.</p>
-                    <ul class="achievements">
-                        <li>✦ 221 Sign-up attendees</li>
-                        <li>✦ 4.6/5.0 CSAT Overall</li>
-                        <li>✦ 90% impressed by the Format</li>
-                    </ul>
+                <div class="project-card tilt-card" onclick="openProject('becday')">
+                    <div class="card-image" style="background-image: url('https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=800');"></div>
+                    <div class="card-content">
+                        <span class="card-cat">Project Leader</span>
+                        <h3>BECDAY 2024</h3>
+                        <p>Intergenerational Connection</p>
+                    </div>
                 </div>
-                <div class="project-visual">
-                    <img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=1000&auto=format&fit=crop" alt="TEDx Stage">
-                </div>
-            </div>
 
-            <div class="project-row reverse fade-in">
-                <div class="project-info">
-                    <span class="project-year">02 — Project Leader</span>
-                    <h3>BECDAY 2024</h3>
-                    <p class="concept-name">Theme: Intergenerational Connection</p>
-                    <p>Led a 20-member team (4 team leaders). Directed planning for recruitment, training, and bonding. Used Gantt charts to visualize dependencies and anticipate risks.</p>
-                    <ul class="achievements">
-                        <li>✦ 100+ Participants</li>
-                        <li>✦ 10+ Generations represented</li>
-                        <li>✦ Record intergenerational gathering</li>
-                    </ul>
-                </div>
-                <div class="project-visual">
-                    <img src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=1000&auto=format&fit=crop" alt="Community Event">
-                </div>
-            </div>
-
-            <div class="project-row fade-in">
-                <div class="project-info">
-                    <span class="project-year">03 — Champion</span>
-                    <h3>H4TF E-commerce 2024</h3>
-                    <p class="concept-name">Role: Strategy & Workflow Lead</p>
-                    <p>Designed a full e-commerce strategy from research to execution in 96 hours. My role centered on structuring workflow, breaking down tasks, and ensuring alignment.</p>
-                    <ul class="achievements">
-                        <li>✦ Outperformed 50+ teams</li>
-                        <li>✦ Won Champion Title</li>
-                        <li>✦ Delivered cohesive pitch</li>
-                    </ul>
-                </div>
-                <div class="project-visual">
-                    <img src="https://images.unsplash.com/photo-1556742049-0cfed4f7a07d?q=80&w=1000&auto=format&fit=crop" alt="Ecommerce Strategy">
+                <div class="project-card tilt-card" onclick="openProject('h4tf')">
+                    <div class="card-image" style="background-image: url('https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=800');"></div>
+                    <div class="card-content">
+                        <span class="card-cat">Champion</span>
+                        <h3>H4TF E-commerce</h3>
+                        <p>Strategic Planning</p>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <section class="footer section-pad">
-            <div class="footer-content fade-in">
-                <p>Am I looking for something?</p>
-                <h2 class="yes-i-am">Yes, yes I am.</h2>
-                <div class="divider">❦</div>
-                <div class="socials">
-                    <a href="#">LinkedIn</a>
-                    <a href="#">Email</a>
-                    <a href="#">GitHub</a>
+        <section id="project-detail" class="page">
+            <button class="back-btn" onclick="showPage('projects-list')">← Back to Wonderland</button>
+            <div class="detail-content" id="detail-container">
                 </div>
-                <p class="copyright">© 2025 Pham Ngoc Minh Thy. Crafted in Wonderland.</p>
+        </section>
+
+        <section id="about" class="page">
+            <div class="about-wrapper">
+                <div class="about-visual">
+                   <img src="https://images.unsplash.com/photo-1491245338813-c6832976196e?q=80&w=800" alt="Alice style">
+                </div>
+                <div class="about-info">
+                    <h2>Pham Ngoc Minh Thy</h2>
+                    <p class="role-badge">Data Analyst & Dreamer</p>
+                    <p class="bio">"Like Alice, I step into each project as if entering a new world. I see challenges as doors to be opened and data as stories to be told."</p>
+                    
+                    <div class="stats-row">
+                        <div class="stat"><span>8.83</span><label>GPA</label></div>
+                        <div class="stat"><span>7.5</span><label>IELTS</label></div>
+                        <div class="stat"><span>3+</span><label>Years</label></div>
+                    </div>
+                    
+                    <div class="skills-cloud">
+                        <span>Python</span><span>Stata</span><span>Project Management</span><span>Concepting</span>
+                    </div>
+                </div>
             </div>
         </section>
     </main>
