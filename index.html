@@ -3,42 +3,65 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Phạm Ngọc Minh Thy — Portfolio</title>
-
+  <title>Minh Thy — Data Portfolio</title>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Lora:ital,wght@0,400;0,600;1,400&family=Pinyon+Script&display=swap" rel="stylesheet">
-
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
+  <div class="cursor-dot" data-cursor-dot></div>
+  <div class="cursor-outline" data-cursor-outline></div>
+
   <div class="bg-overlay"></div>
 
   <main id="scrapbook-container">
     <header class="hero-section">
-      <img src="https://placehold.co/300x300/fcefee/8b5e3c?text=Thy's+Photo" alt="Minh Thy" class="profile-photo deco-border">
+      <div class="photo-wrapper">
+        <img src="https://placehold.co/300x300/fcefee/8b5e3c?text=Thy" alt="Minh Thy" class="profile-photo">
+        <div class="photo-decor"></div>
+      </div>
       <h1 class="script-title">Phạm Ngọc Minh Thy</h1>
       <h2 class="subtitle">Data Analyst & Dreamer</h2>
-      <p class="intro-text">"Chào mừng đến với góc nhỏ lưu giữ những hành trình dữ liệu và những giấc mơ của mình."</p>
+      
       <nav>
-        <button data-target="about">About Me</button>
-        <button data-target="projects">Projects</button>
-        <button data-target="contact">Contact</button>
+        <button class="nav-btn active" onclick="scrollToSection('about')">About</button>
+        <button class="nav-btn" onclick="scrollToSection('projects')">Projects</button>
+        <button class="nav-btn" onclick="scrollToSection('contact')">Contact</button>
       </nav>
     </header>
 
     <div class="bow-divider">୨୧</div>
 
     <section id="about" class="content-panel">
-      <h2 class="section-title">My Story</h2>
-      <div class="about-content">
-        <p>Mình là sinh viên FTU với niềm đam mê biến những con số khô khan thành những câu chuyện có ý nghĩa. Mình yêu thích sự logic của dữ liệu nhưng cũng trân trọng tính nghệ thuật trong cách trình bày nó.</p>
-        <p>Theo đuổi Data Analysis, mình tập trung vào Marketing Research, Kinh tế lượng và Business Intelligence.</p>
+      <h3>About Me</h3>
+      <p>Sinh viên FTU với tư duy logic sắc bén và trái tim của một kẻ mộng mơ. Mình biến dữ liệu thô thành những chiến lược có thể hành động (actionable insights).</p>
+      <div class="stats-row">
+        <div class="stat-box">
+          <span class="stat-num">8.85</span>
+          <span class="stat-label">GPA</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-num">3+</span>
+          <span class="stat-label">Projects</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-num">IELTS</span>
+          <span class="stat-label">7.5</span>
+        </div>
       </div>
     </section>
 
     <div class="bow-divider">୨୧</div>
 
     <section id="projects" class="content-panel">
-      <h2 class="section-title">Featured Works</h2>
+      <h3>Featured Works</h3>
+      
+      <div class="filter-buttons">
+        <button class="filter-btn active" onclick="filterProjects('all')">All</button>
+        <button class="filter-btn" onclick="filterProjects('data')">Data Analysis</button>
+        <button class="filter-btn" onclick="filterProjects('research')">Research</button>
+      </div>
+
       <div class="project-grid" id="projectContainer">
         </div>
     </section>
@@ -46,18 +69,26 @@
     <div class="bow-divider">୨୧</div>
 
     <section id="contact" class="content-panel">
-      <h2 class="section-title">Let's Connect</h2>
-      <p>Mình luôn sẵn sàng cho những cơ hội hợp tác mới hoặc đơn giản là một buổi trò chuyện về data.</p>
-      <div class="contact-links">
-        <a href="mailto:your.email@example.com" class="deco-button">Email Me</a>
-        <a href="https://linkedin.com/in/yourprofile" target="_blank" class="deco-button">LinkedIn</a>
+      <h3>Get In Touch</h3>
+      <div class="social-links">
+        <a href="#" class="social-btn"><i class="fab fa-linkedin"></i> LinkedIn</a>
+        <a href="#" class="social-btn"><i class="fas fa-envelope"></i> Email</a>
+        <a href="#" class="social-btn"><i class="fab fa-github"></i> GitHub</a>
       </div>
     </section>
-
-    <footer>
-      <p>© 2024 Minh Thy. Crafted with ♥ and a touch of magic.</p>
-    </footer>
   </main>
+
+  <div id="project-modal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeModal()">&times;</span>
+      <img id="modal-img" src="" alt="">
+      <h2 id="modal-title">Project Title</h2>
+      <span id="modal-tag" class="tag">Category</span>
+      <p id="modal-desc">Description goes here...</p>
+      <div id="modal-tech" class="tech-stack"></div>
+      <a href="#" id="modal-link" target="_blank" class="view-btn">View Full Project</a>
+    </div>
+  </div>
 
   <script src="script.js" defer></script>
 </body>
