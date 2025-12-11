@@ -1,26 +1,64 @@
-// Logic: Khi lướt chuột xuống, các phần tử sẽ từ từ hiện ra (Fade in)
-document.addEventListener("DOMContentLoaded", function() {
+// 1. SETUP CURSOR (Theo dõi chuột)
+const cursor = document.getElementById("cursor");
+const cursorBlur = document.getElementById("cursor-blur");
+
+document.addEventListener("mousemove", (e) => {
+    cursor.style.left = e.clientX + "px";
+    cursor.style.top = e.clientY + "px";
     
-    // 1. Dùng IntersectionObserver để bắt sự kiện lướt web
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('visible');
-            }
-        });
-    }, {
-        threshold: 0.1 // Hiện 10% là bắt đầu hiệu ứng
-    });
-
-    // 2. Gắn camera quan sát vào tất cả phần tử có class 'fade-in'
-    const hiddenElements = document.querySelectorAll('.fade-in');
-    hiddenElements.forEach((el) => observer.observe(el));
-
-    // 3. Hiệu ứng Parallax (Ảnh trôi chậm hơn chữ) - Optional Aesthetic
-    window.addEventListener('scroll', function() {
-        const scrolled = window.pageYOffset;
-        const hero = document.querySelector('.hero');
-        // Làm mờ Hero section khi cuộn xuống
-        hero.style.opacity = 1 - (scrolled / 700);
-    });
+    cursorBlur.animate({
+        left: e.clientX + "px",
+        top: e.clientY + "px"
+    }, { duration: 500, fill: "forwards" });
 });
+
+// 2. TOGGLE DIMENSION (Chuyển đổi Reality vs Wonderland)
+function toggleDimension() {
+    const body = document.body;
+    body.classList.toggle('wonderland-mode');
+    body.classList.toggle('reality-mode');
+    
+    // Đổi Title Text
+    const title = document.querySelector('.glitch-title');
+    if(body.classList.contains('reality-mode')) {
+        title.innerText = "MINH THY_DATA";
+        title.style.fontFamily = "'JetBrains Mono', monospace";
+    } else {
+        title.innerText = "Portfoliracle";
+        title.style.fontFamily = "'Pinyon Script', cursive";
+    }
+}
+
+// 3. DRINK ME EFFECT (Zoom in/out trang web)
+let isShrunk = false;
+function drinkMeEffect() {
+    const main = document.querySelector('main');
+    if (!isShrunk) {
+        main.style.transform = "scale(0.8) rotate(-2deg)";
+        main.style.transition = "1s ease";
+        alert("Oh dear! You're shrinking!");
+        isShrunk = true;
+    } else {
+        main.style.transform = "scale(1) rotate(0deg)";
+        isShrunk = false;
+    }
+}
+
+// 4. SCROLL HELPER
+function scrollToId(id) {
+    document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+}
+
+// 5. PARALLAX EFFECT (Hiệu ứng chiều sâu khi di chuột)
+document.addEventListener("mousemove", parallax);
+function parallax(e) {
+    // Chỉ chạy ở Wonderland mode
+    if(document.body.classList.contains('wonderland-mode')) {
+        document.querySelectorAll(".floating-words span").forEach(function(move){
+            var moving_value = move.getAttribute("data-value") || 5; // Default speed
+            var x = (e.clientX * moving_value) / 250;
+            var y = (e.clientY * moving_value) / 250;
+            move.style.transform = "translateX(" + x + "px) translateY(" + y + "px)";
+        });
+    }
+}
