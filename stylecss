@@ -1,5 +1,4 @@
-/* BẢNG MÀU COQUETTE */
-:root {
+/* BẢNG MÀU COQUETTE */root {
   --bg-pink: #fcefee; /* Hồng phấn nền */
   --bg-cream: #fffbf0; /* Màu kem của trang giấy */
   --text-brown: #5e4b41; /* Nâu tây cho chữ */
