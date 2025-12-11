@@ -1,95 +1,134 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Minh Thy — Data Portfolio</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Lora:ital,wght@0,400;0,600;1,400&family=Pinyon+Script&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minh Thy | Portfoliracle</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Pinyon+Script&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 </head>
 <body>
-  <div class="cursor-dot" data-cursor-dot></div>
-  <div class="cursor-outline" data-cursor-outline></div>
+    <div class="stars"></div>
 
-  <div class="bg-overlay"></div>
+    <main>
+        <section class="hero">
+            <div class="hero-content fade-in">
+                <h1 class="magic-title">Portfoliracle</h1>
+                <p class="quote">“I can't explain myself because I'm not myself, you see.”</p>
+                <div class="divider">❦</div>
+                <h2 class="role">Data Analyst & Project Manager</h2>
+                <p class="sub-quote">Creating order in the madness.</p>
+            </div>
+        </section>
 
-  <main id="scrapbook-container">
-    <header class="hero-section">
-      <div class="photo-wrapper">
-        <img src="https://placehold.co/300x300/fcefee/8b5e3c?text=Thy" alt="Minh Thy" class="profile-photo">
-        <div class="photo-decor"></div>
-      </div>
-      <h1 class="script-title">Phạm Ngọc Minh Thy</h1>
-      <h2 class="subtitle">Data Analyst & Dreamer</h2>
-      
-      <nav>
-        <button class="nav-btn active" onclick="scrollToSection('about')">About</button>
-        <button class="nav-btn" onclick="scrollToSection('projects')">Projects</button>
-        <button class="nav-btn" onclick="scrollToSection('contact')">Contact</button>
-      </nav>
-    </header>
+        <section class="about section-pad">
+            <div class="glass-card fade-in">
+                <div class="about-grid">
+                    <div class="about-img">
+                        <img src="https://images.unsplash.com/photo-1596230529625-7ee4ebf53af9?q=80&w=1000&auto=format&fit=crop" alt="Alice Aesthetic">
+                    </div>
+                    <div class="about-text">
+                        <h2 class="section-title">Who is Thy?</h2>
+                        <p>Like <i>Alice in Wonderland</i>, I step into each project as if entering a new world: curious, daring, and eager to make sense of the unexpected.</p>
+                        
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <h3>8.83</h3>
+                                <p>GPA @ FTU</p>
+                            </div>
+                            <div class="stat-item">
+                                <h3>7.5</h3>
+                                <p>IELTS</p>
+                            </div>
+                            <div class="stat-item">
+                                <h3>3+</h3>
+                                <p>Years Exp</p>
+                            </div>
+                        </div>
 
-    <div class="bow-divider">୨୧</div>
+                        <div class="skills-list">
+                            <span>Project Management</span>
+                            <span>Data Analysis</span>
+                            <span>Concept Development</span>
+                            <span>Copywriting</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-    <section id="about" class="content-panel">
-      <h3>About Me</h3>
-      <p>Sinh viên FTU với tư duy logic sắc bén và trái tim của một kẻ mộng mơ. Mình biến dữ liệu thô thành những chiến lược có thể hành động (actionable insights).</p>
-      <div class="stats-row">
-        <div class="stat-box">
-          <span class="stat-num">8.85</span>
-          <span class="stat-label">GPA</span>
-        </div>
-        <div class="stat-box">
-          <span class="stat-num">3+</span>
-          <span class="stat-label">Projects</span>
-        </div>
-        <div class="stat-box">
-          <span class="stat-num">IELTS</span>
-          <span class="stat-label">7.5</span>
-        </div>
-      </div>
-    </section>
+        <section class="projects section-pad">
+            <h2 class="section-title center-text">My Wonderland Journey</h2>
+            
+            <div class="project-row fade-in">
+                <div class="project-info">
+                    <span class="project-year">01 — Content Leader</span>
+                    <h3>TEDxFTU 2025</h3>
+                    <p class="concept-name">Concept: "De Rubik Code"</p>
+                    <p>Led a 5-member content team to build plans with WBS and OKRs. Developed event concepts "Back to the Essence", managed stage flow, scripts, and visual cues.</p>
+                    <ul class="achievements">
+                        <li>✦ 221 Sign-up attendees</li>
+                        <li>✦ 4.6/5.0 CSAT Overall</li>
+                        <li>✦ 90% impressed by the Format</li>
+                    </ul>
+                </div>
+                <div class="project-visual">
+                    <img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=1000&auto=format&fit=crop" alt="TEDx Stage">
+                </div>
+            </div>
 
-    <div class="bow-divider">୨୧</div>
+            <div class="project-row reverse fade-in">
+                <div class="project-info">
+                    <span class="project-year">02 — Project Leader</span>
+                    <h3>BECDAY 2024</h3>
+                    <p class="concept-name">Theme: Intergenerational Connection</p>
+                    <p>Led a 20-member team (4 team leaders). Directed planning for recruitment, training, and bonding. Used Gantt charts to visualize dependencies and anticipate risks.</p>
+                    <ul class="achievements">
+                        <li>✦ 100+ Participants</li>
+                        <li>✦ 10+ Generations represented</li>
+                        <li>✦ Record intergenerational gathering</li>
+                    </ul>
+                </div>
+                <div class="project-visual">
+                    <img src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=1000&auto=format&fit=crop" alt="Community Event">
+                </div>
+            </div>
 
-    <section id="projects" class="content-panel">
-      <h3>Featured Works</h3>
-      
-      <div class="filter-buttons">
-        <button class="filter-btn active" onclick="filterProjects('all')">All</button>
-        <button class="filter-btn" onclick="filterProjects('data')">Data Analysis</button>
-        <button class="filter-btn" onclick="filterProjects('research')">Research</button>
-      </div>
+            <div class="project-row fade-in">
+                <div class="project-info">
+                    <span class="project-year">03 — Champion</span>
+                    <h3>H4TF E-commerce 2024</h3>
+                    <p class="concept-name">Role: Strategy & Workflow Lead</p>
+                    <p>Designed a full e-commerce strategy from research to execution in 96 hours. My role centered on structuring workflow, breaking down tasks, and ensuring alignment.</p>
+                    <ul class="achievements">
+                        <li>✦ Outperformed 50+ teams</li>
+                        <li>✦ Won Champion Title</li>
+                        <li>✦ Delivered cohesive pitch</li>
+                    </ul>
+                </div>
+                <div class="project-visual">
+                    <img src="https://images.unsplash.com/photo-1556742049-0cfed4f7a07d?q=80&w=1000&auto=format&fit=crop" alt="Ecommerce Strategy">
+                </div>
+            </div>
+        </section>
 
-      <div class="project-grid" id="projectContainer">
-        </div>
-    </section>
+        <section class="footer section-pad">
+            <div class="footer-content fade-in">
+                <p>Am I looking for something?</p>
+                <h2 class="yes-i-am">Yes, yes I am.</h2>
+                <div class="divider">❦</div>
+                <div class="socials">
+                    <a href="#">LinkedIn</a>
+                    <a href="#">Email</a>
+                    <a href="#">GitHub</a>
+                </div>
+                <p class="copyright">© 2025 Pham Ngoc Minh Thy. Crafted in Wonderland.</p>
+            </div>
+        </section>
+    </main>
 
-    <div class="bow-divider">୨୧</div>
-
-    <section id="contact" class="content-panel">
-      <h3>Get In Touch</h3>
-      <div class="social-links">
-        <a href="#" class="social-btn"><i class="fab fa-linkedin"></i> LinkedIn</a>
-        <a href="#" class="social-btn"><i class="fas fa-envelope"></i> Email</a>
-        <a href="#" class="social-btn"><i class="fab fa-github"></i> GitHub</a>
-      </div>
-    </section>
-  </main>
-
-  <div id="project-modal" class="modal">
-    <div class="modal-content">
-      <span class="close-btn" onclick="closeModal()">&times;</span>
-      <img id="modal-img" src="" alt="">
-      <h2 id="modal-title">Project Title</h2>
-      <span id="modal-tag" class="tag">Category</span>
-      <p id="modal-desc">Description goes here...</p>
-      <div id="modal-tech" class="tech-stack"></div>
-      <a href="#" id="modal-link" target="_blank" class="view-btn">View Full Project</a>
-    </div>
-  </div>
-
-  <script src="script.js" defer></script>
+    <script src="script.js"></script>
 </body>
 </html>
