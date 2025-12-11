@@ -1,163 +1,161 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minh Thy | The Infinite Wonderland</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Pinyon+Script&family=Rye&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>onnlymintt — Down the Rabbit Hole</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Quicksand:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css">
+  <meta name="color-scheme" content="light dark">
+  <!-- GSAP CDN for animations -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.0/gsap.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.0/ScrollTrigger.min.js" defer></script>
 </head>
-<body class="loading">
+<body class="entrance">
+  <!-- Rabbit-hole intro -->
+  <main id="rabbit-hole">
+    <div class="hole-wrap">
+      <svg class="rabbit-hole" viewBox="0 0 800 400" aria-hidden="true">
+        <defs>
+          <radialGradient id="g" cx="50%" cy="40%">
+            <stop offset="0%" stop-color="#fff1" />
+            <stop offset="40%" stop-color="#0b1533" />
+            <stop offset="100%" stop-color="#021024" />
+          </radialGradient>
+        </defs>
+        <ellipse cx="400" cy="180" rx="360" ry="110" fill="url(#g)"/>
+      </svg>
 
-    <div id="preloader">
-        <div class="falling-alice">
-            <span class="symbol">♠</span>
-            <span class="symbol">♥</span>
-            <span class="symbol">♣</span>
-            <span class="symbol">♦</span>
+      <div class="intro-card" role="region" aria-label="Welcome card">
+        <img id="profilePhoto" src="https://placehold.co/240x240?text=Your+Photo" alt="Your photo" class="profile-photo" />
+        <h1 id="introTitle">Come with me...</h1>
+        <p id="introText">I'm onnlymintt — a designer & developer who wandered into Wonderland.</p>
+        <button id="enterBtn" aria-label="Enter the rabbit hole">Enter the Rabbit Hole</button>
+      </div>
+
+      <div class="floating-smoke" aria-hidden="true"></div>
+    </div>
+  </main>
+
+  <!-- Main site -->
+  <div id="site" hidden>
+    <header>
+      <div class="brand">
+        <span class="logo">♣</span>
+        <h2 id="brandName">onnlymintt</h2>
+      </div>
+      <nav>
+        <button data-target="about">About</button>
+        <button data-target="skills">Skills</button>
+        <button data-target="projects">Projects</button>
+        <button data-target="contact">Contact</button>
+      </nav>
+    </header>
+
+    <section id="about" class="panel">
+      <div class="panel-inner">
+        <h2>About Me — Down the Rabbit Hole</h2>
+        <p class="lead" id="leadText">I mix whimsical design with technical craft. I love interactions that surprise and invite discovery.</p>
+        <div class="cards" aria-hidden="false">
+          <article class="tale-card" tabindex="0" data-role="story">
+            <div class="face front">
+              <h3>Who I Am</h3>
+              <p>Designer + Developer</p>
+            </div>
+            <div class="face back">
+              <p>I create accessible interactive experiences inspired by narrative and play.</p>
+            </div>
+          </article>
+
+          <article class="tale-card" tabindex="0" data-role="story">
+            <div class="face front">
+              <h3>Values</h3>
+              <p>Curiosity. Clarity. Craft.</p>
+            </div>
+            <div class="face back">
+              <p>I iterate quickly, test with users, and polish details until they delight.</p>
+            </div>
+          </article>
         </div>
-        <h2 class="loading-text">Falling down the rabbit hole...</h2>
-    </div>
+      </div>
+    </section>
 
-    <div class="parallax-layer layer-1"></div> <div class="parallax-layer layer-2"></div> <div class="parallax-layer layer-3"></div> <div class="gramophone-widget" onclick="toggleMusic()">
-        <div class="vinyl-record"><div class="vinyl-center"></div></div>
-        <div class="music-note">♫</div>
-    </div>
-    <audio id="bg-music" loop>
-        <source src="https://cdn.pixabay.com/download/audio/2022/10/05/audio_68629e769e.mp3?filename=wistful-rain-119665.mp3" type="audio/mpeg">
-    </audio>
-
-    <div id="magic-cursor"></div>
-    <div id="magic-cursor-trail"></div>
-    <div class="progress-bar"></div>
-
-    <main>
-        <section id="chap1" class="chapter hero-section">
-            <div class="hero-content">
-                <p class="chap-sub">Chapter I</p>
-                <h1 class="glitch-title" data-text="PORTFOLIRACLE">PORTFOLIRACLE</h1>
-                <div class="hero-desc">
-                    <p class="type-text">"I’m not crazy. My reality is just different than yours."</p>
-                </div>
-                <div class="scroll-prompt">
-                    <span>Drink Me</span>
-                    <div class="liquid-drop"></div>
-                </div>
+    <section id="skills" class="panel">
+      <div class="panel-inner">
+        <h2>Skills — Playing Cards</h2>
+        <div class="skills-grid" role="list">
+          <div class="card" role="listitem" tabindex="0" aria-label="HTML">
+            <div class="card-inner">
+              <div class="card-front">HTML</div>
+              <div class="card-back">Semantic, accessible markup</div>
             </div>
-        </section>
-
-        <section id="chap2" class="chapter about-section">
-            <div class="glass-panel tilt-element">
-                <div class="row">
-                    <div class="col-text">
-                        <span class="deco-num">II</span>
-                        <h2>The Mirror's Edge</h2>
-                        <p>Behind the looking glass lies <strong>Minh Thy</strong> — a Data Analyst at FTU (GPA 8.83). I weave logic with imagination, turning raw data into compelling narratives.</p>
-                        <div class="stats-row">
-                            <div class="stat-box"><h3>8.83</h3><p>GPA</p></div>
-                            <div class="stat-box"><h3>7.5</h3><p>IELTS</p></div>
-                            <div class="stat-box"><h3>3+</h3><p>Years</p></div>
-                        </div>
-                    </div>
-                    <div class="col-img">
-                        <div class="frame-ornament">
-                            <img src="https://images.unsplash.com/photo-1542385151-efd9000785a0?q=80&w=800" alt="Thy Portrait">
-                        </div>
-                    </div>
-                </div>
+          </div>
+          <div class="card" role="listitem" tabindex="0" aria-label="CSS">
+            <div class="card-inner">
+              <div class="card-front">CSS</div>
+              <div class="card-back">Animation, layouts, responsive</div>
             </div>
-        </section>
-
-        <section id="chap3" class="chapter skills-section">
-            <h2 class="section-header">Choose Your Weapon</h2>
-            <div class="skills-orbit">
-                <div class="center-star">DATA</div>
-                <div class="orbit-item" style="--angle:0deg">Python</div>
-                <div class="orbit-item" style="--angle:60deg">Stata</div>
-                <div class="orbit-item" style="--angle:120deg">SQL</div>
-                <div class="orbit-item" style="--angle:180deg">Excel</div>
-                <div class="orbit-item" style="--angle:240deg">Tableau</div>
-                <div class="orbit-item" style="--angle:300deg">R</div>
+          </div>
+          <div class="card" role="listitem" tabindex="0" aria-label="JS">
+            <div class="card-inner">
+              <div class="card-front">JavaScript</div>
+              <div class="card-back">Interactions, performance</div>
             </div>
-        </section>
-
-        <section id="chap4" class="chapter projects-section">
-            <h2 class="section-header">The Queen's Gallery</h2>
-            <div class="cards-perspective">
-                <div class="tarot-card" onclick="openProject('tedx')">
-                    <div class="card-face front">
-                        <img src="https://images.unsplash.com/photo-1475721027767-4d09602e5b87?q=80&w=600" class="card-bg">
-                        <div class="card-overlay">
-                            <span class="card-suit">♣</span>
-                            <h3>TEDxFTU</h3>
-                            <p>Click to Reveal</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="tarot-card" onclick="openProject('becday')">
-                    <div class="card-face front">
-                        <img src="https://images.unsplash.com/photo-1523580494863-6f3031224c94?q=80&w=600" class="card-bg">
-                        <div class="card-overlay">
-                            <span class="card-suit">♥</span>
-                            <h3>BECDAY</h3>
-                            <p>Click to Reveal</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="tarot-card" onclick="openProject('h4tf')">
-                    <div class="card-face front">
-                        <img src="https://images.unsplash.com/photo-1556742049-0cfed4f7a07d?q=80&w=600" class="card-bg">
-                        <div class="card-overlay">
-                            <span class="card-suit">♠</span>
-                            <h3>E-Commerce</h3>
-                            <p>Click to Reveal</p>
-                        </div>
-                    </div>
-                </div>
+          </div>
+          <div class="card" role="listitem" tabindex="0" aria-label="Design">
+            <div class="card-inner">
+              <div class="card-front">Design</div>
+              <div class="card-back">UX, visual systems</div>
             </div>
-        </section>
-
-        <section id="chap5" class="chapter contact-section">
-            <div class="letter-box">
-                <h2>Alice's Evidence</h2>
-                <div class="signature-anim">Pham Ngoc Minh Thy</div>
-                <div class="social-icons">
-                    <a href="#"><i class="fab fa-linkedin"></i></a>
-                    <a href="#"><i class="fas fa-envelope"></i></a>
-                    <a href="#"><i class="fab fa-github"></i></a>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <div id="project-portal" class="portal-overlay">
-        <button class="close-portal" onclick="closeProject()">✕ Close Gallery</button>
-        <div class="portal-content">
-            <div class="portal-header">
-                <h1 id="p-title" class="neon-text">Project Title</h1>
-                <p id="p-role">Role | Year</p>
-            </div>
-            
-            <div class="gallery-container">
-                <h3>Visual Evidence</h3>
-                <div class="scroll-gallery" id="p-gallery">
-                    </div>
-            </div>
-
-            <div class="portal-details">
-                <div class="detail-box">
-                    <h3>The Story</h3>
-                    <p id="p-desc">Description...</p>
-                </div>
-                <div class="detail-box">
-                    <h3>Key Metrics</h3>
-                    <ul id="p-stats"></ul>
-                </div>
-            </div>
+          </div>
         </div>
-    </div>
+      </div>
+    </section>
 
-    <script src="script.js"></script>
+    <section id="projects" class="panel">
+      <div class="panel-inner">
+        <h2>Tea Party — Projects</h2>
+        <div class="carousel" aria-roledescription="carousel">
+          <button class="prev" aria-label="Previous project">‹</button>
+          <ul class="slides" role="list" id="projectSlides">
+            <!-- slides populated from data.json -->
+          </ul>
+          <button class="next" aria-label="Next project">›</button>
+        </div>
+        <p class="muted">You can replace project thumbnails by editing data.json → projects[].image</p>
+      </div>
+    </section>
+
+    <section id="contact" class="panel">
+      <div class="panel-inner">
+        <h2>Contact the White Rabbit</h2>
+        <form id="contactForm">
+          <label>
+            Your name
+            <input name="name" type="text" required />
+          </label>
+          <label>
+            Email
+            <input name="email" type="email" required />
+          </label>
+          <label>
+            Message
+            <textarea name="message" rows="4" required></textarea>
+          </label>
+          <button type="submit">Send</button>
+          <div id="formMessage" role="status" aria-live="polite"></div>
+        </form>
+      </div>
+    </section>
+
+    <footer>
+      <p>Made with tea & code — © <span id="footerName">onnlymintt</span></p>
+    </footer>
+  </div>
+
+  <script src="script.js" defer></script>
 </body>
 </html>
