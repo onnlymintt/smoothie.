@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>onnlymintt — Down the Rabbit Hole</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Quicksand:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css">
+  <meta name="color-scheme" content="light dark">
+  <!-- GSAP CDN for animations -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.0/gsap.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.0/ScrollTrigger.min.js" defer></script>
+</head>
+<body class="entrance">
+  <!-- Rabbit-hole intro -->
+  <main id="rabbit-hole">
+    <div class="hole-wrap">
+      <svg class="rabbit-hole" viewBox="0 0 800 400" aria-hidden="true">
+        <defs>
+          <radialGradient id="g" cx="50%" cy="40%">
+            <stop offset="0%" stop-color="#fff1" />
+            <stop offset="40%" stop-color="#0b1533" />
+            <stop offset="100%" stop-color="#021024" />
+          </radialGradient>
+        </defs>
+        <ellipse cx="400" cy="180" rx="360" ry="110" fill="url(#g)"/>
+      </svg>
+
+      <div class="intro-card" role="region" aria-label="Welcome card">
+        <img id="profilePhoto" src="https://placehold.co/240x240?text=Your+Photo" alt="Your photo" class="profile-photo" />
+        <h1 id="introTitle">Come with me...</h1>
+        <p id="introText">I'm onnlymintt — a designer & developer who wandered into Wonderland.</p>
+        <button id="enterBtn" aria-label="Enter the rabbit hole">Enter the Rabbit Hole</button>
+      </div>
+
+      <div class="floating-smoke" aria-hidden="true"></div>
+    </div>
+  </main>
+
+  <!-- Main site -->
+  <div id="site" hidden>
+    <header>
+      <div class="brand">
+        <span class="logo">♣</span>
+        <h2 id="brandName">onnlymintt</h2>
+      </div>
+      <nav>
+        <button data-target="about">About</button>
+        <button data-target="skills">Skills</button>
+        <button data-target="projects">Projects</button>
+        <button data-target="contact">Contact</button>
+      </nav>
+    </header>
+
+    <section id="about" class="panel">
+      <div class="panel-inner">
+        <h2>About Me — Down the Rabbit Hole</h2>
+        <p class="lead" id="leadText">I mix whimsical design with technical craft. I love interactions that surprise and invite discovery.</p>
+        <div class="cards" aria-hidden="false">
+          <article class="tale-card" tabindex="0" data-role="story">
+            <div class="face front">
+              <h3>Who I Am</h3>
+              <p>Designer + Developer</p>
+            </div>
+            <div class="face back">
+              <p>I create accessible interactive experiences inspired by narrative and play.</p>
+            </div>
+          </article>
+
+          <article class="tale-card" tabindex="0" data-role="story">
+            <div class="face front">
+              <h3>Values</h3>
+              <p>Curiosity. Clarity. Craft.</p>
+            </div>
+            <div class="face back">
+              <p>I iterate quickly, test with users, and polish details until they delight.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="skills" class="panel">
+      <div class="panel-inner">
+        <h2>Skills — Playing Cards</h2>
+        <div class="skills-grid" role="list">
+          <div class="card" role="listitem" tabindex="0" aria-label="HTML">
+            <div class="card-inner">
+              <div class="card-front">HTML</div>
+              <div class="card-back">Semantic, accessible markup</div>
+            </div>
+          </div>
+          <div class="card" role="listitem" tabindex="0" aria-label="CSS">
+            <div class="card-inner">
+              <div class="card-front">CSS</div>
+              <div class="card-back">Animation, layouts, responsive</div>
+            </div>
+          </div>
+          <div class="card" role="listitem" tabindex="0" aria-label="JS">
+            <div class="card-inner">
+              <div class="card-front">JavaScript</div>
+              <div class="card-back">Interactions, performance</div>
+            </div>
+          </div>
+          <div class="card" role="listitem" tabindex="0" aria-label="Design">
+            <div class="card-inner">
+              <div class="card-front">Design</div>
+              <div class="card-back">UX, visual systems</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="projects" class="panel">
+      <div class="panel-inner">
+        <h2>Tea Party — Projects</h2>
+        <div class="carousel" aria-roledescription="carousel">
+          <button class="prev" aria-label="Previous project">‹</button>
+          <ul class="slides" role="list" id="projectSlides">
+            <!-- slides populated from data.json -->
+          </ul>
+          <button class="next" aria-label="Next project">›</button>
+        </div>
+        <p class="muted">You can replace project thumbnails by editing data.json → projects[].image</p>
+      </div>
+    </section>
+
+    <section id="contact" class="panel">
+      <div class="panel-inner">
+        <h2>Contact the White Rabbit</h2>
+        <form id="contactForm">
+          <label>
+            Your name
+            <input name="name" type="text" required />
+          </label>
+          <label>
+            Email
+            <input name="email" type="email" required />
+          </label>
+          <label>
+            Message
+            <textarea name="message" rows="4" required></textarea>
+          </label>
+          <button type="submit">Send</button>
+          <div id="formMessage" role="status" aria-live="polite"></div>
+        </form>
+      </div>
+    </section>
+
+    <footer>
+      <p>Made with tea & code — © <span id="footerName">onnlymintt</span></p>
+    </footer>
+  </div>
+
+  <script src="script.js" defer></script>
+</body>
+</html>
