@@ -3,158 +3,61 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>onnlymintt — Down the Rabbit Hole</title>
+  <title>Phạm Ngọc Minh Thy — Portfolio</title>
 
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Quicksand:wght@300;400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Lora:ital,wght@0,400;0,600;1,400&family=Pinyon+Script&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="styles.css">
-  <meta name="color-scheme" content="light dark">
-  <!-- GSAP CDN for animations -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.0/gsap.min.js" defer></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.0/ScrollTrigger.min.js" defer></script>
 </head>
-<body class="entrance">
-  <!-- Rabbit-hole intro -->
-  <main id="rabbit-hole">
-    <div class="hole-wrap">
-      <svg class="rabbit-hole" viewBox="0 0 800 400" aria-hidden="true">
-        <defs>
-          <radialGradient id="g" cx="50%" cy="40%">
-            <stop offset="0%" stop-color="#fff1" />
-            <stop offset="40%" stop-color="#0b1533" />
-            <stop offset="100%" stop-color="#021024" />
-          </radialGradient>
-        </defs>
-        <ellipse cx="400" cy="180" rx="360" ry="110" fill="url(#g)"/>
-      </svg>
+<body>
+  <div class="bg-overlay"></div>
 
-      <div class="intro-card" role="region" aria-label="Welcome card">
-        <img id="profilePhoto" src="https://placehold.co/240x240?text=Your+Photo" alt="Your photo" class="profile-photo" />
-        <h1 id="introTitle">Come with me...</h1>
-        <p id="introText">I'm onnlymintt — a designer & developer who wandered into Wonderland.</p>
-        <button id="enterBtn" aria-label="Enter the rabbit hole">Enter the Rabbit Hole</button>
-      </div>
-
-      <div class="floating-smoke" aria-hidden="true"></div>
-    </div>
-  </main>
-
-  <!-- Main site -->
-  <div id="site" hidden>
-    <header>
-      <div class="brand">
-        <span class="logo">♣</span>
-        <h2 id="brandName">onnlymintt</h2>
-      </div>
+  <main id="scrapbook-container">
+    <header class="hero-section">
+      <img src="https://placehold.co/300x300/fcefee/8b5e3c?text=Thy's+Photo" alt="Minh Thy" class="profile-photo deco-border">
+      <h1 class="script-title">Phạm Ngọc Minh Thy</h1>
+      <h2 class="subtitle">Data Analyst & Dreamer</h2>
+      <p class="intro-text">"Chào mừng đến với góc nhỏ lưu giữ những hành trình dữ liệu và những giấc mơ của mình."</p>
       <nav>
-        <button data-target="about">About</button>
-        <button data-target="skills">Skills</button>
+        <button data-target="about">About Me</button>
         <button data-target="projects">Projects</button>
         <button data-target="contact">Contact</button>
       </nav>
     </header>
 
-    <section id="about" class="panel">
-      <div class="panel-inner">
-        <h2>About Me — Down the Rabbit Hole</h2>
-        <p class="lead" id="leadText">I mix whimsical design with technical craft. I love interactions that surprise and invite discovery.</p>
-        <div class="cards" aria-hidden="false">
-          <article class="tale-card" tabindex="0" data-role="story">
-            <div class="face front">
-              <h3>Who I Am</h3>
-              <p>Designer + Developer</p>
-            </div>
-            <div class="face back">
-              <p>I create accessible interactive experiences inspired by narrative and play.</p>
-            </div>
-          </article>
+    <div class="bow-divider">୨୧</div>
 
-          <article class="tale-card" tabindex="0" data-role="story">
-            <div class="face front">
-              <h3>Values</h3>
-              <p>Curiosity. Clarity. Craft.</p>
-            </div>
-            <div class="face back">
-              <p>I iterate quickly, test with users, and polish details until they delight.</p>
-            </div>
-          </article>
-        </div>
+    <section id="about" class="content-panel">
+      <h2 class="section-title">My Story</h2>
+      <div class="about-content">
+        <p>Mình là sinh viên FTU với niềm đam mê biến những con số khô khan thành những câu chuyện có ý nghĩa. Mình yêu thích sự logic của dữ liệu nhưng cũng trân trọng tính nghệ thuật trong cách trình bày nó.</p>
+        <p>Theo đuổi Data Analysis, mình tập trung vào Marketing Research, Kinh tế lượng và Business Intelligence.</p>
       </div>
     </section>
 
-    <section id="skills" class="panel">
-      <div class="panel-inner">
-        <h2>Skills — Playing Cards</h2>
-        <div class="skills-grid" role="list">
-          <div class="card" role="listitem" tabindex="0" aria-label="HTML">
-            <div class="card-inner">
-              <div class="card-front">HTML</div>
-              <div class="card-back">Semantic, accessible markup</div>
-            </div>
-          </div>
-          <div class="card" role="listitem" tabindex="0" aria-label="CSS">
-            <div class="card-inner">
-              <div class="card-front">CSS</div>
-              <div class="card-back">Animation, layouts, responsive</div>
-            </div>
-          </div>
-          <div class="card" role="listitem" tabindex="0" aria-label="JS">
-            <div class="card-inner">
-              <div class="card-front">JavaScript</div>
-              <div class="card-back">Interactions, performance</div>
-            </div>
-          </div>
-          <div class="card" role="listitem" tabindex="0" aria-label="Design">
-            <div class="card-inner">
-              <div class="card-front">Design</div>
-              <div class="card-back">UX, visual systems</div>
-            </div>
-          </div>
+    <div class="bow-divider">୨୧</div>
+
+    <section id="projects" class="content-panel">
+      <h2 class="section-title">Featured Works</h2>
+      <div class="project-grid" id="projectContainer">
         </div>
-      </div>
     </section>
 
-    <section id="projects" class="panel">
-      <div class="panel-inner">
-        <h2>Tea Party — Projects</h2>
-        <div class="carousel" aria-roledescription="carousel">
-          <button class="prev" aria-label="Previous project">‹</button>
-          <ul class="slides" role="list" id="projectSlides">
-            <!-- slides populated from data.json -->
-          </ul>
-          <button class="next" aria-label="Next project">›</button>
-        </div>
-        <p class="muted">You can replace project thumbnails by editing data.json → projects[].image</p>
-      </div>
-    </section>
+    <div class="bow-divider">୨୧</div>
 
-    <section id="contact" class="panel">
-      <div class="panel-inner">
-        <h2>Contact the White Rabbit</h2>
-        <form id="contactForm">
-          <label>
-            Your name
-            <input name="name" type="text" required />
-          </label>
-          <label>
-            Email
-            <input name="email" type="email" required />
-          </label>
-          <label>
-            Message
-            <textarea name="message" rows="4" required></textarea>
-          </label>
-          <button type="submit">Send</button>
-          <div id="formMessage" role="status" aria-live="polite"></div>
-        </form>
+    <section id="contact" class="content-panel">
+      <h2 class="section-title">Let's Connect</h2>
+      <p>Mình luôn sẵn sàng cho những cơ hội hợp tác mới hoặc đơn giản là một buổi trò chuyện về data.</p>
+      <div class="contact-links">
+        <a href="mailto:your.email@example.com" class="deco-button">Email Me</a>
+        <a href="https://linkedin.com/in/yourprofile" target="_blank" class="deco-button">LinkedIn</a>
       </div>
     </section>
 
     <footer>
-      <p>Made with tea & code — © <span id="footerName">onnlymintt</span></p>
+      <p>© 2024 Minh Thy. Crafted with ♥ and a touch of magic.</p>
     </footer>
-  </div>
+  </main>
 
   <script src="script.js" defer></script>
 </body>
