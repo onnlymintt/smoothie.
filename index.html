@@ -3,102 +3,129 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minh Thy | Portfoliracle</title>
-    <link href="https://fonts.googleapis.com/css2?family=Italianno&family=Cinzel+Decorative:wght@400;700&family=Cormorant+Garamond:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>Minh Thy | The Dual Reality</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Pinyon+Script&family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body>
-    <div id="magic-cursor"></div>
-    <div id="magic-cursor-trail"></div>
-    <div class="noise-overlay"></div>
+<body class="wonderland-mode"> <div class="noise-bg"></div>
+    <div class="grid-bg"></div> <div class="fog-container"> <div class="fog-img fog-one"></div>
+        <div class="fog-img fog-two"></div>
+    </div>
 
-    <nav class="floating-nav">
-        <span class="logo" onclick="showPage('home')">M.T</span>
-        <div class="nav-links">
-            <button onclick="showPage('home')">Home</button>
-            <button onclick="showPage('projects-list')">Wonderland</button>
-            <button onclick="showPage('about')">The Alice</button>
+    <div id="cursor"></div>
+    <div id="cursor-blur"></div>
+
+    <div class="corner top-left">
+        <div class="card-deck">
+            <div class="card-nav" onclick="scrollToId('home')">Home</div>
+            <div class="card-nav" onclick="scrollToId('projects')">Work</div>
+            <div class="card-nav" onclick="scrollToId('about')">Me</div>
+            <div class="card-top">MENU</div>
         </div>
-    </nav>
+    </div>
 
-    <main>
-        <section id="home" class="page active-page">
-            <div class="hero-container">
-                <div class="hero-visual">
-                    <img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=1000&auto=format&fit=crop" class="floating-img main-img">
-                    <img src="https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=500&auto=format&fit=crop" class="floating-img sec-img">
+    <div class="corner top-right">
+        <div class="toggle-container" onclick="toggleDimension()">
+            <span class="mode-label">Reality</span>
+            <div class="toggle-switch">
+                <div class="toggle-knob"></div>
+            </div>
+            <span class="mode-label active-label">Wonderland</span>
+        </div>
+    </div>
+
+    <div class="corner bottom-left">
+        <div class="potion-bottle" onclick="drinkMeEffect()">
+            <div class="liquid"></div>
+            <span>DRINK ME</span>
+        </div>
+    </div>
+
+    <div class="corner bottom-right" onclick="scrollToId('home')">
+        <div class="pocket-watch">
+            <div class="clock-face">
+                <div class="hand hour"></div>
+                <div class="hand minute"></div>
+            </div>
+            <span class="tooltip">I'm late!</span>
+        </div>
+    </div>
+
+    <main id="smooth-scroll">
+        
+        <section id="home" class="screen center-content">
+            <h1 class="glitch-title" data-text="PORTFOLIRACLE">PORTFOLIRACLE</h1>
+            <p class="subtitle">Data Analyst <span>//</span> Dream Weaver</p>
+            <div class="quote-box">
+                <p>"I prefer my data structured, but my reality chaotic."</p>
+            </div>
+        </section>
+
+        <section id="about" class="screen split-screen">
+            <div class="half left-logic">
+                <h2>The Analyst</h2>
+                <ul class="data-list">
+                    <li>> GPA: 8.83/10.0</li>
+                    <li>> IELTS: 7.5</li>
+                    <li>> Tool: Stata, Python, SQL</li>
+                    <li>> Logic: Inductive & Deductive</li>
+                </ul>
+            </div>
+            <div class="half right-magic">
+                <h2>The Artist</h2>
+                <div class="floating-words">
+                    <span>Storytelling</span>
+                    <span>Aesthetic</span>
+                    <span>Chaos</span>
+                    <span>Empathy</span>
                 </div>
-                <div class="hero-text">
-                    <p class="pre-title">Welcome to the</p>
-                    <h1 class="grand-title">Portfoliracle</h1>
-                    <p class="sub-quote">"I can't explain myself, because I'm not myself, you see."</p>
-                    <button class="explore-btn" onclick="showPage('projects-list')">Enter the Rabbit Hole</button>
+                <p>Curiouser and curiouser...</p>
+            </div>
+            <div class="mirror-divider"></div>
+        </section>
+
+        <section id="projects" class="screen">
+            <h2 class="section-header">The Rabbit Hole Projects</h2>
+            <div class="cards-container">
+                <div class="magic-card">
+                    <div class="card-front">
+                        <h3>TEDxFTU</h3>
+                        <p class="rank">♦ Content Leader</p>
+                        <div class="suit">♣</div>
+                    </div>
+                    <div class="card-back">
+                        <p>Managed 5 members. Created "De Rubik Code" format. 90% Impression Rate.</p>
+                        <a href="#" class="btn-pixel">View Data</a>
+                    </div>
+                </div>
+
+                <div class="magic-card">
+                    <div class="card-front">
+                        <h3>BECDAY</h3>
+                        <p class="rank">♥ Project Leader</p>
+                        <div class="suit">♥</div>
+                    </div>
+                    <div class="card-back">
+                        <p>Connected 10+ generations. Used Gantt Chart for 20 members workflow.</p>
+                        <a href="#" class="btn-pixel">View Gantt</a>
+                    </div>
+                </div>
+
+                <div class="magic-card">
+                    <div class="card-front">
+                        <h3>E-Commerce</h3>
+                        <p class="rank">♠ Champion</p>
+                        <div class="suit">♠</div>
+                    </div>
+                    <div class="card-back">
+                        <p>96h Challenge. Full Strategy from Research to Pitching.</p>
+                        <a href="#" class="btn-pixel">View Deck</a>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <section id="projects-list" class="page">
-            <h2 class="page-title">The Gallery of Wonders</h2>
-            <div class="projects-container">
-                
-                <div class="project-card tilt-card" onclick="openProject('tedx')">
-                    <div class="card-image" style="background-image: url('https://images.unsplash.com/photo-1514525253440-b393452e8d26?q=80&w=800');"></div>
-                    <div class="card-content">
-                        <span class="card-cat">Content Leader</span>
-                        <h3>TEDxFTU 2025</h3>
-                        <p>De Rubik Code</p>
-                    </div>
-                </div>
-
-                <div class="project-card tilt-card" onclick="openProject('becday')">
-                    <div class="card-image" style="background-image: url('https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=800');"></div>
-                    <div class="card-content">
-                        <span class="card-cat">Project Leader</span>
-                        <h3>BECDAY 2024</h3>
-                        <p>Intergenerational Connection</p>
-                    </div>
-                </div>
-
-                <div class="project-card tilt-card" onclick="openProject('h4tf')">
-                    <div class="card-image" style="background-image: url('https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=800');"></div>
-                    <div class="card-content">
-                        <span class="card-cat">Champion</span>
-                        <h3>H4TF E-commerce</h3>
-                        <p>Strategic Planning</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="project-detail" class="page">
-            <button class="back-btn" onclick="showPage('projects-list')">← Back to Wonderland</button>
-            <div class="detail-content" id="detail-container">
-                </div>
-        </section>
-
-        <section id="about" class="page">
-            <div class="about-wrapper">
-                <div class="about-visual">
-                   <img src="https://images.unsplash.com/photo-1491245338813-c6832976196e?q=80&w=800" alt="Alice style">
-                </div>
-                <div class="about-info">
-                    <h2>Pham Ngoc Minh Thy</h2>
-                    <p class="role-badge">Data Analyst & Dreamer</p>
-                    <p class="bio">"Like Alice, I step into each project as if entering a new world. I see challenges as doors to be opened and data as stories to be told."</p>
-                    
-                    <div class="stats-row">
-                        <div class="stat"><span>8.83</span><label>GPA</label></div>
-                        <div class="stat"><span>7.5</span><label>IELTS</label></div>
-                        <div class="stat"><span>3+</span><label>Years</label></div>
-                    </div>
-                    
-                    <div class="skills-cloud">
-                        <span>Python</span><span>Stata</span><span>Project Management</span><span>Concepting</span>
-                    </div>
-                </div>
-            </div>
-        </section>
     </main>
 
     <script src="script.js"></script>
