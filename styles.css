@@ -1,246 +1,127 @@
-/* 1. SETUP VIBE MA MỊ */
 :root {
-    --bg-color: #050505; /* Đen sâu */
-    --text-primary: #e0e0e0; /* Trắng bạc */
-    --text-secondary: #a0a0a0; /* Xám khói */
-    --accent: #d4af37; /* Vàng cổ điển (Gold) */
-    --glass: rgba(255, 255, 255, 0.03);
-    --border: rgba(255, 255, 255, 0.1);
+    /* WONDERLAND COLORS */
+    --bg-magic: #050505;
+    --text-magic: #e0e0e0;
+    --accent-magic: #9d4edd; /* Tím */
+    --font-magic: 'Pinyon Script', cursive;
+    --font-head: 'Cinzel', serif;
+
+    /* LOGIC COLORS (Data Mode) */
+    --bg-logic: #f0f2f5;
+    --text-logic: #1a1a1a;
+    --accent-logic: #0066cc; /* Xanh Data */
+    --font-logic: 'JetBrains Mono', monospace;
 }
 
+/* === SETUP CHUNG === */
 body {
     margin: 0;
-    background-color: var(--bg-color);
-    color: var(--text-primary);
-    font-family: 'Cormorant Garamond', serif; /* Font nội dung sang trọng */
-    font-size: 1.2rem;
-    line-height: 1.6;
     overflow-x: hidden;
+    transition: background-color 0.5s, color 0.5s;
+    cursor: none; /* Ẩn chuột */
 }
 
-/* Background Noise (Tạo hạt giống phim cũ) */
-body::before {
-    content: "";
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background-image: url("https://grainy-gradients.vercel.app/noise.svg");
-    opacity: 0.05;
-    pointer-events: none;
-    z-index: 999;
+/* --- CHẾ ĐỘ WONDERLAND (Mặc định) --- */
+body.wonderland-mode {
+    background-color: var(--bg-magic);
+    color: var(--text-magic);
+    font-family: var(--font-head);
 }
 
-h1, h2, h3 {
-    font-weight: 400;
-    margin: 0;
+body.wonderland-mode .grid-bg { display: none; }
+body.wonderland-mode .glitch-title { font-family: var(--font-magic); font-size: 6rem; color: var(--accent-magic); text-shadow: 0 0 20px var(--accent-magic); }
+body.wonderland-mode .magic-card { border: 1px solid var(--accent-magic); box-shadow: 0 0 15px rgba(157, 78, 221, 0.3); }
+
+/* --- CHẾ ĐỘ REALITY (LOGIC) --- */
+body.reality-mode {
+    background-color: var(--bg-logic);
+    color: var(--text-logic);
+    font-family: var(--font-logic);
 }
 
-/* 2. TYPOGRAPHY */
-.magic-title {
-    font-family: 'Pinyon Script', cursive; /* Font chữ viết tay tiêu đề */
-    font-size: 6rem;
-    background: linear-gradient(to right, #fff, #a0a0a0);
-    -webkit-background-clip: text;
-    color: transparent;
-    margin-bottom: 20px;
-    filter: drop-shadow(0 0 10px rgba(255,255,255,0.3));
+body.reality-mode .fog-container { display: none; }
+body.reality-mode .grid-bg {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background-image: linear-gradient(#ccc 1px, transparent 1px), linear-gradient(90deg, #ccc 1px, transparent 1px);
+    background-size: 50px 50px; opacity: 0.3; z-index: -1;
 }
+body.reality-mode .glitch-title { font-size: 4rem; letter-spacing: -2px; font-weight: bold; color: var(--text-logic); text-shadow: none; }
+body.reality-mode .magic-card { background: white; border: 1px solid #ccc; color: black; box-shadow: 5px 5px 0px #000; }
 
-.quote {
-    font-style: italic;
-    font-size: 1.5rem;
-    color: var(--text-secondary);
-}
+/* === CORNER INTERACTIVE STYLES === */
+.corner { position: fixed; z-index: 999; padding: 20px; }
+.top-left { top: 0; left: 0; }
+.top-right { top: 0; right: 0; }
+.bottom-left { bottom: 0; left: 0; }
+.bottom-right { bottom: 0; right: 0; }
 
-.section-title {
-    font-family: 'Cinzel', serif; /* Font tiêu đề cứng cáp */
-    font-size: 3rem;
-    margin-bottom: 40px;
-    letter-spacing: 2px;
-}
+/* 1. Menu Bài Tây (TL) */
+.card-deck { position: relative; width: 100px; height: 140px; cursor: pointer; perspective: 1000px; }
+.card-top { width: 100%; height: 100%; background: #fff; color: black; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-weight: bold; border: 2px solid black; position: absolute; z-index: 10; transition: 0.3s; }
+.card-nav { width: 100%; height: 100%; background: var(--accent-magic); color: white; position: absolute; top: 0; left: 0; border-radius: 5px; display: flex; align-items: center; justify-content: center; transition: 0.5s; opacity: 0; }
 
-.divider {
-    font-size: 2rem;
-    color: var(--accent);
-    margin: 30px 0;
-}
+.card-deck:hover .card-top { transform: rotate(-10deg) translateX(-20px); }
+.card-deck:hover .card-nav:nth-child(1) { transform: rotate(15deg) translateX(80px); opacity: 1; }
+.card-deck:hover .card-nav:nth-child(2) { transform: rotate(30deg) translateX(80px) translateY(40px); opacity: 1; }
+.card-deck:hover .card-nav:nth-child(3) { transform: rotate(45deg) translateX(60px) translateY(80px); opacity: 1; }
 
-/* 3. LAYOUT & SECTIONS */
-.section-pad {
-    padding: 100px 10%;
-}
+/* 2. Switch (TR) */
+.toggle-container { display: flex; align-items: center; gap: 10px; cursor: pointer; background: rgba(255,255,255,0.1); padding: 10px; border-radius: 30px; backdrop-filter: blur(5px); }
+.toggle-switch { width: 50px; height: 25px; background: #333; border-radius: 25px; position: relative; }
+.toggle-knob { width: 21px; height: 21px; background: white; border-radius: 50%; position: absolute; top: 2px; left: 2px; transition: 0.3s; }
+.active-label { color: var(--accent-magic); font-weight: bold; }
 
-.center-text { text-align: center; }
+/* Logic Move Knob */
+body.reality-mode .toggle-knob { left: 27px; background: var(--accent-logic); }
+body.reality-mode .mode-label:first-child { color: var(--accent-logic); font-weight: bold; }
+body.reality-mode .mode-label:last-child { color: #999; font-weight: normal; }
 
-/* HERO SECTION */
-.hero {
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    background: radial-gradient(circle at center, #1a1a1a 0%, #000 70%);
-}
+/* 3. Potion (BL) */
+.potion-bottle { width: 40px; height: 60px; border: 2px solid white; border-radius: 10px 10px 20px 20px; position: relative; overflow: hidden; cursor: pointer; }
+.liquid { width: 100%; height: 60%; background: #ff0055; position: absolute; bottom: 0; animation: wave 2s infinite linear; }
+.potion-bottle span { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 0.5rem; color: white; font-weight: bold; z-index: 2; text-shadow: 1px 1px 0 #000; }
+@keyframes wave { 0% { transform: skew(0deg); } 25% { transform: skew(5deg); } 75% { transform: skew(-5deg); } 100% { transform: skew(0deg); } }
 
-/* GLASS CARD (Hiệu ứng kính mờ) */
-.glass-card {
-    background: var(--glass);
-    backdrop-filter: blur(10px);
-    border: 1px solid var(--border);
-    padding: 40px;
-    border-radius: 20px;
-}
+/* 4. Watch (BR) */
+.pocket-watch { width: 60px; height: 60px; border: 2px solid var(--accent-gold); border-radius: 50%; background: #fff; position: relative; cursor: pointer; transition: 0.3s; }
+.clock-face { position: relative; width: 100%; height: 100%; }
+.hand { position: absolute; bottom: 50%; left: 50%; background: black; transform-origin: bottom center; }
+.hour { height: 15px; width: 2px; animation: spin 12s linear infinite; }
+.minute { height: 22px; width: 1px; animation: spin 1s linear infinite; }
+.pocket-watch:hover { transform: scale(1.2); box-shadow: 0 0 20px gold; }
+.tooltip { position: absolute; top: -30px; left: 50%; transform: translateX(-50%); background: white; color: black; padding: 2px 5px; font-size: 0.7rem; opacity: 0; transition: 0.3s; pointer-events: none; }
+.pocket-watch:hover .tooltip { opacity: 1; top: -40px; }
 
-.about-grid {
-    display: grid;
-    grid-template-columns: 1fr 1.5fr;
-    gap: 50px;
-    align-items: center;
-}
+/* === MAIN SECTIONS === */
+.screen { min-height: 100vh; padding: 80px 50px; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; }
 
-.about-img img {
-    width: 100%;
-    border-radius: 200px 200px 0 0; /* Bo tròn kiểu cửa sổ lâu đài */
-    border: 1px solid var(--accent);
-    filter: grayscale(30%);
-}
+/* Split Screen (About) */
+.split-screen { flex-direction: row; gap: 50px; }
+.half { flex: 1; padding: 30px; }
+.mirror-divider { width: 2px; height: 300px; background: linear-gradient(to bottom, transparent, var(--accent-magic), transparent); }
+.left-logic { text-align: right; }
+.data-list li { list-style: none; font-family: 'JetBrains Mono'; margin: 10px 0; }
+.floating-words span { display: inline-block; padding: 5px 15px; border: 1px solid var(--accent-magic); border-radius: 20px; margin: 5px; animation: floatWords 3s infinite ease-in-out; }
 
-.stats-grid {
-    display: flex;
-    gap: 30px;
-    margin: 30px 0;
-    border-top: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
-    padding: 20px 0;
-}
+/* Magic Cards */
+.cards-container { display: flex; gap: 30px; flex-wrap: wrap; justify-content: center; }
+.magic-card { width: 250px; height: 350px; position: relative; transform-style: preserve-3d; transition: transform 0.8s; cursor: pointer; }
+.magic-card:hover { transform: rotateY(180deg); }
+.card-front, .card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; }
+.card-front { background: #111; }
+.card-back { background: var(--accent-magic); color: white; transform: rotateY(180deg); text-align: center; }
+.suit { font-size: 4rem; opacity: 0.2; position: absolute; bottom: 20px; right: 20px; }
 
-.stat-item h3 {
-    font-family: 'Cinzel', serif;
-    font-size: 2rem;
-    color: var(--accent);
-}
+/* CURSOR */
+#cursor { width: 10px; height: 10px; background: white; border-radius: 50%; position: fixed; pointer-events: none; z-index: 9999; mix-blend-mode: difference; }
+#cursor-blur { width: 50px; height: 50px; border: 1px solid white; border-radius: 50%; position: fixed; pointer-events: none; z-index: 9998; transition: 0.1s; opacity: 0.5; }
 
-.skills-list span {
-    display: inline-block;
-    border: 1px solid var(--text-secondary);
-    padding: 5px 15px;
-    border-radius: 50px;
-    margin-right: 10px;
-    margin-bottom: 10px;
-    font-size: 0.9rem;
-    letter-spacing: 1px;
-}
+@keyframes spin { 100% { transform: rotate(360deg); } }
+@keyframes floatWords { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
 
-/* PROJECT ROWS */
-.project-row {
-    display: flex;
-    gap: 50px;
-    margin-bottom: 100px;
-    align-items: center;
-}
-
-.project-row.reverse {
-    flex-direction: row-reverse; /* Đảo chiều ảnh */
-}
-
-.project-visual {
-    flex: 1;
-}
-
-.project-visual img {
-    width: 100%;
-    height: 400px;
-    object-fit: cover;
-    border-radius: 10px;
-    filter: brightness(0.8);
-    transition: 0.5s;
-}
-
-.project-row:hover .project-visual img {
-    filter: brightness(1);
-    transform: scale(1.02);
-}
-
-.project-info {
-    flex: 1;
-}
-
-.project-year {
-    font-family: 'Cinzel', serif;
-    color: var(--accent);
-    font-size: 0.9rem;
-    display: block;
-    margin-bottom: 10px;
-}
-
-.concept-name {
-    font-style: italic;
-    color: var(--text-secondary);
-    border-left: 2px solid var(--accent);
-    padding-left: 15px;
-}
-
-.achievements {
-    list-style: none;
-    padding: 0;
-    margin-top: 20px;
-}
-
-.achievements li {
-    margin-bottom: 5px;
-    font-size: 1.1rem;
-}
-
-/* FOOTER */
-.footer {
-    text-align: center;
-    border-top: 1px solid var(--border);
-    padding-bottom: 50px;
-}
-
-.yes-i-am {
-    font-family: 'Pinyon Script', cursive;
-    font-size: 4rem;
-    color: var(--accent);
-}
-
-.socials a {
-    color: var(--text-primary);
-    text-decoration: none;
-    margin: 0 20px;
-    font-family: 'Cinzel', serif;
-    border-bottom: 1px solid transparent;
-    transition: 0.3s;
-}
-
-.socials a:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-}
-
-.copyright {
-    margin-top: 50px;
-    font-size: 0.9rem;
-    color: var(--text-secondary);
-}
-
-/* ANIMATION CLASSES */
-.fade-in {
-    opacity: 0;
-    transform: translateY(30px);
-    transition: all 1s ease;
-}
-
-.fade-in.visible {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-/* Responsive Mobile */
+/* Responsive */
 @media (max-width: 768px) {
-    .magic-title { font-size: 3.5rem; }
-    .about-grid, .project-row, .project-row.reverse {
-        grid-template-columns: 1fr;
-        flex-direction: column;
-    }
-    .section-pad { padding: 60px 20px; }
+    .split-screen { flex-direction: column; }
+    .mirror-divider { width: 100%; height: 2px; }
+    .corner span { display: none; } /* Giấu chữ trên mobile cho gọn */
 }
