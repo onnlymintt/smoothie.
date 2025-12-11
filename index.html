@@ -3,128 +3,156 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minh Thy | The Storyteller</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Pinyon+Script&display=swap" rel="stylesheet">
+    <title>Minh Thy | The Infinite Wonderland</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Pinyon+Script&family=Rye&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-    
-    <div class="gramophone-widget" onclick="toggleMusic()">
-        <div class="vinyl-record">
-            <div class="vinyl-center"></div>
+<body class="loading">
+
+    <div id="preloader">
+        <div class="falling-alice">
+            <span class="symbol">♠</span>
+            <span class="symbol">♥</span>
+            <span class="symbol">♣</span>
+            <span class="symbol">♦</span>
         </div>
+        <h2 class="loading-text">Falling down the rabbit hole...</h2>
+    </div>
+
+    <div class="parallax-layer layer-1"></div> <div class="parallax-layer layer-2"></div> <div class="parallax-layer layer-3"></div> <div class="gramophone-widget" onclick="toggleMusic()">
+        <div class="vinyl-record"><div class="vinyl-center"></div></div>
         <div class="music-note">♫</div>
-        <span class="music-tooltip">Play Wonderland</span>
     </div>
     <audio id="bg-music" loop>
-        <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=mystery-114875.mp3" type="audio/mpeg">
+        <source src="https://cdn.pixabay.com/download/audio/2022/10/05/audio_68629e769e.mp3?filename=wistful-rain-119665.mp3" type="audio/mpeg">
     </audio>
 
-    <div id="click-effects"></div>
-
-    <div class="cheshire-cat">
-        <div class="eye left"></div>
-        <div class="eye right"></div>
-    </div>
-
+    <div id="magic-cursor"></div>
+    <div id="magic-cursor-trail"></div>
     <div class="progress-bar"></div>
 
     <main>
-        <section id="chap1" class="chapter">
-            <div class="chapter-content">
-                <p class="chap-num">Chapter I</p>
-                <h1 class="chap-title">Down the Rabbit-Hole</h1>
-                <div class="hero-text type-writer">
-                    <p id="type-text"></p> </div>
-                <div class="scroll-indicator">
-                    <span>Fall Deeper</span>
-                    <div class="arrow">↓</div>
+        <section id="chap1" class="chapter hero-section">
+            <div class="hero-content">
+                <p class="chap-sub">Chapter I</p>
+                <h1 class="glitch-title" data-text="PORTFOLIRACLE">PORTFOLIRACLE</h1>
+                <div class="hero-desc">
+                    <p class="type-text">"I’m not crazy. My reality is just different than yours."</p>
                 </div>
-            </div>
-            <div class="spiral-bg"></div>
-        </section>
-
-        <section id="chap2" class="chapter">
-            <div class="chapter-content split-layout">
-                <div class="text-side">
-                    <p class="chap-num">Chapter II</p>
-                    <h2 class="chap-title">The Pool of Tears</h2>
-                    <p class="story-text">
-                        "Curiouser and curiouser!" cried Alice.
-                        <br><br>
-                        That is how I feel about Data. I am <strong>Minh Thy</strong>, a wanderer from Foreign Trade University (GPA 8.83). I see numbers not as dry facts, but as riddles waiting to be solved.
-                    </p>
-                </div>
-                <div class="img-side">
-                    <div class="mirror-frame">
-                        <img src="https://images.unsplash.com/photo-1542385151-efd9000785a0?q=80&w=800" alt="Thy">
-                        <div class="mirror-reflection"></div>
-                    </div>
+                <div class="scroll-prompt">
+                    <span>Drink Me</span>
+                    <div class="liquid-drop"></div>
                 </div>
             </div>
         </section>
 
-        <section id="chap3" class="chapter">
-            <div class="chapter-content">
-                <p class="chap-num">Chapter III</p>
-                <h2 class="chap-title">A Mad Tea-Party</h2>
-                <div class="tea-table">
-                    <div class="tea-cup" data-skill="Python"><span>Python</span><div class="steam-wrap"><div class="steam"></div><div class="steam s2"></div></div></div>
-                    <div class="tea-cup" data-skill="Stata"><span>Stata</span><div class="steam-wrap"><div class="steam"></div><div class="steam s2"></div></div></div>
-                    <div class="tea-cup" data-skill="SQL"><span>SQL</span><div class="steam-wrap"><div class="steam"></div><div class="steam s2"></div></div></div>
-                    <div class="tea-cup" data-skill="Logic"><span>Logic</span><div class="steam-wrap"><div class="steam"></div><div class="steam s2"></div></div></div>
-                </div>
-            </div>
-        </section>
-
-        <section id="chap4" class="chapter">
-            <div class="chapter-content">
-                <p class="chap-num">Chapter IV</p>
-                <h2 class="chap-title">The Queen's Croquet</h2>
-                <div class="card-gallery">
-                    <div class="playing-card" onclick="openProject('tedx')">
-                        <div class="card-inner"><span class="suit">♣</span><h3>TEDxFTU</h3><p>De Rubik Code</p></div>
+        <section id="chap2" class="chapter about-section">
+            <div class="glass-panel tilt-element">
+                <div class="row">
+                    <div class="col-text">
+                        <span class="deco-num">II</span>
+                        <h2>The Mirror's Edge</h2>
+                        <p>Behind the looking glass lies <strong>Minh Thy</strong> — a Data Analyst at FTU (GPA 8.83). I weave logic with imagination, turning raw data into compelling narratives.</p>
+                        <div class="stats-row">
+                            <div class="stat-box"><h3>8.83</h3><p>GPA</p></div>
+                            <div class="stat-box"><h3>7.5</h3><p>IELTS</p></div>
+                            <div class="stat-box"><h3>3+</h3><p>Years</p></div>
+                        </div>
                     </div>
-                    <div class="playing-card" onclick="openProject('becday')">
-                        <div class="card-inner"><span class="suit">♥</span><h3>BECDAY</h3><p>The Reunion</p></div>
-                    </div>
-                    <div class="playing-card" onclick="openProject('h4tf')">
-                        <div class="card-inner"><span class="suit">♠</span><h3>E-Commerce</h3><p>96h Battle</p></div>
+                    <div class="col-img">
+                        <div class="frame-ornament">
+                            <img src="https://images.unsplash.com/photo-1542385151-efd9000785a0?q=80&w=800" alt="Thy Portrait">
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section id="chap5" class="chapter">
-            <div class="chapter-content">
-                <p class="chap-num">Chapter V</p>
-                <h2 class="chap-title">Alice's Evidence</h2>
-                <div class="signature-block">
-                    <p>Sincerely,</p>
-                    <svg viewBox="0 0 500 150" class="sig-svg">
-                        <text x="50%" y="50%" text-anchor="middle" class="sig-text">Pham Ngoc Minh Thy</text>
-                    </svg>
-                    <div class="contact-links">
-                        <a href="#">LinkedIn</a> ✦ <a href="#">Email</a> ✦ <a href="#">Github</a>
+        <section id="chap3" class="chapter skills-section">
+            <h2 class="section-header">Choose Your Weapon</h2>
+            <div class="skills-orbit">
+                <div class="center-star">DATA</div>
+                <div class="orbit-item" style="--angle:0deg">Python</div>
+                <div class="orbit-item" style="--angle:60deg">Stata</div>
+                <div class="orbit-item" style="--angle:120deg">SQL</div>
+                <div class="orbit-item" style="--angle:180deg">Excel</div>
+                <div class="orbit-item" style="--angle:240deg">Tableau</div>
+                <div class="orbit-item" style="--angle:300deg">R</div>
+            </div>
+        </section>
+
+        <section id="chap4" class="chapter projects-section">
+            <h2 class="section-header">The Queen's Gallery</h2>
+            <div class="cards-perspective">
+                <div class="tarot-card" onclick="openProject('tedx')">
+                    <div class="card-face front">
+                        <img src="https://images.unsplash.com/photo-1475721027767-4d09602e5b87?q=80&w=600" class="card-bg">
+                        <div class="card-overlay">
+                            <span class="card-suit">♣</span>
+                            <h3>TEDxFTU</h3>
+                            <p>Click to Reveal</p>
+                        </div>
                     </div>
+                </div>
+                <div class="tarot-card" onclick="openProject('becday')">
+                    <div class="card-face front">
+                        <img src="https://images.unsplash.com/photo-1523580494863-6f3031224c94?q=80&w=600" class="card-bg">
+                        <div class="card-overlay">
+                            <span class="card-suit">♥</span>
+                            <h3>BECDAY</h3>
+                            <p>Click to Reveal</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="tarot-card" onclick="openProject('h4tf')">
+                    <div class="card-face front">
+                        <img src="https://images.unsplash.com/photo-1556742049-0cfed4f7a07d?q=80&w=600" class="card-bg">
+                        <div class="card-overlay">
+                            <span class="card-suit">♠</span>
+                            <h3>E-Commerce</h3>
+                            <p>Click to Reveal</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="chap5" class="chapter contact-section">
+            <div class="letter-box">
+                <h2>Alice's Evidence</h2>
+                <div class="signature-anim">Pham Ngoc Minh Thy</div>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                    <a href="#"><i class="fas fa-envelope"></i></a>
+                    <a href="#"><i class="fab fa-github"></i></a>
                 </div>
             </div>
         </section>
     </main>
 
     <div id="project-portal" class="portal-overlay">
-        <button class="close-portal" onclick="closeProject()">✕ Close Book</button>
+        <button class="close-portal" onclick="closeProject()">✕ Close Gallery</button>
         <div class="portal-content">
             <div class="portal-header">
-                <h1 id="portal-title">Project Name</h1>
-                <p id="portal-role">Role</p>
+                <h1 id="p-title" class="neon-text">Project Title</h1>
+                <p id="p-role">Role | Year</p>
             </div>
-            <div class="portal-body">
-                <div class="portal-img"><img id="portal-image" src="" alt=""></div>
-                <div class="portal-text">
-                    <p id="portal-desc">Description...</p>
-                    <ul id="portal-stats"></ul>
+            
+            <div class="gallery-container">
+                <h3>Visual Evidence</h3>
+                <div class="scroll-gallery" id="p-gallery">
+                    </div>
+            </div>
+
+            <div class="portal-details">
+                <div class="detail-box">
+                    <h3>The Story</h3>
+                    <p id="p-desc">Description...</p>
+                </div>
+                <div class="detail-box">
+                    <h3>Key Metrics</h3>
+                    <ul id="p-stats"></ul>
                 </div>
             </div>
         </div>
