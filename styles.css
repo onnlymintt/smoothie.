@@ -1,122 +1,89 @@
-:root {
-    --bg-dark: #090014;
-    --gold: #ffcc00;
-    --neon-pink: #ff0055;
-    --neon-blue: #00f3ff;
-    --glass: rgba(255, 255, 255, 0.05);
+:root{
+  --bg:#07132a;
+  --card:#f6efe6;
+  --accent:#d98b7d;
+  --accent-2:#9fd3c7;
+  --muted:#a9b6c5;
+  --glass: rgba(255,255,255,0.06);
+  --radius:14px;
+  --ff-title: "Playfair Display", serif;
+  --ff-body: "Quicksand", system-ui, sans-serif;
 }
 
-body {
-    margin: 0; background-color: var(--bg-dark); color: #fff;
-    font-family: 'Cormorant Garamond', serif; overflow-x: hidden;
-    cursor: none;
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family:var(--ff-body);
+  background:linear-gradient(180deg,var(--bg),#021026 60%);
+  color:var(--card);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  overflow-x:hidden;
 }
 
-/* 0. PRELOADER */
-#preloader {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: #000; z-index: 10000; display: flex; flex-direction: column;
-    align-items: center; justify-content: center; transition: 1s;
-}
-.loading-text { font-family: 'Cinzel Decorative'; animation: pulse 1s infinite; color: var(--gold); margin-top: 20px;}
-.falling-alice span { font-size: 3rem; animation: tumble 2s infinite; display: inline-block; color: var(--neon-blue); margin: 0 10px; }
-@keyframes tumble { 0% {transform: rotate(0deg) translateY(0);} 50% {transform: rotate(180deg) translateY(20px);} 100% {transform: rotate(360deg) translateY(0);} }
-body.loaded #preloader { transform: translateY(-100%); }
+/* Rabbit hole entrance */
+#rabbit-hole{height:100vh;display:flex;align-items:center;justify-content:center;position:relative}
+.hole-wrap{width:100%;max-width:1000px;padding:2rem;text-align:center;position:relative}
+.rabbit-hole{width:100%;height:260px;opacity:0.9}
+.intro-card{position:absolute;left:50%;transform:translateX(-50%);top:40%;background:linear-gradient(135deg,var(--glass),rgba(255,255,255,0.02));backdrop-filter: blur(6px);padding:2rem;border-radius:16px;border:1px solid rgba(255,255,255,0.04);width:min(640px,92%);display:grid;grid-template-columns:120px 1fr;gap:1rem;align-items:center}
+.profile-photo{width:100px;height:100px;border-radius:999px;object-fit:cover;border:2px solid rgba(255,255,255,0.06)}
+.intro-card h1{font-family:var(--ff-title);margin:0 0 .25rem}
+.intro-card p{color:var(--muted)}
+#enterBtn{margin-top:1rem;background:linear-gradient(90deg,var(--accent),var(--accent-2));border:0;color:#06121a;padding:.7rem 1.2rem;border-radius:12px;font-weight:600;cursor:pointer;box-shadow:0 8px 20px rgba(0,0,0,0.4)}
 
-/* 1. PARALLAX BG */
-.parallax-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; }
-.layer-1 { background-image: url('https://grainy-gradients.vercel.app/noise.svg'); opacity: 0.1; }
-.layer-2 { background: radial-gradient(circle at 50% 50%, transparent, var(--bg-dark)); }
+.floating-smoke{position:absolute;inset:auto 10% 10% auto;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,#ffffff22,#0000);filter:blur(18px);opacity:.6;transform:translateY(10px)}
 
-/* 2. GLITCH TITLE (HIỆU ỨNG BÙNG NỔ) */
-.glitch-title {
-    font-family: 'Rye', serif; font-size: 5rem; position: relative;
-    color: var(--gold); text-shadow: 2px 2px var(--neon-pink);
-}
-.glitch-title::before, .glitch-title::after {
-    content: attr(data-text); position: absolute; left: 0; top: 0; width: 100%; height: 100%; background: var(--bg-dark);
-}
-.glitch-title::before { left: 2px; text-shadow: -1px 0 var(--neon-blue); clip: rect(24px, 550px, 90px, 0); animation: glitch-anim 3s infinite linear alternate-reverse; }
-.glitch-title::after { left: -2px; text-shadow: -1px 0 var(--neon-pink); clip: rect(85px, 550px, 140px, 0); animation: glitch-anim 2s infinite linear alternate-reverse; }
-@keyframes glitch-anim { 0% {clip: rect(10px, 9999px, 30px, 0);} 20% {clip: rect(80px, 9999px, 100px, 0);} 100% {clip: rect(40px, 9999px, 60px, 0);} }
+/* site layout */
+#site{min-height:100vh;display:flex;flex-direction:column}
+header{display:flex;justify-content:space-between;align-items:center;padding:1rem 2rem;background:linear-gradient(180deg, rgba(0,0,0,0.15), transparent);backdrop-filter: blur(4px)}
+.brand{display:flex;align-items:center;gap:.6rem}
+.brand .logo{background:var(--accent);color:#051020;padding:.4rem .6rem;border-radius:8px;font-weight:700}
+nav button{background:transparent;border:0;color:var(--card);padding:.5rem 0;margin:.2rem .4rem;cursor:pointer;font-weight:600}
 
-/* 3. SECTIONS */
-.chapter { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 50px; position: relative; }
+/* panels */
+.panel{padding:4rem 2rem;position:relative}
+.panel-inner{max-width:1100px;margin:0 auto}
+h2{font-family:var(--ff-title);font-size:2rem;margin:.2rem 0 1rem;color:var(--card)}
+.lead{color:var(--muted);max-width:60ch}
 
-/* GLASS PANEL (ABOUT) */
-.glass-panel {
-    background: var(--glass); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1);
-    padding: 50px; border-radius: 20px; max-width: 900px;
-    box-shadow: 0 0 30px rgba(0, 243, 255, 0.1);
-}
-.row { display: flex; gap: 50px; align-items: center; }
-.frame-ornament img { width: 100%; border-radius: 10px; border: 2px solid var(--gold); }
-.stats-row { display: flex; gap: 30px; margin-top: 20px; }
-.stat-box { border: 1px solid var(--neon-blue); padding: 10px 20px; text-align: center; }
+/* tale cards */
+.cards{display:flex;gap:1rem;flex-wrap:wrap;margin-top:1.5rem}
+.tale-card{width:260px;height:160px;perspective:900px;cursor:pointer;position:relative}
+.tale-card .face{position:absolute;inset:0;border-radius:12px;padding:1rem;display:flex;align-items:center;justify-content:center;text-align:center;backface-visibility:hidden;transition:transform .6s ease}
+.tale-card .front{background:linear-gradient(180deg,#ffffff07,#00000010);border:1px solid rgba(255,255,255,0.03)}
+.tale-card .back{transform:rotateY(180deg);background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(0,0,0,0.25));border:1px dashed rgba(255,255,255,0.03)}
 
-/* SKILLS ORBIT (XOAY TRÒN) */
-.skills-orbit { position: relative; width: 300px; height: 300px; animation: spinOrbit 20s linear infinite; }
-.center-star { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); font-weight: bold; color: var(--gold); font-size: 1.5rem; }
-.orbit-item {
-    position: absolute; top: 50%; left: 50%;
-    transform: rotate(var(--angle)) translateX(150px) rotate(calc(-1 * var(--angle)));
-    background: #111; border: 1px solid var(--neon-pink); padding: 5px 15px; border-radius: 20px;
-    white-space: nowrap; color: #fff;
-}
-@keyframes spinOrbit { 100% { transform: rotate(360deg); } }
+/* flip effect */
+.tale-card:focus .front,
+.tale-card:hover .front{transform:rotateY(180deg)}
+.tale-card:focus .back,
+.tale-card:hover .back{transform:rotateY(360deg)}
 
-/* PROJECT CARDS (TAROT STYLE) */
-.cards-perspective { display: flex; gap: 30px; perspective: 1000px; }
-.tarot-card {
-    width: 260px; height: 400px; position: relative; transition: 0.5s;
-    border: 2px solid var(--gold); border-radius: 15px; overflow: hidden; cursor: pointer;
-}
-.tarot-card:hover { transform: translateY(-30px) rotateX(10deg); box-shadow: 0 20px 50px rgba(255, 204, 0, 0.2); }
-.card-bg { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
-.tarot-card:hover .card-bg { transform: scale(1.1); filter: brightness(0.4); }
-.card-overlay {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    display: flex; flex-direction: column; justify-content: center; align-items: center;
-    opacity: 0; transition: 0.5s;
-}
-.tarot-card:hover .card-overlay { opacity: 1; }
-.card-suit { font-size: 4rem; color: var(--gold); margin-bottom: 10px; }
+/* skills cards */
+.skills-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1rem;margin-top:1rem}
+.card{height:140px;perspective:1000px;cursor:pointer}
+.card-inner{position:relative;height:100%;transition:transform .7s;transform-style:preserve-3d;border-radius:12px}
+.card-front,.card-back{position:absolute;inset:0;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:700;backface-visibility:hidden}
+.card-front{background:linear-gradient(135deg,var(--accent),#f6c6b1);color:#07121a}
+.card-back{transform:rotateY(180deg);background:linear-gradient(135deg,#0d2b3b,#05243a);color:var(--card);padding:1rem;text-align:center;font-weight:400}
+.card:focus .card-inner,.card:hover .card-inner{transform:rotateY(180deg)}
 
-/* 4. GALLERY PORTAL (CẢI TIẾN LỚN) */
-.portal-overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000;
-    z-index: 9999; transform: translateY(100%); transition: 0.6s cubic-bezier(0.8, 0, 0.2, 1);
-    overflow-y: auto;
-}
-.portal-overlay.active { transform: translateY(0); }
-.portal-content { max-width: 1200px; margin: 0 auto; padding: 60px 20px; }
-.neon-text { font-family: 'Cinzel Decorative'; font-size: 4rem; color: #fff; text-shadow: 0 0 10px var(--neon-pink); text-align: center; }
+/* carousel */
+.carousel{display:flex;align-items:center;gap:1rem;margin-top:1rem}
+.slides{list-style:none;padding:0;margin:0;display:flex;gap:1rem;overflow:hidden;width:100%}
+.slide{min-width:320px;background:linear-gradient(180deg,#021427,#05243a);padding:1.2rem;border-radius:10px;border:1px solid rgba(255,255,255,0.03);opacity:.6;transform:scale(.96);transition:all .35s;display:flex;gap:1rem;align-items:center}
+.slide.active{opacity:1;transform:scale(1)}
+.slide img{width:110px;height:80px;object-fit:cover;border-radius:8px}
+.prev,.next{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--card);padding:.6rem 1rem;border-radius:8px;cursor:pointer}
 
-/* KHOẢNG TRỐNG NHIỀU ẢNH */
-.gallery-container { margin: 40px 0; }
-.gallery-container h3 { color: var(--gold); font-family: 'Cinzel Decorative'; border-bottom: 1px solid #333; padding-bottom: 10px; }
-.scroll-gallery {
-    display: flex; gap: 20px; overflow-x: auto; padding-bottom: 20px;
-    scroll-snap-type: x mandatory;
-}
-.scroll-gallery img {
-    height: 400px; border-radius: 5px; scroll-snap-align: center;
-    border: 1px solid #333; transition: 0.3s;
-}
-.scroll-gallery img:hover { border-color: var(--neon-blue); transform: scale(1.02); }
+/* footer */
+footer{padding:1.2rem;text-align:center;color:var(--muted)}
 
-.portal-details { display: grid; grid-template-columns: 2fr 1fr; gap: 50px; }
-.detail-box h3 { color: var(--gold); font-family: 'Cinzel Decorative'; }
-.close-portal { position: fixed; top: 30px; right: 30px; background: none; border: 1px solid #fff; color: #fff; padding: 10px 20px; cursor: pointer; z-index: 100; font-family: 'Cinzel Decorative'; }
-.close-portal:hover { background: var(--neon-pink); border-color: var(--neon-pink); }
-
-/* CUSTOM CURSOR */
-#magic-cursor { width: 10px; height: 10px; background: #fff; border-radius: 50%; position: fixed; pointer-events: none; mix-blend-mode: difference; z-index: 10000; }
-#magic-cursor-trail { width: 40px; height: 40px; border: 1px solid var(--gold); border-radius: 50%; position: fixed; pointer-events: none; z-index: 9999; transition: 0.1s; }
-
-/* RESPONSIVE */
-@media (max-width: 768px) {
-    .row, .portal-details { flex-direction: column; }
-    .glitch-title { font-size: 3rem; }
-    .scroll-gallery img { height: 250px; }
+/* responsive */
+@media (max-width:700px){
+  .intro-card{top:30%;grid-template-columns:1fr;justify-items:center;text-align:center}
+  .cards{justify-content:center}
+  header{padding:1rem}
+  .slide{flex-direction:column}
 }
