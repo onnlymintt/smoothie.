@@ -3,130 +3,132 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minh Thy | The Dual Reality</title>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Pinyon+Script&family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+    <title>Minh Thy | The Storyteller</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Pinyon+Script&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="wonderland-mode"> <div class="noise-bg"></div>
-    <div class="grid-bg"></div> <div class="fog-container"> <div class="fog-img fog-one"></div>
-        <div class="fog-img fog-two"></div>
-    </div>
-
-    <div id="cursor"></div>
-    <div id="cursor-blur"></div>
-
-    <div class="corner top-left">
-        <div class="card-deck">
-            <div class="card-nav" onclick="scrollToId('home')">Home</div>
-            <div class="card-nav" onclick="scrollToId('projects')">Work</div>
-            <div class="card-nav" onclick="scrollToId('about')">Me</div>
-            <div class="card-top">MENU</div>
+<body>
+    
+    <div class="gramophone-widget" onclick="toggleMusic()">
+        <div class="vinyl-record">
+            <div class="vinyl-center"></div>
         </div>
+        <div class="music-note">♫</div>
+        <span class="music-tooltip">Play Wonderland</span>
+    </div>
+    <audio id="bg-music" loop>
+        <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=mystery-114875.mp3" type="audio/mpeg">
+    </audio>
+
+    <div id="click-effects"></div>
+
+    <div class="cheshire-cat">
+        <div class="eye left"></div>
+        <div class="eye right"></div>
     </div>
 
-    <div class="corner top-right">
-        <div class="toggle-container" onclick="toggleDimension()">
-            <span class="mode-label">Reality</span>
-            <div class="toggle-switch">
-                <div class="toggle-knob"></div>
+    <div class="progress-bar"></div>
+
+    <main>
+        <section id="chap1" class="chapter">
+            <div class="chapter-content">
+                <p class="chap-num">Chapter I</p>
+                <h1 class="chap-title">Down the Rabbit-Hole</h1>
+                <div class="hero-text type-writer">
+                    <p id="type-text"></p> </div>
+                <div class="scroll-indicator">
+                    <span>Fall Deeper</span>
+                    <div class="arrow">↓</div>
+                </div>
             </div>
-            <span class="mode-label active-label">Wonderland</span>
-        </div>
-    </div>
-
-    <div class="corner bottom-left">
-        <div class="potion-bottle" onclick="drinkMeEffect()">
-            <div class="liquid"></div>
-            <span>DRINK ME</span>
-        </div>
-    </div>
-
-    <div class="corner bottom-right" onclick="scrollToId('home')">
-        <div class="pocket-watch">
-            <div class="clock-face">
-                <div class="hand hour"></div>
-                <div class="hand minute"></div>
-            </div>
-            <span class="tooltip">I'm late!</span>
-        </div>
-    </div>
-
-    <main id="smooth-scroll">
-        
-        <section id="home" class="screen center-content">
-            <h1 class="glitch-title" data-text="PORTFOLIRACLE">PORTFOLIRACLE</h1>
-            <p class="subtitle">Data Analyst <span>//</span> Dream Weaver</p>
-            <div class="quote-box">
-                <p>"I prefer my data structured, but my reality chaotic."</p>
-            </div>
+            <div class="spiral-bg"></div>
         </section>
 
-        <section id="about" class="screen split-screen">
-            <div class="half left-logic">
-                <h2>The Analyst</h2>
-                <ul class="data-list">
-                    <li>> GPA: 8.83/10.0</li>
-                    <li>> IELTS: 7.5</li>
-                    <li>> Tool: Stata, Python, SQL</li>
-                    <li>> Logic: Inductive & Deductive</li>
-                </ul>
-            </div>
-            <div class="half right-magic">
-                <h2>The Artist</h2>
-                <div class="floating-words">
-                    <span>Storytelling</span>
-                    <span>Aesthetic</span>
-                    <span>Chaos</span>
-                    <span>Empathy</span>
+        <section id="chap2" class="chapter">
+            <div class="chapter-content split-layout">
+                <div class="text-side">
+                    <p class="chap-num">Chapter II</p>
+                    <h2 class="chap-title">The Pool of Tears</h2>
+                    <p class="story-text">
+                        "Curiouser and curiouser!" cried Alice.
+                        <br><br>
+                        That is how I feel about Data. I am <strong>Minh Thy</strong>, a wanderer from Foreign Trade University (GPA 8.83). I see numbers not as dry facts, but as riddles waiting to be solved.
+                    </p>
                 </div>
-                <p>Curiouser and curiouser...</p>
-            </div>
-            <div class="mirror-divider"></div>
-        </section>
-
-        <section id="projects" class="screen">
-            <h2 class="section-header">The Rabbit Hole Projects</h2>
-            <div class="cards-container">
-                <div class="magic-card">
-                    <div class="card-front">
-                        <h3>TEDxFTU</h3>
-                        <p class="rank">♦ Content Leader</p>
-                        <div class="suit">♣</div>
-                    </div>
-                    <div class="card-back">
-                        <p>Managed 5 members. Created "De Rubik Code" format. 90% Impression Rate.</p>
-                        <a href="#" class="btn-pixel">View Data</a>
-                    </div>
-                </div>
-
-                <div class="magic-card">
-                    <div class="card-front">
-                        <h3>BECDAY</h3>
-                        <p class="rank">♥ Project Leader</p>
-                        <div class="suit">♥</div>
-                    </div>
-                    <div class="card-back">
-                        <p>Connected 10+ generations. Used Gantt Chart for 20 members workflow.</p>
-                        <a href="#" class="btn-pixel">View Gantt</a>
-                    </div>
-                </div>
-
-                <div class="magic-card">
-                    <div class="card-front">
-                        <h3>E-Commerce</h3>
-                        <p class="rank">♠ Champion</p>
-                        <div class="suit">♠</div>
-                    </div>
-                    <div class="card-back">
-                        <p>96h Challenge. Full Strategy from Research to Pitching.</p>
-                        <a href="#" class="btn-pixel">View Deck</a>
+                <div class="img-side">
+                    <div class="mirror-frame">
+                        <img src="https://images.unsplash.com/photo-1542385151-efd9000785a0?q=80&w=800" alt="Thy">
+                        <div class="mirror-reflection"></div>
                     </div>
                 </div>
             </div>
         </section>
 
+        <section id="chap3" class="chapter">
+            <div class="chapter-content">
+                <p class="chap-num">Chapter III</p>
+                <h2 class="chap-title">A Mad Tea-Party</h2>
+                <div class="tea-table">
+                    <div class="tea-cup" data-skill="Python"><span>Python</span><div class="steam-wrap"><div class="steam"></div><div class="steam s2"></div></div></div>
+                    <div class="tea-cup" data-skill="Stata"><span>Stata</span><div class="steam-wrap"><div class="steam"></div><div class="steam s2"></div></div></div>
+                    <div class="tea-cup" data-skill="SQL"><span>SQL</span><div class="steam-wrap"><div class="steam"></div><div class="steam s2"></div></div></div>
+                    <div class="tea-cup" data-skill="Logic"><span>Logic</span><div class="steam-wrap"><div class="steam"></div><div class="steam s2"></div></div></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="chap4" class="chapter">
+            <div class="chapter-content">
+                <p class="chap-num">Chapter IV</p>
+                <h2 class="chap-title">The Queen's Croquet</h2>
+                <div class="card-gallery">
+                    <div class="playing-card" onclick="openProject('tedx')">
+                        <div class="card-inner"><span class="suit">♣</span><h3>TEDxFTU</h3><p>De Rubik Code</p></div>
+                    </div>
+                    <div class="playing-card" onclick="openProject('becday')">
+                        <div class="card-inner"><span class="suit">♥</span><h3>BECDAY</h3><p>The Reunion</p></div>
+                    </div>
+                    <div class="playing-card" onclick="openProject('h4tf')">
+                        <div class="card-inner"><span class="suit">♠</span><h3>E-Commerce</h3><p>96h Battle</p></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="chap5" class="chapter">
+            <div class="chapter-content">
+                <p class="chap-num">Chapter V</p>
+                <h2 class="chap-title">Alice's Evidence</h2>
+                <div class="signature-block">
+                    <p>Sincerely,</p>
+                    <svg viewBox="0 0 500 150" class="sig-svg">
+                        <text x="50%" y="50%" text-anchor="middle" class="sig-text">Pham Ngoc Minh Thy</text>
+                    </svg>
+                    <div class="contact-links">
+                        <a href="#">LinkedIn</a> ✦ <a href="#">Email</a> ✦ <a href="#">Github</a>
+                    </div>
+                </div>
+            </div>
+        </section>
     </main>
+
+    <div id="project-portal" class="portal-overlay">
+        <button class="close-portal" onclick="closeProject()">✕ Close Book</button>
+        <div class="portal-content">
+            <div class="portal-header">
+                <h1 id="portal-title">Project Name</h1>
+                <p id="portal-role">Role</p>
+            </div>
+            <div class="portal-body">
+                <div class="portal-img"><img id="portal-image" src="" alt=""></div>
+                <div class="portal-text">
+                    <p id="portal-desc">Description...</p>
+                    <ul id="portal-stats"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script src="script.js"></script>
 </body>
