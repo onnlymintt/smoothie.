@@ -1,198 +1,246 @@
-/* BẢNG MÀU COQUETTE */root {
-  --bg-pink: #fcefee; /* Hồng phấn nền */
-  --bg-cream: #fffbf0; /* Màu kem của trang giấy */
-  --text-brown: #5e4b41; /* Nâu tây cho chữ */
-  --accent-rose: #d4a5a5; /* Hồng đậm nhấn nhá */
-  --accent-gold: #c7b299; /* Vàng nhạt sang trọng */
-  
-  --font-script: 'Pinyon Script', cursive; /* Font viết tay tiêu đề */
-  --font-header: 'Cinzel Decorative', serif; /* Font tiêu đề sang trọng */
-  --font-body: 'Lora', serif; /* Font nội dung dễ đọc */
+/* 1. SETUP VIBE MA MỊ */
+:root {
+    --bg-color: #050505; /* Đen sâu */
+    --text-primary: #e0e0e0; /* Trắng bạc */
+    --text-secondary: #a0a0a0; /* Xám khói */
+    --accent: #d4af37; /* Vàng cổ điển (Gold) */
+    --glass: rgba(255, 255, 255, 0.03);
+    --border: rgba(255, 255, 255, 0.1);
 }
 
 body {
-  margin: 0;
-  padding: 20px;
-  background-color: var(--bg-pink);
-  /* Tạo hiệu ứng giấy dán tường hoa văn chìm (tùy chọn) */
-  background-image: radial-gradient(circle at 50% 50%, #ffffff 0%, var(--bg-pink) 80%);
-  color: var(--text-brown);
-  font-family: var(--font-body);
-  line-height: 1.6;
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+    margin: 0;
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    font-family: 'Cormorant Garamond', serif; /* Font nội dung sang trọng */
+    font-size: 1.2rem;
+    line-height: 1.6;
+    overflow-x: hidden;
 }
 
-/* Hiệu ứng khung viền ren mờ ảo xung quanh màn hình */
-.bg-overlay {
+/* Background Noise (Tạo hạt giống phim cũ) */
+body::before {
+    content: "";
     position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-image: url("https://grainy-gradients.vercel.app/noise.svg");
+    opacity: 0.05;
     pointer-events: none;
-    border: 20px solid transparent;
-    border-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0c16.569 0 30 13.431 30 30 0 16.569-13.431 30-30 30C13.431 60 0 46.569 0 30 0 13.431 13.431 0 30 0z' fill='%23ffffff' fill-opacity='0.1'/%3E%3C/svg%3E") 30 round;
-    opacity: 0.5;
-    z-index: -1;
+    z-index: 999;
 }
 
-/* Cái khung chính giữa (Scrapbook page) */
-#scrapbook-container {
-  background-color: var(--bg-cream);
-  max-width: 800px;
-  width: 100%;
-  padding: 50px 40px;
-  border-radius: 15px;
-  /* Hiệu ứng bóng đổ mềm mại như trang giấy nổi lên */
-  box-shadow: 
-    0 10px 30px rgba(94, 75, 65, 0.1),
-    inset 0 0 60px rgba(255, 255, 255, 0.5);
-  border: 2px solid var(--accent-rose);
-  text-align: center;
-  position: relative;
+h1, h2, h3 {
+    font-weight: 400;
+    margin: 0;
 }
 
-/* Trang trí hình cái nơ */
-.bow-divider {
-    font-family: var(--font-header);
-    font-size: 2.5rem;
-    color: var(--accent-rose);
-    margin: 30px 0;
-    opacity: 0.7;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+/* 2. TYPOGRAPHY */
+.magic-title {
+    font-family: 'Pinyon Script', cursive; /* Font chữ viết tay tiêu đề */
+    font-size: 6rem;
+    background: linear-gradient(to right, #fff, #a0a0a0);
+    -webkit-background-clip: text;
+    color: transparent;
+    margin-bottom: 20px;
+    filter: drop-shadow(0 0 10px rgba(255,255,255,0.3));
 }
 
-/* Header styles */
-.profile-photo {
-  width: 180px;
-  height: 180px;
-  object-fit: cover;
-  border-radius: 50%;
-  border: 4px double var(--accent-rose); /* Viền đôi sang trọng */
-  padding: 5px;
-  background: white;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-}
-
-.script-title {
-  font-family: var(--font-script);
-  font-size: 4rem;
-  color: var(--accent-rose);
-  margin: 20px 0 5px;
-  font-weight: normal;
-}
-
-.subtitle {
-  font-family: var(--font-header);
-  font-size: 1.2rem;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  margin-top: 0;
-  color: var(--accent-gold);
-}
-
-.intro-text {
+.quote {
     font-style: italic;
-    color: var(--text-brown);
-    margin-bottom: 30px;
+    font-size: 1.5rem;
+    color: var(--text-secondary);
 }
 
-/* Navigation Buttons */
-nav button, .deco-button {
-  background-color: var(--bg-pink);
-  color: var(--text-brown);
-  border: 1px solid var(--accent-rose);
-  padding: 10px 25px;
-  margin: 5px;
-  font-family: var(--font-header);
-  font-size: 0.9rem;
-  border-radius: 30px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  text-decoration: none;
-  display: inline-block;
-}
-
-nav button:hover, .deco-button:hover {
-  background-color: var(--accent-rose);
-  color: white;
-  transform: translateY(-2px);
-  box-shadow: 0 5px 10px rgba(212, 165, 165, 0.3);
-}
-
-/* Section Styles */
 .section-title {
-    font-family: var(--font-header);
+    font-family: 'Cinzel', serif; /* Font tiêu đề cứng cáp */
+    font-size: 3rem;
+    margin-bottom: 40px;
+    letter-spacing: 2px;
+}
+
+.divider {
     font-size: 2rem;
-    color: var(--text-brown);
-    position: relative;
-    display: inline-block;
-    margin-bottom: 30px;
+    color: var(--accent);
+    margin: 30px 0;
 }
 
-/* Đường gạch chân trang trí dưới tiêu đề */
-.section-title::after {
-    content: '';
-    display: block;
-    width: 60%;
-    height: 2px;
-    background: var(--accent-rose);
-    margin: 10px auto 0;
-    border-radius: 2px;
+/* 3. LAYOUT & SECTIONS */
+.section-pad {
+    padding: 100px 10%;
 }
 
-/* Project Grid (Danh sách dự án) */
-.project-grid {
+.center-text { text-align: center; }
+
+/* HERO SECTION */
+.hero {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: radial-gradient(circle at center, #1a1a1a 0%, #000 70%);
+}
+
+/* GLASS CARD (Hiệu ứng kính mờ) */
+.glass-card {
+    background: var(--glass);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border);
+    padding: 40px;
+    border-radius: 20px;
+}
+
+.about-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 25px;
-    padding: 20px 0;
-    text-align: left;
+    grid-template-columns: 1fr 1.5fr;
+    gap: 50px;
+    align-items: center;
 }
 
-.project-card {
-    background: white;
-    padding: 15px;
-    border-radius: 10px;
-    border: 1px solid var(--bg-pink);
-    box-shadow: 0 3px 10px rgba(0,0,0,0.05);
-    transition: transform 0.3s;
-}
-
-.project-card:hover {
-    transform: translateY(-5px);
-    border-color: var(--accent-rose);
-}
-
-.project-img {
+.about-img img {
     width: 100%;
-    height: 150px;
-    object-fit: cover;
-    border-radius: 8px;
-    margin-bottom: 15px;
-    border: 1px solid var(--bg-pink);
+    border-radius: 200px 200px 0 0; /* Bo tròn kiểu cửa sổ lâu đài */
+    border: 1px solid var(--accent);
+    filter: grayscale(30%);
 }
 
-.project-card h3 {
-    font-family: var(--font-header);
-    margin: 10px 0;
-    color: var(--text-brown);
+.stats-grid {
+    display: flex;
+    gap: 30px;
+    margin: 30px 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 0;
 }
 
-.project-card p {
+.stat-item h3 {
+    font-family: 'Cinzel', serif;
+    font-size: 2rem;
+    color: var(--accent);
+}
+
+.skills-list span {
+    display: inline-block;
+    border: 1px solid var(--text-secondary);
+    padding: 5px 15px;
+    border-radius: 50px;
+    margin-right: 10px;
+    margin-bottom: 10px;
     font-size: 0.9rem;
-    color: #7a6b63;
+    letter-spacing: 1px;
 }
 
-footer {
+/* PROJECT ROWS */
+.project-row {
+    display: flex;
+    gap: 50px;
+    margin-bottom: 100px;
+    align-items: center;
+}
+
+.project-row.reverse {
+    flex-direction: row-reverse; /* Đảo chiều ảnh */
+}
+
+.project-visual {
+    flex: 1;
+}
+
+.project-visual img {
+    width: 100%;
+    height: 400px;
+    object-fit: cover;
+    border-radius: 10px;
+    filter: brightness(0.8);
+    transition: 0.5s;
+}
+
+.project-row:hover .project-visual img {
+    filter: brightness(1);
+    transform: scale(1.02);
+}
+
+.project-info {
+    flex: 1;
+}
+
+.project-year {
+    font-family: 'Cinzel', serif;
+    color: var(--accent);
+    font-size: 0.9rem;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.concept-name {
+    font-style: italic;
+    color: var(--text-secondary);
+    border-left: 2px solid var(--accent);
+    padding-left: 15px;
+}
+
+.achievements {
+    list-style: none;
+    padding: 0;
+    margin-top: 20px;
+}
+
+.achievements li {
+    margin-bottom: 5px;
+    font-size: 1.1rem;
+}
+
+/* FOOTER */
+.footer {
+    text-align: center;
+    border-top: 1px solid var(--border);
+    padding-bottom: 50px;
+}
+
+.yes-i-am {
+    font-family: 'Pinyon Script', cursive;
+    font-size: 4rem;
+    color: var(--accent);
+}
+
+.socials a {
+    color: var(--text-primary);
+    text-decoration: none;
+    margin: 0 20px;
+    font-family: 'Cinzel', serif;
+    border-bottom: 1px solid transparent;
+    transition: 0.3s;
+}
+
+.socials a:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.copyright {
     margin-top: 50px;
-    font-size: 0.8rem;
-    color: var(--accent-gold);
+    font-size: 0.9rem;
+    color: var(--text-secondary);
 }
 
-/* Responsive */
-@media (max-width: 600px) {
-    .script-title { font-size: 3rem; }
-    #scrapbook-container { padding: 30px 20px; }
-    .project-grid { grid-template-columns: 1fr; }
+/* ANIMATION CLASSES */
+.fade-in {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 1s ease;
+}
+
+.fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Responsive Mobile */
+@media (max-width: 768px) {
+    .magic-title { font-size: 3.5rem; }
+    .about-grid, .project-row, .project-row.reverse {
+        grid-template-columns: 1fr;
+        flex-direction: column;
+    }
+    .section-pad { padding: 60px 20px; }
 }
