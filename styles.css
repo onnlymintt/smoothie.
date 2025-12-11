@@ -1,89 +1,120 @@
-:root{
-  --bg:#07132a;
-  --card:#f6efe6;
-  --accent:#d98b7d;
-  --accent-2:#9fd3c7;
-  --muted:#a9b6c5;
-  --glass: rgba(255,255,255,0.06);
-  --radius:14px;
-  --ff-title: "Playfair Display", serif;
-  --ff-body: "Quicksand", system-ui, sans-serif;
+:root {
+    --bg: #050505;
+    --text: #eaddcf; /* Màu giấy cũ */
+    --gold: #d4af37;
+    --neon: #b545ff; /* Tím Neon */
+    --glass: rgba(255, 255, 255, 0.05);
 }
 
-*{box-sizing:border-box}
-html,body{height:100%}
-body{
-  margin:0;
-  font-family:var(--ff-body);
-  background:linear-gradient(180deg,var(--bg),#021026 60%);
-  color:var(--card);
-  -webkit-font-smoothing:antialiased;
-  -moz-osx-font-smoothing:grayscale;
-  overflow-x:hidden;
+body {
+    margin: 0; background-color: var(--bg); color: var(--text);
+    font-family: 'Cormorant Garamond', serif; overflow-x: hidden;
+    cursor: none; /* Ẩn chuột */
 }
 
-/* Rabbit hole entrance */
-#rabbit-hole{height:100vh;display:flex;align-items:center;justify-content:center;position:relative}
-.hole-wrap{width:100%;max-width:1000px;padding:2rem;text-align:center;position:relative}
-.rabbit-hole{width:100%;height:260px;opacity:0.9}
-.intro-card{position:absolute;left:50%;transform:translateX(-50%);top:40%;background:linear-gradient(135deg,var(--glass),rgba(255,255,255,0.02));backdrop-filter: blur(6px);padding:2rem;border-radius:16px;border:1px solid rgba(255,255,255,0.04);width:min(640px,92%);display:grid;grid-template-columns:120px 1fr;gap:1rem;align-items:center}
-.profile-photo{width:100px;height:100px;border-radius:999px;object-fit:cover;border:2px solid rgba(255,255,255,0.06)}
-.intro-card h1{font-family:var(--ff-title);margin:0 0 .25rem}
-.intro-card p{color:var(--muted)}
-#enterBtn{margin-top:1rem;background:linear-gradient(90deg,var(--accent),var(--accent-2));border:0;color:#06121a;padding:.7rem 1.2rem;border-radius:12px;font-weight:600;cursor:pointer;box-shadow:0 8px 20px rgba(0,0,0,0.4)}
+/* 1. HIỆU ỨNG NỀN MA MỊ */
+.bg-noise {
+    position: fixed; inset: 0; pointer-events: none; z-index: -1; opacity: 0.07;
+    background: url('https://grainy-gradients.vercel.app/noise.svg');
+}
+.fog-layer {
+    position: fixed; inset: 0; z-index: -2;
+    background: radial-gradient(circle at 50% 50%, #1a0b2e 0%, #000 70%);
+}
 
-.floating-smoke{position:absolute;inset:auto 10% 10% auto;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,#ffffff22,#0000);filter:blur(18px);opacity:.6;transform:translateY(10px)}
+/* 2. TYPOGRAPHY ĐỈNH CAO */
+h1, h2, h3 { font-family: 'Cinzel Decorative', serif; margin: 0; }
+.title-glitch {
+    font-size: 5rem; color: var(--gold); text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+    position: relative; animation: glowPulse 3s infinite;
+}
+@keyframes glowPulse { 0%,100%{text-shadow: 0 0 10px var(--gold);} 50%{text-shadow: 0 0 30px var(--neon), 0 0 10px #fff;} }
 
-/* site layout */
-#site{min-height:100vh;display:flex;flex-direction:column}
-header{display:flex;justify-content:space-between;align-items:center;padding:1rem 2rem;background:linear-gradient(180deg, rgba(0,0,0,0.15), transparent);backdrop-filter: blur(4px)}
-.brand{display:flex;align-items:center;gap:.6rem}
-.brand .logo{background:var(--accent);color:#051020;padding:.4rem .6rem;border-radius:8px;font-weight:700}
-nav button{background:transparent;border:0;color:var(--card);padding:.5rem 0;margin:.2rem .4rem;cursor:pointer;font-weight:600}
+.hero-quote {
+    font-family: 'Pinyon Script', cursive; font-size: 2rem; color: #888; margin-top: 20px;
+}
 
-/* panels */
-.panel{padding:4rem 2rem;position:relative}
-.panel-inner{max-width:1100px;margin:0 auto}
-h2{font-family:var(--ff-title);font-size:2rem;margin:.2rem 0 1rem;color:var(--card)}
-.lead{color:var(--muted);max-width:60ch}
+/* 3. SCROLL SECTIONS */
+.chapter {
+    min-height: 100vh; display: flex; flex-direction: column; 
+    justify-content: center; align-items: center; position: relative; padding: 50px;
+}
 
-/* tale cards */
-.cards{display:flex;gap:1rem;flex-wrap:wrap;margin-top:1.5rem}
-.tale-card{width:260px;height:160px;perspective:900px;cursor:pointer;position:relative}
-.tale-card .face{position:absolute;inset:0;border-radius:12px;padding:1rem;display:flex;align-items:center;justify-content:center;text-align:center;backface-visibility:hidden;transition:transform .6s ease}
-.tale-card .front{background:linear-gradient(180deg,#ffffff07,#00000010);border:1px solid rgba(255,255,255,0.03)}
-.tale-card .back{transform:rotateY(180deg);background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(0,0,0,0.25));border:1px dashed rgba(255,255,255,0.03)}
+/* GƯƠNG THẦN */
+.mirror-frame {
+    width: 300px; height: 400px; border: 8px double var(--gold);
+    border-radius: 150px 150px 20px 20px; overflow: hidden; position: relative;
+    box-shadow: 0 0 50px rgba(181, 69, 255, 0.2);
+}
+.mirror-frame img { width: 100%; height: 100%; object-fit: cover; filter: sepia(20%); }
 
-/* flip effect */
-.tale-card:focus .front,
-.tale-card:hover .front{transform:rotateY(180deg)}
-.tale-card:focus .back,
-.tale-card:hover .back{transform:rotateY(360deg)}
+/* TIỆC TRÀ SKILLS */
+.tea-cups-container { display: flex; gap: 40px; margin-top: 50px; }
+.cup-item {
+    width: 100px; height: 60px; border: 2px solid var(--text);
+    border-radius: 0 0 50px 50px; position: relative;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Cinzel Decorative'; cursor: pointer; transition: 0.3s;
+}
+.cup-item::after { /* Quai ly */
+    content: ''; position: absolute; right: -20px; top: 10px; width: 20px; height: 30px;
+    border: 2px solid var(--text); border-radius: 0 20px 20px 0;
+}
+.cup-item:hover { background: var(--gold); color: #000; border-color: var(--gold); }
+.steam {
+    position: absolute; top: -30px; left: 40%; width: 5px; height: 30px;
+    background: #fff; filter: blur(5px); opacity: 0; transition: 0.5s;
+}
+.cup-item:hover .steam { opacity: 0.8; animation: steamRise 1s infinite; }
 
-/* skills cards */
-.skills-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1rem;margin-top:1rem}
-.card{height:140px;perspective:1000px;cursor:pointer}
-.card-inner{position:relative;height:100%;transition:transform .7s;transform-style:preserve-3d;border-radius:12px}
-.card-front,.card-back{position:absolute;inset:0;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:700;backface-visibility:hidden}
-.card-front{background:linear-gradient(135deg,var(--accent),#f6c6b1);color:#07121a}
-.card-back{transform:rotateY(180deg);background:linear-gradient(135deg,#0d2b3b,#05243a);color:var(--card);padding:1rem;text-align:center;font-weight:400}
-.card:focus .card-inner,.card:hover .card-inner{transform:rotateY(180deg)}
+/* 4. GALLERY CARDS (LẬT MẶT) */
+.cards-wrapper { display: flex; gap: 30px; perspective: 1000px; }
+.tarot-card {
+    width: 260px; height: 400px; position: relative; cursor: pointer;
+    transform-style: preserve-3d; transition: transform 0.6s;
+}
+.tarot-card:hover { transform: rotateY(180deg); }
+.card-inner { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; }
+.card-front, .card-back {
+    position: absolute; inset: 0; backface-visibility: hidden;
+    border: 2px solid var(--gold); border-radius: 15px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    background: #0a0510;
+}
+.card-front { border: 1px solid var(--gold); background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1h2v2H1V1zm4 0h2v2H5V1zm5 4h2v2h-2V5zm-5 4h2v2H5V9zm5 4h2v2h-2v-2z' fill='%23d4af37' fill-opacity='0.1'/%3E%3C/svg%3E"); }
+.card-back { transform: rotateY(180deg); background: #1a1a1a; padding: 10px; }
+.card-back img { width: 100%; height: 70%; object-fit: cover; border-radius: 5px; margin-bottom: 10px; }
+.view-btn { background: var(--gold); border: none; padding: 5px 15px; cursor: pointer; font-family: 'Cinzel Decorative'; }
 
-/* carousel */
-.carousel{display:flex;align-items:center;gap:1rem;margin-top:1rem}
-.slides{list-style:none;padding:0;margin:0;display:flex;gap:1rem;overflow:hidden;width:100%}
-.slide{min-width:320px;background:linear-gradient(180deg,#021427,#05243a);padding:1.2rem;border-radius:10px;border:1px solid rgba(255,255,255,0.03);opacity:.6;transform:scale(.96);transition:all .35s;display:flex;gap:1rem;align-items:center}
-.slide.active{opacity:1;transform:scale(1)}
-.slide img{width:110px;height:80px;object-fit:cover;border-radius:8px}
-.prev,.next{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--card);padding:.6rem 1rem;border-radius:8px;cursor:pointer}
+/* 5. PORTAL GALLERY (PROJECT DETAILS) */
+.portal-overlay {
+    position: fixed; inset: 0; background: #000; z-index: 9999;
+    transform: translateY(100%); transition: 0.8s cubic-bezier(0.86, 0, 0.07, 1);
+    display: flex; flex-direction: column;
+}
+.portal-overlay.active { transform: translateY(0); }
+.portal-content { padding: 40px; height: 100%; overflow-y: auto; }
+.close-btn { 
+    position: absolute; top: 30px; right: 30px; background: transparent; 
+    border: 1px solid var(--text); color: var(--text); padding: 10px 20px; cursor: pointer; z-index: 100;
+}
+.gallery-scroll-area {
+    display: flex; gap: 20px; overflow-x: auto; margin: 40px 0; padding-bottom: 20px;
+    scroll-snap-type: x mandatory;
+}
+.gallery-scroll-area img {
+    height: 500px; border-radius: 5px; scroll-snap-align: center;
+    border: 1px solid #333; transition: 0.3s;
+}
+.gallery-scroll-area img:hover { transform: scale(1.02); border-color: var(--neon); }
 
-/* footer */
-footer{padding:1.2rem;text-align:center;color:var(--muted)}
+/* CUSTOM CURSOR */
+.cursor-dot { width: 8px; height: 8px; background: white; border-radius: 50%; position: fixed; pointer-events: none; z-index: 9999; }
+.cursor-circle { width: 40px; height: 40px; border: 1px solid var(--gold); border-radius: 50%; position: fixed; pointer-events: none; z-index: 9998; transition: 0.15s; }
 
-/* responsive */
-@media (max-width:700px){
-  .intro-card{top:30%;grid-template-columns:1fr;justify-items:center;text-align:center}
-  .cards{justify-content:center}
-  header{padding:1rem}
-  .slide{flex-direction:column}
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .title-glitch { font-size: 3rem; }
+    .cards-wrapper { flex-direction: column; }
+    .gallery-scroll-area img { height: 250px; }
 }
