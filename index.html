@@ -1,193 +1,28 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minh Thy | The Data Alchemist</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;900&family=Cormorant+Garamond:ital,wght@0,300;0,600;1,400&family=Pinyon+Script&family=Rye&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="styles.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-</head>
 <body>
-    
-    <div class="loader">
-        <div class="falling-items">♠ ♥ ♣ ♦</div>
-        <p>Falling down the rabbit hole...</p>
-    </div>
+  <div class="world">
 
-    <div class="bg-noise"></div>
-    <div class="fog-layer"></div>
-    <div class="fireflies"></div> <nav class="book-nav">
-        <span class="logo">M.T</span>
-        <div class="chapter-marks">
-            <a href="#chap1">I</a>
-            <a href="#chap2">II</a>
-            <a href="#chap3">III</a>
-            <a href="#chap4">IV</a>
-            <a href="#chap5">V</a>
-        </div>
+    <nav class="nav">
+      <span>Home</span>
+      <span>TEDxFTU 2025</span>
+      <span>BECDAY 2024</span>
+      <span>H4TF</span>
     </nav>
 
-    <div class="gramophone" onclick="toggleAudio()">
-        <i class="fas fa-compact-disc vinyl-icon"></i>
-        <span class="music-hint">Play Me</span>
-    </div>
-    <audio id="bg-audio" loop>
-        <source src="https://cdn.pixabay.com/download/audio/2022/10/05/audio_68629e769e.mp3?filename=wistful-rain-119665.mp3" type="audio/mpeg">
-    </audio>
+    <section class="toc">
+      <h1>Table of Content</h1>
 
-    <main id="smooth-wrapper">
-        <div id="smooth-content">
-            
-            <section id="chap1" class="chapter hero">
-                <div class="hero-content" data-speed="0.5">
-                    <p class="chap-sub">Chapter I</p>
-                    <h1 class="title-glitch" data-text="PORTFOLIRACLE">PORTFOLIRACLE</h1>
-                    <div class="hero-quote">
-                        <p>"I can't go back to yesterday because I was a different person then."</p>
-                    </div>
-                </div>
-                <div class="floater f1" data-speed="0.2">⏱</div>
-                <div class="floater f2" data-speed="0.3">🗝</div>
-                <div class="floater f3" data-speed="0.1">🍄</div>
-            </section>
+      <div class="item">
+        <span class="role">Content Leader</span>
+        <span class="project">TEDxFTU 2025</span>
+        <small class="echo">Decoding complexity.</small>
+      </div>
 
-            <section id="chap2" class="chapter about">
-                <div class="mirror-container">
-                    <div class="mirror-frame">
-                        <img src="https://images.unsplash.com/photo-1542385151-efd9000785a0?q=80&w=800" alt="Minh Thy">
-                        <div class="reflection"></div>
-                    </div>
-                </div>
-                <div class="text-block">
-                    <span class="chap-num">Chapter II</span>
-                    <h2>The Pool of Tears</h2>
-                    <p>I am <strong>Minh Thy</strong>, a Data Analyst wandering in Wonderland. I use logic (GPA 8.83) as my compass and creativity as my map.</p>
-                    <div class="stats-grid">
-                        <div class="stat"><span>8.83</span><label>GPA</label></div>
-                        <div class="stat"><span>7.5</span><label>IELTS</label></div>
-                        <div class="stat"><span>3+</span><label>Exp</label></div>
-                    </div>
-                </div>
-            </section>
+      <div class="item">
+        <span class="role">Project Leader</span>
+        <span class="project">BECDAY 2024</span>
+        <small class="echo">Building continuity.</small>
+      </div>
+    </section>
 
-            <section id="chap3" class="chapter skills">
-                <h2 class="section-title">A Mad Tea-Party</h2>
-                <div class="tea-cups-container">
-                    <div class="cup-item">
-                        <div class="steam"></div>
-                        <span class="cup-label">Python</span>
-                    </div>
-                    <div class="cup-item">
-                        <div class="steam"></div>
-                        <span class="cup-label">Stata</span>
-                    </div>
-                    <div class="cup-item">
-                        <div class="steam"></div>
-                        <span class="cup-label">SQL</span>
-                    </div>
-                    <div class="cup-item">
-                        <div class="steam"></div>
-                        <span class="cup-label">Tableau</span>
-                    </div>
-                </div>
-            </section>
-
-            <section id="chap4" class="chapter projects">
-                <h2 class="section-title">The Queen's Gallery</h2>
-                <div class="cards-wrapper">
-                    
-                    <div class="tarot-card" onclick="openPortal('tedx')">
-                        <div class="card-inner">
-                            <div class="card-front">
-                                <div class="suit-top">♣</div>
-                                <h3>TEDxFTU</h3>
-                                <p class="card-role">Content Leader</p>
-                                <div class="suit-bottom">♣</div>
-                            </div>
-                            <div class="card-back">
-                                <img src="https://images.unsplash.com/photo-1475721027767-4d09602e5b87?q=80&w=400">
-                                <button class="view-btn">Reveal Evidence</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="tarot-card" onclick="openPortal('becday')">
-                        <div class="card-inner">
-                            <div class="card-front">
-                                <div class="suit-top">♥</div>
-                                <h3>BECDAY</h3>
-                                <p class="card-role">Project Leader</p>
-                                <div class="suit-bottom">♥</div>
-                            </div>
-                            <div class="card-back">
-                                <img src="https://images.unsplash.com/photo-1523580494863-6f3031224c94?q=80&w=400">
-                                <button class="view-btn">Reveal Evidence</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="tarot-card" onclick="openPortal('h4tf')">
-                        <div class="card-inner">
-                            <div class="card-front">
-                                <div class="suit-top">♠</div>
-                                <h3>H4TF</h3>
-                                <p class="card-role">Champion</p>
-                                <div class="suit-bottom">♠</div>
-                            </div>
-                            <div class="card-back">
-                                <img src="https://images.unsplash.com/photo-1556742049-0cfed4f7a07d?q=80&w=400">
-                                <button class="view-btn">Reveal Evidence</button>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-            </section>
-
-            <section id="chap5" class="chapter contact">
-                <div class="letter-content">
-                    <span class="chap-num">Chapter V</span>
-                    <h2>Alice's Evidence</h2>
-                    <div class="signature">Pham Ngoc Minh Thy</div>
-                    <div class="socials">
-                        <a href="#">LinkedIn</a>
-                        <a href="#">Email</a>
-                        <a href="#">GitHub</a>
-                    </div>
-                </div>
-            </section>
-
-        </div>
-    </main>
-
-    <div class="portal-overlay" id="portal">
-        <button class="close-btn" onclick="closePortal()">✕ Close Book</button>
-        <div class="portal-content">
-            <h1 id="p-title">Project Name</h1>
-            <p id="p-role">Role | Year</p>
-            
-            <div class="gallery-scroll-area" id="p-gallery">
-                </div>
-
-            <div class="portal-info">
-                <div class="info-block">
-                    <h3>The Story</h3>
-                    <p id="p-desc">Description...</p>
-                </div>
-                <div class="info-block">
-                    <h3>Key Achievements</h3>
-                    <ul id="p-stats"></ul>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="cursor-dot"></div>
-    <div class="cursor-circle"></div>
-
-    <script src="script.js"></script>
+  </div>
 </body>
-</html>
