@@ -1,21 +1,14 @@
-.cursor-thought {
-  position: fixed;
-  width: 20px;
-  height: 20px;
-  border: 1px solid rgba(255,255,255,0.4);
-  border-radius: 50%;
-  pointer-events: none;
-  transform: translate(-50%, -50%);
-  mix-blend-mode: difference;
-  transition: transform 0.1s ease;
-  z-index: 9999;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-  margin: 0;
   background: black;
   color: white;
-  font-family: 'Didot', serif;
+  font-family: "Playfair Display", serif;
+  overflow-x: hidden;
 }
 
 .world {
@@ -24,16 +17,17 @@ body {
 }
 
 @keyframes breathe {
-  0%,100% { transform: scale(1); }
+  0%, 100% { transform: scale(1); }
   50% { transform: scale(1.01); }
 }
 
 .nav {
   position: fixed;
-  top: 20px;
+  top: 24px;
   right: 40px;
   display: flex;
-  gap: 30px;
+  gap: 28px;
+  font-size: 0.9rem;
   opacity: 0.7;
 }
 
@@ -42,44 +36,57 @@ body {
 }
 
 h1 {
-  font-family: 'Playfair Display', serif;
-  font-style: italic;
   font-size: 4rem;
-  opacity: 0.9;
+  font-style: italic;
+  margin-bottom: 80px;
 }
 
 .item {
   border: 1px solid white;
-  margin-top: 40px;
-  padding: 30px;
+  padding: 30px 40px;
+  margin-bottom: 60px;
   position: relative;
+  cursor: pointer;
   transition: all 1s ease;
 }
 
 .item:hover {
-  transform: translateX(10px);
+  transform: translateX(12px);
 }
 
 .role {
+  font-size: 0.9rem;
   opacity: 0.5;
-  font-size: 1rem;
 }
 
 .project {
   display: block;
   font-size: 3rem;
-  font-weight: bold;
+  font-weight: 600;
 }
 
 .echo {
   position: absolute;
-  bottom: -20px;
+  bottom: -24px;
   left: 0;
-  opacity: 0;
   font-size: 0.8rem;
+  opacity: 0;
   transition: opacity 1s ease;
 }
 
 .item:hover .echo {
   opacity: 0.6;
+}
+
+/* CURSOR THOUGHT */
+.cursor-thought {
+  position: fixed;
+  width: 18px;
+  height: 18px;
+  border: 1px solid rgba(255,255,255,0.4);
+  border-radius: 50%;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  mix-blend-mode: difference;
+  z-index: 9999;
 }
