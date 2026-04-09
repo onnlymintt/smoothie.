@@ -3,173 +3,174 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Vực Thẳm Phân Rã</title>
+<title>Vực Thẳm - Thy</title>
 <style>
   :root {
-    --bg: #000000;
-    --text: #e0e0e0;
+    --bg: #030303;
+    --text-main: #c0c0c0;
+    --text-dim: #555555;
     --accent: #ff3333;
-    --dim: #333333;
+    --border: #1a1a1a;
   }
+
+  * { box-sizing: border-box; }
 
   body, html {
     margin: 0; padding: 0;
     background-color: var(--bg);
-    color: var(--text);
+    color: var(--text-main);
     font-family: 'Courier New', Courier, monospace;
     overflow: hidden;
     cursor: crosshair;
   }
 
-  /* LOADER CHUYỂN TRANG */
+  /* TÙY CHỈNH THANH CUỘN CHO CÁC KHU VỰC CHỨA CHỮ */
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--text-dim); }
+  ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+  /* MÀNG CHẮN CHUYỂN TRANG (ĐÃ FIX LỖI ẨN) */
   #transition-layer {
     position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
     background: var(--bg); z-index: 99999;
     display: flex; align-items: center; justify-content: center;
-    pointer-events: none; transition: opacity 1.2s ease;
+    opacity: 0; pointer-events: none; /* Khởi tạo là ẩn */
+    transition: opacity 0.8s ease;
   }
   .loading-line {
     width: 0; height: 1px; background: var(--accent);
-    transition: width 0.8s cubic-bezier(0.7, 0, 0.3, 1);
+    transition: width 0.6s cubic-bezier(0.7, 0, 0.3, 1);
   }
 
-  /* ÂM THANH */
-  #audio-control {
-    position: fixed; bottom: 40px; right: 40px; z-index: 10000;
-    font-size: 0.8rem; letter-spacing: 3px; cursor: pointer;
-    text-transform: lowercase; opacity: 0.4; transition: opacity 0.5s;
-  }
-  #audio-control:hover { opacity: 1; }
-
-  /* ĐIỀU HƯỚNG DỌC */
+  /* THANH ĐIỀU HƯỚNG DỌC BÊN TRÁI */
   nav {
-    position: fixed; top: 50vh; left: 40px; transform: translateY(-50%);
-    display: flex; flex-direction: column; gap: 50px; z-index: 10000;
+    position: fixed; top: 50vh; left: 30px; transform: translateY(-50%);
+    display: flex; flex-direction: column; gap: 40px; z-index: 10000;
   }
   nav a {
-    color: var(--dim); text-decoration: none; font-size: 0.85rem;
-    letter-spacing: 2px; text-transform: lowercase; cursor: pointer;
+    color: var(--text-dim); text-decoration: none; font-size: 0.8rem;
+    letter-spacing: 4px; text-transform: lowercase; cursor: pointer;
     writing-mode: vertical-rl; transform: rotate(180deg);
     transition: all 0.4s ease;
   }
   nav a.active, nav a:hover {
-    color: #fff; letter-spacing: 6px; text-shadow: 0 0 10px rgba(255,255,255,0.4);
+    color: #fff; letter-spacing: 8px; text-shadow: 0 0 10px rgba(255,255,255,0.3);
   }
 
-  /* CẤU TRÚC TRANG CHUNG */
-  main { position: relative; width: 100vw; height: 100vh; }
+  /* CẤU TRÚC CHÍNH */
+  main { position: relative; width: 100vw; height: 100vh; padding-left: 80px; }
+  
   section {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    position: absolute; top: 0; left: 80px; width: calc(100vw - 80px); height: 100vh;
     opacity: 0; visibility: hidden; transition: opacity 1s ease;
-    overflow: hidden;
   }
   section.active { opacity: 1; visibility: visible; z-index: 10; }
 
-  /* ====================================================================
-     TRANG 1: BẢN NGÃ (HIỆU ỨNG PARALLAX SÂU - BỐ CỤC TRÔI NỔI)
-     ==================================================================== */
-  #page-1 {
+  /* GIAO DIỆN PLACEHOLDER ẢNH (Bảo vệ khi chưa có ảnh) */
+  .img-box {
+    background: #080808; border: 1px solid var(--border);
     display: flex; align-items: center; justify-content: center;
+    color: #333; font-size: 0.8rem; letter-spacing: 2px; text-transform: lowercase;
+    position: relative; overflow: hidden;
   }
-  .parallax-wrapper {
-    position: relative; width: 100vw; height: 100vh;
-    display: flex; align-items: center; justify-content: center;
+  .img-box img, .img-box video {
+    width: 100%; height: 100%; object-fit: cover; opacity: 0.5;
+    transition: opacity 0.8s, filter 0.8s; filter: grayscale(100%);
+    position: absolute; top: 0; left: 0;
   }
-  .parallax-item {
-    position: absolute; background: #050505; border: 1px solid var(--dim);
-    display: flex; align-items: center; justify-content: center;
-    overflow: hidden; filter: grayscale(100%) brightness(0.6);
-    transition: filter 0.5s ease;
-  }
-  .parallax-item:hover { filter: grayscale(0%) brightness(1); z-index: 100 !important; }
-  .parallax-item img, .parallax-item video { width: 100%; height: 100%; object-fit: cover; }
-  
-  .p-text {
-    position: absolute; z-index: 50; max-width: 400px;
-    font-size: 0.95rem; line-height: 2.2; pointer-events: none;
-    text-shadow: 0 2px 10px rgba(0,0,0,0.8);
-  }
+  .img-box:hover img, .img-box:hover video { opacity: 1; filter: grayscale(0%); }
 
-  /* ====================================================================
-     TRANG 2: TEDxFTU (HIỆU ỨNG ĐÈN PIN SPOTLIGHT - BỐ CỤC MÊ CUNG)
-     ==================================================================== */
+  /* ==========================================================
+     TRANG 1: BẢN NGÃ (CHIA ĐÔI MÀN HÌNH - BÊN CHỮ BÊN ẢNH BAY)
+     ========================================================== */
+  #page-1 { display: flex; }
+  .p1-text-zone {
+    width: 45%; height: 100%; padding: 100px 50px 100px 0;
+    overflow-y: auto; /* Cho phép cuộn để viết văn dài */
+  }
+  .p1-visual-zone {
+    width: 55%; height: 100%; position: relative;
+    overflow: hidden;
+  }
+  
+  /* Lõi Text Trang 1 */
+  .title-glitch { font-size: 3rem; font-weight: normal; margin-bottom: 50px; letter-spacing: -2px; }
+  .deep-paragraph {
+    font-size: 1.05rem; line-height: 2.4; color: #aaa; margin-bottom: 40px;
+  }
+  .deep-paragraph highlight { color: var(--accent); font-style: italic; }
+
+  /* Lõi Parallax Trang 1 */
+  .parallax-item { position: absolute; transition: transform 0.1s linear; }
+
+  /* ==========================================================
+     TRANG 2: TEDx (ĐÈN PIN RỌI TÌM NHỮNG GÓC KHUẤT)
+     ========================================================== */
   #page-2 {
-    background: #020202;
-    /* Hiệu ứng mask tạo đèn pin chiếu sáng */
-    mask-image: radial-gradient(circle 250px at var(--mouse-x, 50%) var(--mouse-y, 50%), black 0%, transparent 100%);
-    -webkit-mask-image: radial-gradient(circle 250px at var(--mouse-x, 50%) var(--mouse-y, 50%), black 0%, transparent 100%);
+    background: #000;
+    mask-image: radial-gradient(circle 350px at var(--mouse-x, 50%) var(--mouse-y, 50%), black 0%, transparent 100%);
+    -webkit-mask-image: radial-gradient(circle 350px at var(--mouse-x, 50%) var(--mouse-y, 50%), black 0%, transparent 100%);
   }
-  .spotlight-content {
-    width: 100%; height: 100%; overflow-y: auto; overflow-x: hidden;
-    padding: 100px 150px; box-sizing: border-box;
+  .spotlight-wrapper {
+    width: 100%; height: 100%; overflow-y: auto; padding: 100px 50px;
   }
-  .spotlight-content::-webkit-scrollbar { display: none; }
   .masonry-grid {
-    column-count: 3; column-gap: 30px; width: 100%; max-width: 1200px; margin: 0 auto;
+    column-count: 3; column-gap: 40px; max-width: 1200px; margin: 0 auto;
   }
-  .masonry-item {
-    break-inside: avoid; margin-bottom: 30px; background: #080808;
-    position: relative; border: 1px solid #1a1a1a;
-  }
-  .masonry-item img { width: 100%; display: block; filter: contrast(1.2); }
-  .masonry-text {
-    padding: 30px; font-size: 1.1rem; line-height: 2; color: #fff;
-    font-style: italic;
+  .masonry-item { break-inside: avoid; margin-bottom: 40px; }
+  
+  /* Các khối chữ xen kẽ hình */
+  .thought-block {
+    padding: 30px; border-left: 1px solid var(--text-dim);
+    font-size: 0.95rem; line-height: 2; color: #999;
   }
 
-  /* ====================================================================
-     TRANG 3: YOUNG LIONS (HIỆU ỨNG RGB GLITCH - BỐ CỤC TRƯỢT NGANG)
-     ==================================================================== */
-  #page-3 {
-    display: flex; align-items: center; background: #010101;
+  /* ==========================================================
+     TRANG 3: YOUNG LIONS (CUỘN NGANG VỚI CÁC TRỤ CỘT CHỮ LỚN)
+     ========================================================== */
+  #page-3 { display: flex; align-items: center; background: #020202; }
+  .h-scroll-zone {
+    display: flex; gap: 100px; padding: 0 20vw; height: 70vh;
+    align-items: center; overflow-x: auto; width: 100%;
   }
-  .horizontal-scroll-container {
-    display: flex; gap: 80px; padding: 0 20vw; height: 60vh;
-    align-items: center; overflow-x: auto; width: 100vw;
-    scroll-behavior: auto; /* Tắt smooth mặc định để JS can thiệp */
-  }
-  .horizontal-scroll-container::-webkit-scrollbar { display: none; }
+  .h-scroll-zone::-webkit-scrollbar { display: none; }
   
-  .h-item {
-    min-width: 500px; height: 100%; background: #050505; position: relative;
-    transition: transform 0.1s linear, filter 0.1s linear;
+  .h-text-pillar {
+    min-width: 450px; height: 80%; display: flex; flex-direction: column; justify-content: center;
   }
-  .h-item img, .h-item video { width: 100%; height: 100%; object-fit: cover; }
+  .h-text-pillar h2 { font-size: 2.5rem; letter-spacing: -1px; margin-bottom: 30px; }
+  .h-text-pillar p { font-size: 1rem; line-height: 2.2; color: #888; }
   
-  .h-text-block {
-    min-width: 400px; padding: 40px; border-left: 2px solid var(--accent);
+  .h-img-pillar {
+    min-width: 500px; height: 100%; transition: transform 0.2s, filter 0.2s;
   }
-  .h-text-block h2 { font-weight: normal; letter-spacing: -2px; font-size: 3rem; margin: 0 0 20px 0; }
 
-  /* ====================================================================
-     TRANG 4: REMAKE (HIỆU ỨNG HÀN GẮN MẢNH VỠ - BỐ CỤC TẬP TRUNG)
-     ==================================================================== */
-  #page-4 {
-    display: flex; align-items: center; justify-content: center;
-    flex-direction: column;
+  /* ==========================================================
+     TRANG 4: REMAKE (NHẬT KÝ CHỮA LÀNH BÊN CẠNH SỰ PHÂN RÃ)
+     ========================================================== */
+  #page-4 { display: flex; align-items: center; justify-content: space-between; padding-right: 50px; }
+  
+  .heal-visual { width: 50%; display: flex; justify-content: center; }
+  .shard-container {
+    width: 400px; height: 500px; position: relative; cursor: pointer;
   }
-  .heal-container {
-    width: 600px; height: 800px; position: relative;
-    cursor: pointer;
-  }
-  /* Khung chứa các mảnh vỡ sinh ra từ JS */
   .shard-grid {
     width: 100%; height: 100%; position: absolute; top: 0; left: 0;
-    display: grid; grid-template-columns: repeat(10, 1fr); grid-template-rows: repeat(10, 1fr);
+    display: grid; grid-template-columns: repeat(8, 1fr); grid-template-rows: repeat(8, 1fr);
   }
   .shard {
-    background-image: url('https://images.unsplash.com/photo-1518773553398-650c184e0bb3?q=80&w=2070'); /* ĐIỀN ẢNH CHỮA LÀNH VÀO ĐÂY */
-    background-size: 600px 800px; /* Bằng kích thước container */
-    background-repeat: no-repeat;
+    background-image: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2000'); /* ẢNH REMAKE GỐC */
+    background-size: 400px 500px;
     transition: all 1.5s cubic-bezier(0.19, 1, 0.22, 1);
-    opacity: 0;
   }
-  .heal-text {
-    margin-top: 60px; max-width: 500px; text-align: center;
-    font-size: 0.9rem; line-height: 2.2; color: #888;
-    transition: color 1s ease;
+
+  .heal-diary {
+    width: 45%; height: 70vh; overflow-y: auto;
+    border-left: 1px solid var(--border); padding-left: 40px;
   }
-  .heal-container:hover + .heal-text { color: #fff; }
+  .diary-date { font-size: 0.8rem; letter-spacing: 3px; color: var(--accent); margin-bottom: 20px; }
+  .diary-entry { font-size: 0.95rem; line-height: 2.4; color: #aaa; margin-bottom: 50px; }
 
 </style>
 </head>
@@ -178,125 +179,210 @@
 <div id="transition-layer"><div class="loading-line" id="loader-line"></div></div>
 
 <audio id="bg-audio" loop><source src="" type="audio/mpeg"></audio>
-<div id="audio-control" onclick="toggleAudio()">[ play flow ]</div>
+<div onclick="toggleAudio()" style="position: fixed; bottom: 40px; right: 40px; z-index: 10000; font-size: 0.8rem; letter-spacing: 2px; cursor: pointer; color: #666; transition: color 0.3s;" id="audio-btn">
+  [ sound : off ]
+</div>
 
 <nav>
   <a onclick="switchPage('page-1')" id="nav-1" class="active">bản_ngã</a>
   <a onclick="switchPage('page-2')" id="nav-2">điểm_mù</a>
   <a onclick="switchPage('page-3')" id="nav-3">ép_xác</a>
-  <a onclick="switchPage('page-4')" id="nav-4">hàn_gắn</a>
+  <a onclick="switchPage('page-4')" id="nav-4">nhật_ký</a>
 </nav>
 
 <main>
-  <section id="page-1" class="active">
-    <div class="parallax-wrapper" id="parallax-area">
-      <div class="parallax-item" data-speed="-40" style="width: 300px; height: 400px; top: 10%; left: 15%; z-index: 1;">
-        </div>
-      
-      <div class="parallax-item" data-speed="25" style="width: 450px; height: 600px; top: 20%; left: 40%; z-index: 3;">
-        </div>
-      
-      <div class="parallax-item" data-speed="-15" style="width: 250px; height: 250px; bottom: 15%; right: 10%; z-index: 2;">
-        </div>
 
-      <div class="p-text" data-speed="50" style="top: 40%; left: 20%;">
-        đèn đường chao nghiêng. những vệt mật ong sóng sánh. vỏ ốc rỗng tuếch. bầu không khí đặc sệt tràn vào phổi.
+  <section id="page-1" class="active">
+    <div class="p1-text-zone">
+      <h1 class="title-glitch">vỏ ốc rỗng.</h1>
+      
+      <div class="deep-paragraph">
+        Đèn đường chao nghiêng, đổ những vệt mật ong sóng sánh xuống mặt lộ. Ngân bước đi giữa những quầng sáng neon rực rỡ, tiếng giày gõ đều như nhịp phim cũ. 
       </div>
-      <div class="p-text" data-speed="-30" style="bottom: 20%; right: 30%; color: #ff3333;">
-        tuyệt đối không được quên thuốc.
+      
+      <div class="deep-paragraph">
+        Ánh nhìn anh sâu thẳm, phong kín cả thời gian. Ngân bám vào anh như nhành dây leo ký sinh, ủy thác hết nhựa sống vào cái điểm tựa ngỡ là vĩnh cửu ấy. <highlight>Cô chỉ sợ nếu mình chớp mắt, mọi thứ sẽ vỡ vụn.</highlight>
+      </div>
+      
+      <div class="deep-paragraph">
+        Đùng. Tiếng sấm rạch ngang trời. Bóng tối ùa vào đặc quánh. 00:00. Ngân tỉnh giấc. Lại một lần nữa cơn triều xanh xám dâng lên từ dưới chân, nhấn chìm căn phòng.
+      </div>
+      
+      <div class="deep-paragraph" style="border-left: 2px solid var(--accent); padding-left: 20px;">
+        Giữa bóng tối ướt sũng và trống hoác, viên thuốc là chiếc phao còn sót lại. <br>
+        Ngân biết mình phải học cách thở dưới nước. Tuyệt đối không được quên thuốc. Để không phải một lần nữa, chìm, chìm rất sâu.
+      </div>
+    </div>
+
+    <div class="p1-visual-zone" id="parallax-area">
+      <div class="img-box parallax-item" data-speed="30" style="width: 300px; height: 400px; top: 10%; right: 10%;">
+        chỗ điền ảnh 1
+        <img src="" alt="">
+      </div>
+      <div class="img-box parallax-item" data-speed="-20" style="width: 250px; height: 250px; bottom: 15%; left: 10%;">
+        chỗ điền ảnh 2
+        <img src="" alt="">
       </div>
     </div>
   </section>
 
   <section id="page-2">
-    <div class="spotlight-content">
+    <div class="spotlight-wrapper">
       <div class="masonry-grid">
-        <div class="masonry-text">
-          những luồng sáng đan chéo nhau trên sân khấu. một không gian rực rỡ để nhào nặn những khối óc.
+        
+        <div class="masonry-item thought-block">
+          Sân khấu rực rỡ, những luồng sáng đan chéo nhau đâm thủng màn đêm. Một không gian để nhào nặn những khối óc.
+          <br><br>[ Em có thể viết dài bao nhiêu tùy thích ở đây... ]
         </div>
-        <div class="masonry-item">
-           <img src="https://images.unsplash.com/photo-1544531586-fde5298cdd40?q=80&w=1000" alt="">
+
+        <div class="masonry-item img-box" style="height: 400px;">
+          ảnh sự kiện 1
+          <img src="" alt="">
         </div>
-        <div class="masonry-item">
-           <img src="https://images.unsplash.com/photo-1505373877841-8d25f7d46678?q=80&w=1000" alt="">
+
+        <div class="masonry-item thought-block" style="border-color: var(--accent);">
+          Đứng giữa trung tâm của sự chú ý nhưng đôi khi lại cảm thấy mình tàng hình. Áp lực đè nặng lên từng nếp nhăn. Vỏ bọc càng hoàn hảo, bên trong càng trống rỗng.
         </div>
-        <div class="masonry-text" style="color: var(--accent);">
-          đứng giữa trung tâm của sự chú ý nhưng đôi khi lại cảm thấy mình tàng hình.
+
+        <div class="masonry-item img-box" style="height: 300px;">
+          ảnh hậu trường 2
+          <img src="" alt="">
         </div>
-        <div class="masonry-item">
-           <img src="https://images.unsplash.com/photo-1551818255-e6e10975bc17?q=80&w=1000" alt="">
+
+        <div class="masonry-item img-box" style="height: 500px;">
+          ảnh diễn giả 3
+          <img src="" alt="">
         </div>
-        <div class="masonry-item">
-           <img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=1000" alt="">
+
+        <div class="masonry-item thought-block">
+          Chỉ sợ nếu mình chớp mắt, mọi thứ sẽ vỡ vụn ngay trước mặt đám đông. Nụ cười phải được canh chỉnh đúng biên độ.
+          <br><br>[ Viết thêm những bí mật sau cánh gà vào đây... ]
         </div>
-        <div class="masonry-text">
-          áp lực của sự hoàn hảo đè nặng lên từng nếp nhăn. chỉ sợ chớp mắt mọi thứ sẽ vỡ vụn.
-        </div>
+
       </div>
     </div>
   </section>
 
   <section id="page-3">
-    <div class="horizontal-scroll-container" id="h-scroll">
+    <div class="h-scroll-zone" id="h-scroll">
       
-      <div class="h-text-block">
+      <div class="h-text-pillar">
         <h2>ép xác.</h2>
-        những vệt sáng neon rực rỡ lướt qua. trí tuệ bị ép đến giới hạn cuối cùng trong những đêm không ngủ.
+        <p>Những vệt sáng neon rực rỡ lướt qua. Trí tuệ bị ép đến giới hạn cuối cùng trong những đêm không ngủ.</p>
+        <p>[ Nơi em kể về quá trình brainstorm cạn kiệt não bộ... ]</p>
       </div>
 
-      <div class="h-item glitch-item">
-        <img src="https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=1000" alt="">
+      <div class="img-box h-img-pillar glitch-item">
+        ảnh chiến dịch 1
+        <img src="" alt="">
       </div>
 
-      <div class="h-text-block" style="border-left-color: #555;">
-        vị đắng buốt sắc như mảnh kim loại chạy dọc thực quản. sự thăng hoa sinh ra từ trạng thái kiệt quệ nhất.
+      <div class="h-text-pillar">
+        <h2 style="color: var(--accent);">vị đắng.</h2>
+        <p>Quờ quạng trên bàn. Vội lấy vỉ bạc. Một viên Fluoxetine 20mg.</p>
+        <p>Vị đắng buốt sắc như mảnh kim loại chạy dọc thực quản. Sự thăng hoa sinh ra từ trạng thái kiệt quệ nhất.</p>
+        <p>[ Viết về sự đánh đổi của em ở đây... ]</p>
       </div>
 
-      <div class="h-item glitch-item">
-        <img src="https://images.unsplash.com/photo-1517502884422-41eaead166d4?q=80&w=1000" alt="">
-      </div>
-      
-      <div class="h-item glitch-item">
-        <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000" alt="">
+      <div class="img-box h-img-pillar glitch-item">
+        ảnh chiến dịch 2
+        <img src="" alt="">
       </div>
 
     </div>
   </section>
 
   <section id="page-4">
-    <div class="heal-container" id="heal-box" onmouseenter="healImage()" onmouseleave="shatterImage()">
-      <div class="shard-grid" id="shard-grid">
+    
+    <div class="heal-visual">
+      <div class="shard-container" id="heal-box" onmouseenter="healImage()" onmouseleave="shatterImage()">
+        <div class="shard-grid" id="shard-grid">
+          </div>
+        <div style="position: absolute; bottom: -40px; width: 100%; text-align: center; color: #555; font-size: 0.8rem; letter-spacing: 2px;">
+          [ đưa chuột vào để hàn gắn ]
         </div>
+      </div>
     </div>
-    <div class="heal-text">
-      ngày cẩn trọng kéo bản thân lên từ vực sâu. gắn kết lại những mảnh vỡ. không phải để trở về hình dáng cũ mà để tạo ra một cấu trúc mới vững chãi hơn. vết sẹo vẫn ở đó nhưng không còn rỉ máu.
-      <br><br>[ đưa tay chạm vào vùng trống phía trên để hàn gắn ]
+
+    <div class="heal-diary">
+      
+      <div class="diary-date">01.03 / TÁI TẠO</div>
+      <div class="diary-entry">
+        21.2, tình cờ thật. 3 năm trước, trên vệ đường, ngày cẩn trọng kéo bản thân lên từ vực sâu thăm thẳm. Lần đầu, sau 25 năm, thấy mình khô ráo và ấm áp.
+        <br><br>
+        [ Em có thể trút bầu tâm sự vào đây... ]
+      </div>
+
+      <div class="diary-date">15.03 / MẢNH VỠ</div>
+      <div class="diary-entry">
+        Gắn kết lại những mảnh vỡ. Không phải để trở về hình dáng cũ, mà để tạo ra một cấu trúc mới vững chãi hơn, chấp nhận tì vết.
+      </div>
+
+      <div class="diary-date">30.03 / VẾT SẸO</div>
+      <div class="diary-entry">
+        Điều gì đã thực sự chữa lành? Hay chỉ là học cách sống chung với những mảnh sắc nhọn? Vết sẹo vẫn ở đó, nhưng nó không còn rỉ máu nữa.
+        <br><br>
+        [ Viết ra cái kết cục của sự uốn éo ở đây... ]
+      </div>
+
     </div>
+
   </section>
 </main>
 
 <script>
-  /* ==========================================================================
-     HỆ THỐNG ÂM THANH TRÔI CHẢY
-     ========================================================================== */
+  /* ====================================================
+     LÕI CHUYỂN TRANG (ĐÃ FIX ĐỂ KHÔNG BỊ ĐEN MÀN HÌNH)
+     ==================================================== */
+  const loader = document.getElementById('transition-layer');
+  const loaderLine = document.getElementById('loader-line');
+
+  function switchPage(pageId) {
+    fluidAudioTransition(pageId);
+    
+    loader.style.pointerEvents = 'all';
+    loader.style.opacity = '1';
+    loaderLine.style.width = '0';
+    
+    setTimeout(() => {
+      loaderLine.style.width = '100vw'; 
+      
+      document.querySelectorAll('section').forEach(sec => sec.classList.remove('active'));
+      document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+      
+      document.getElementById(pageId).classList.add('active');
+      document.getElementById('nav-' + pageId.split('-')[1]).classList.add('active');
+
+      setTimeout(() => {
+        loader.style.opacity = '0';
+        loader.style.pointerEvents = 'none';
+        loaderLine.style.width = '0';
+      }, 600);
+
+    }, 400);
+  }
+
+  /* ====================================================
+     NHẠC TRÔI CHẢY
+     ==================================================== */
   const soundtracks = {
-    'page-1': 'nhac_ban_nga.mp3',
-    'page-2': 'nhac_tedx.mp3',
-    'page-3': 'nhac_vyl.mp3',
-    'page-4': 'nhac_remake.mp3'
+    'page-1': 'nhac1.mp3',
+    'page-2': 'nhac2.mp3',
+    'page-3': 'nhac3.mp3',
+    'page-4': 'nhac4.mp3'
   };
 
   const audio = document.getElementById('bg-audio');
-  const audioBtn = document.getElementById('audio-control');
+  const audioBtn = document.getElementById('audio-btn');
   let isPlaying = false;
   let currentTrackId = 'page-1';
   audio.src = soundtracks[currentTrackId];
 
   function toggleAudio() {
     if (isPlaying) { 
-      audio.pause(); audioBtn.innerText = '[ audio : off ]'; audioBtn.style.opacity = '0.4'; 
+      audio.pause(); audioBtn.innerText = '[ sound : off ]'; audioBtn.style.color = '#666'; 
     } else { 
-      audio.play(); audioBtn.innerText = '[ audio : flow ]'; audioBtn.style.opacity = '1'; 
+      audio.play(); audioBtn.innerText = '[ sound : on ]'; audioBtn.style.color = '#fff'; 
     }
     isPlaying = !isPlaying;
   }
@@ -317,83 +403,42 @@
     }, 100);
   }
 
-  /* ==========================================================================
-     HỆ THỐNG LÕI CHUYỂN TRANG
-     ========================================================================== */
-  const loader = document.getElementById('transition-layer');
-  const loaderLine = document.getElementById('loader-line');
-
-  function switchPage(pageId) {
-    fluidAudioTransition(pageId);
-    
-    // Kích hoạt màng chắn đen
-    loader.style.pointerEvents = 'all';
-    loader.style.opacity = '1';
-    loaderLine.style.width = '0';
-    
-    setTimeout(() => {
-      loaderLine.style.width = '100vw'; // Chạy dải sáng
-      
-      // Đổi class ẩn hiện
-      document.querySelectorAll('section').forEach(sec => sec.classList.remove('active'));
-      document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
-      
-      document.getElementById(pageId).classList.add('active');
-      document.getElementById('nav-' + pageId.split('-')[1]).classList.add('active');
-
-      // Tắt màng chắn
-      setTimeout(() => {
-        loader.style.opacity = '0';
-        loader.style.pointerEvents = 'none';
-        loaderLine.style.width = '0';
-      }, 600);
-
-    }, 400);
-  }
-
-  /* ==========================================================================
-     LÕI TƯƠNG TÁC TRANG 1: PARALLAX TRÔI NỔI
-     ========================================================================== */
+  /* ====================================================
+     TRANG 1: PARALLAX THEO CHUỘT
+     ==================================================== */
   const pArea = document.getElementById('parallax-area');
-  const pItems = document.querySelectorAll('.parallax-item, .p-text');
+  const pItems = document.querySelectorAll('.parallax-item');
 
   document.addEventListener('mousemove', (e) => {
-    // Chỉ chạy nếu đang ở trang 1
     if (!document.getElementById('page-1').classList.contains('active')) return;
-    
     let x = (window.innerWidth - e.pageX * 2) / 100;
     let y = (window.innerHeight - e.pageY * 2) / 100;
 
     pItems.forEach(item => {
       let speed = item.getAttribute('data-speed');
-      let xMove = x * speed;
-      let yMove = y * speed;
-      item.style.transform = `translate3d(${xMove}px, ${yMove}px, 0)`;
+      item.style.transform = `translate3d(${x * speed}px, ${y * speed}px, 0)`;
     });
   });
 
-  /* ==========================================================================
-     LÕI TƯƠNG TÁC TRANG 2: ĐÈN PIN SPOTLIGHT
-     ========================================================================== */
+  /* ====================================================
+     TRANG 2: ĐÈN PIN THEO CHUỘT
+     ==================================================== */
   const page2 = document.getElementById('page-2');
-  
   document.addEventListener('mousemove', (e) => {
     if (!page2.classList.contains('active')) return;
     let x = (e.clientX / window.innerWidth) * 100;
     let y = (e.clientY / window.innerHeight) * 100;
-    // Cập nhật tọa độ chuột vào biến CSS của trang 2
     page2.style.setProperty('--mouse-x', `${x}%`);
     page2.style.setProperty('--mouse-y', `${y}%`);
   });
 
-  /* ==========================================================================
-     LÕI TƯƠNG TÁC TRANG 3: RGB GLITCH SCROLL
-     ========================================================================== */
+  /* ====================================================
+     TRANG 3: KÉO CHUỘT ĐỂ CUỘN NGANG + HIỆU ỨNG GLITCH
+     ==================================================== */
   const hScroll = document.getElementById('h-scroll');
   const glitchItems = document.querySelectorAll('.glitch-item');
-  let isDown = false; let startX; let scrollLeft; let scrollVelocity = 0; let lastScrollX = 0;
+  let isDown = false; let startX; let scrollLeft; let lastScrollX = 0;
 
-  // Xử lý kéo thả chuột để cuộn ngang
   hScroll.addEventListener('mousedown', (e) => {
     isDown = true; startX = e.pageX - hScroll.offsetLeft; scrollLeft = hScroll.scrollLeft;
   });
@@ -403,27 +448,22 @@
     if (!isDown) return;
     e.preventDefault();
     const x = e.pageX - hScroll.offsetLeft;
-    const walk = (x - startX) * 2;
-    hScroll.scrollLeft = scrollLeft - walk;
+    hScroll.scrollLeft = scrollLeft - (x - startX) * 2;
   });
 
-  // Theo dõi vận tốc cuộn để bóp méo hình ảnh (bằng bánh xe chuột hoặc kéo thả)
   hScroll.addEventListener('scroll', () => {
     let currentScrollX = hScroll.scrollLeft;
-    scrollVelocity = currentScrollX - lastScrollX;
+    let scrollVelocity = currentScrollX - lastScrollX;
     lastScrollX = currentScrollX;
     
-    let skewValue = Math.min(Math.max(scrollVelocity * 0.1, -15), 15);
-    let blurValue = Math.min(Math.abs(scrollVelocity * 0.05), 5);
-    let rgbSplit = Math.min(Math.abs(scrollVelocity * 0.2), 20);
+    let skewValue = Math.min(Math.max(scrollVelocity * 0.08, -10), 10);
+    let rgbSplit = Math.min(Math.abs(scrollVelocity * 0.1), 15);
 
     glitchItems.forEach(item => {
-      // Ép khung hình nghiêng và bóc tách màu RGB
       item.style.transform = `skewX(${skewValue}deg)`;
-      item.style.filter = `drop-shadow(${rgbSplit}px 0 0 rgba(255,0,0,0.5)) drop-shadow(-${rgbSplit}px 0 0 rgba(0,0,255,0.5)) blur(${blurValue}px)`;
+      item.style.filter = `drop-shadow(${rgbSplit}px 0 0 rgba(255,0,0,0.5)) drop-shadow(-${rgbSplit}px 0 0 rgba(0,0,255,0.5))`;
     });
 
-    // Sau khi dừng cuộn 100ms, phục hồi lại trạng thái tĩnh
     clearTimeout(window.glitchTimer);
     window.glitchTimer = setTimeout(resetGlitch, 100);
   });
@@ -435,7 +475,7 @@
     });
   }
 
-  // Cho phép dùng nút cuộn dọc của chuột để cuộn ngang
+  // Cuộn chuột dọc biến thành ngang
   hScroll.addEventListener('wheel', (e) => {
     if (e.deltaY !== 0) {
       e.preventDefault();
@@ -443,41 +483,35 @@
     }
   });
 
-  /* ==========================================================================
-     LÕI TƯƠNG TÁC TRANG 4: TẠO KHỐI VÀ HÀN GẮN (SHATTER DOM MATRIX)
-     ========================================================================== */
+  /* ====================================================
+     TRANG 4: PHÂN RÃ VÀ HÀN GẮN MẢNH VỠ
+     ==================================================== */
   const gridBox = document.getElementById('shard-grid');
-  const cols = 10; const rows = 10;
+  const cols = 8; const rows = 8;
   const shards = [];
 
-  // Sinh ra 100 thẻ div nhỏ, cắt bức ảnh lớn thành 100 mảnh
   for (let i = 0; i < rows; i++) {
     for (let j = 0; j < cols; j++) {
       let shard = document.createElement('div');
       shard.classList.add('shard');
-      
-      // Tính toán phần ảnh hiển thị cho mảnh này
       let xPos = (j / (cols - 1)) * 100;
       let yPos = (i / (rows - 1)) * 100;
       shard.style.backgroundPosition = `${xPos}% ${yPos}%`;
-      
       gridBox.appendChild(shard);
       shards.push(shard);
     }
   }
 
-  // Trạng thái vỡ nát: Các mảnh bay lung tung, xoay vòng và mờ đi
   function shatterImage() {
     shards.forEach(shard => {
-      let transX = (Math.random() - 0.5) * 800; // Bay xa 800px
-      let transY = (Math.random() - 0.5) * 800;
-      let rot = (Math.random() - 0.5) * 180;
-      shard.style.transform = `translate(${transX}px, ${transY}px) rotate(${rot}deg) scale(0.5)`;
+      let transX = (Math.random() - 0.5) * 500;
+      let transY = (Math.random() - 0.5) * 500;
+      let rot = (Math.random() - 0.5) * 90;
+      shard.style.transform = `translate(${transX}px, ${transY}px) rotate(${rot}deg) scale(0.6)`;
       shard.style.opacity = '0';
     });
   }
 
-  // Trạng thái chữa lành: Các mảnh hút về vị trí 0 gốc
   function healImage() {
     shards.forEach(shard => {
       shard.style.transform = `translate(0px, 0px) rotate(0deg) scale(1)`;
@@ -485,7 +519,6 @@
     });
   }
 
-  // Khởi động trạng thái vỡ nát ban đầu
   setTimeout(shatterImage, 500);
 
 </script>
