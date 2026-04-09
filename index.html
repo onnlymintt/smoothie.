@@ -11,8 +11,8 @@
     --grid-c: #151515;
     --text-main: #b0b0b0;
     --text-dim: #3a3a3a;
-    --accent: #003366; /* Xanh dương đậm */
-    --graffiti: #0066cc; /* Xanh dương sáng (neon) */
+    --accent: #003366; 
+    --graffiti: #0066cc; 
     --border: #1a1a1a;
   }
 
@@ -24,7 +24,7 @@
     overflow: hidden; width: 100vw; height: 100vh;
   }
 
-  /* CUSTOM CURSOR & LIGHT TRAIL */
+  /* CUSTOM CURSOR */
   #custom-cursor {
     position: fixed; top: 0; left: 0; width: 10px; height: 10px;
     background: #fff; border-radius: 50%; pointer-events: none;
@@ -33,7 +33,7 @@
     mix-blend-mode: difference;
   }
   #custom-cursor.hovering { width: 35px; height: 35px; background: transparent; border: 1px solid var(--accent); mix-blend-mode: normal; }
-  #custom-cursor.spray { width: 25px; height: 25px; background: transparent; border: 2px dashed #fff; animation: spinCursor 4s linear infinite; }
+  #custom-cursor.spray { width: 30px; height: 30px; background: transparent; border: 2px dashed #fff; animation: spinCursor 2s linear infinite; mix-blend-mode: normal;}
   @keyframes spinCursor { 100% { transform: translate(-50%, -50%) rotate(360deg); } }
 
   /* OVERLAYS & CANVAS */
@@ -42,8 +42,8 @@
     background-image: linear-gradient(var(--grid-c) 1px, transparent 1px), linear-gradient(90deg, var(--grid-c) 1px, transparent 1px);
     background-size: 5vw 5vh; opacity: 0.5; z-index: 2; pointer-events: none;
   }
-  #ink-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; opacity: 0.6; }
-  #graffiti-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 50; pointer-events: none; }
+  #ink-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1; pointer-events: none; opacity: 0.6; }
+  #graffiti-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 50; pointer-events: none; }
 
   /* CINEMATIC INTRO */
   #cinematic-intro {
@@ -85,11 +85,10 @@
   }
   nav a.active { color: #fff; letter-spacing: 12px; text-shadow: 0 0 15px rgba(255,255,255,0.4); }
 
-  /* KHUNG MEDIA CHUNG */
+  /* MEDIA BOXES */
   .media-box {
     background: #050505; border: 1px solid var(--border);
     position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center;
-    color: var(--text-dim); font-size: 0.6rem; letter-spacing: 2px; text-align: center;
   }
   .media-box img, .media-box video {
     width: 100%; height: 100%; object-fit: cover; opacity: 0.3;
@@ -114,13 +113,13 @@
   .redacted { background-color: #111; color: #111; padding: 2px 8px; transition: 0.4s;cursor: help; }
   .redacted:hover { background-color: transparent; color: #fff; text-shadow: 0 0 5px #fff; }
   
-  /* Hiệu ứng chìm sâu cho cụm hình ảnh */
+  /* HIỆU ỨNG CHÌM SÂU HƠN VÀ NGỘT NGẠT HƠN */
   @keyframes sinkDeep {
-    0% { transform: translateY(0px) scale(1); opacity: 1; }
-    50% { transform: translateY(30px) scale(0.97); opacity: 0.7; }
-    100% { transform: translateY(0px) scale(1); opacity: 1; }
+    0% { transform: translateY(0px) scale(1); opacity: 1; filter: blur(0px); }
+    50% { transform: translateY(150px) scale(0.85); opacity: 0.15; filter: blur(6px); }
+    100% { transform: translateY(0px) scale(1); opacity: 1; filter: blur(0px); }
   }
-  .abyss-visual-zone { position: relative; height: 70vh; width: 100%; animation: sinkDeep 10s ease-in-out infinite; }
+  .abyss-visual-zone { position: relative; height: 70vh; width: 100%; animation: sinkDeep 12s ease-in-out infinite; }
   .p1-img { position: absolute; transition: transform 0.1s linear; }
   .p1-img-1 { width: 300px; height: 400px; top: 0; right: 0; z-index: 2; border-color: #333;}
   .p1-img-2 { width: 200px; height: 300px; bottom: 10%; left: 0; z-index: 1; opacity: 0.5; }
@@ -129,32 +128,45 @@
   /* =========================================
      PAGE 2: SÂN KHẤU (TEDx & Concept)
      ========================================= */
-  #page-2 { background: #000; mask-image: radial-gradient(circle 350px at var(--mouse-x, 50%) var(--mouse-y, 50%), black 0%, transparent 100%); -webkit-mask-image: radial-gradient(circle 350px at var(--mouse-x, 50%) var(--mouse-y, 50%), black 0%, transparent 100%); }
+  #page-2 { background: #020202; } 
   .stage-arena { width: 100%; height: 100%; position: relative; display: flex; align-items: center; justify-content: center; }
-  .stage-bg { position: absolute; width: 100%; height: 100%; object-fit: cover; opacity: 0.1; filter: grayscale(100%) contrast(180%); z-index: 1; }
+  .stage-bg { position: absolute; width: 100%; height: 100%; object-fit: cover; opacity: 0.15; filter: grayscale(100%) contrast(150%); z-index: 1; pointer-events: none;}
   .stage-title { position: absolute; top: 10%; z-index: 1; font-size: 8rem; color: transparent; -webkit-text-stroke: 1px rgba(255,255,255,0.05); letter-spacing: 30px; text-transform: uppercase; pointer-events: none; }
   
-  /* Reflection Box cho Page 2 */
+  /* Reflection Box chung */
   .reflection-box {
-    position: absolute; bottom: 15%; right: 10%; width: 350px;
-    z-index: 10; border-left: 2px solid var(--accent);
+    position: absolute; z-index: 10; border-left: 2px solid var(--accent);
     padding: 20px; background: rgba(5,5,5,0.8); backdrop-filter: blur(5px);
   }
   .reflection-box h3 { font-style: italic; font-size: 1.8rem; margin-bottom: 15px; color: #fff; }
   .reflection-box p { color: #888; font-size: 0.85rem; line-height: 1.8; margin: 0; outline: none; }
 
-  .draggable-media { position: absolute; cursor: grab; z-index: 5; box-shadow: 5px 5px 20px rgba(0,0,0,0.8); }
+  .stage-reflect { bottom: 15%; right: 10%; width: 350px; }
+
+  /* Draggable Media & LOCAL SPOTLIGHT */
+  .draggable-media { position: absolute; cursor: grab; z-index: 5; box-shadow: 5px 5px 20px rgba(0,0,0,0.8); overflow: hidden; }
   .draggable-media:active { cursor: grabbing; z-index: 100; transform: scale(1.03); border-color: var(--graffiti); }
   
   .film-strip { width: 220px; background: #050505; padding: 10px; padding-bottom: 25px; border: 1px solid #222; }
-  .film-img-zone { width: 100%; height: 140px; background: #111; overflow: hidden; position: relative; }
-  .film-strip img { width: 100%; height: 100%; object-fit: cover; opacity: 0.5; filter: grayscale(100%); transition: 0.5s; }
-  .film-strip:hover img { filter: grayscale(0%); opacity: 1; }
+  .film-img-zone { width: 100%; height: 140px; background: #000; overflow: hidden; position: relative; }
+  
+  /* Ảnh bình thường rất tối. Khi rọi chuột vào thì sáng lên cục bộ */
+  .film-img-zone img, .spotlight-media img { 
+    width: 100%; height: 100%; object-fit: cover; opacity: 0.2; filter: grayscale(100%); 
+    transition: opacity 0.5s, filter 0.5s; 
+  }
+  
+  .draggable-media:hover .film-img-zone img, .draggable-media:hover.spotlight-media img { 
+    opacity: 1; filter: grayscale(0%);
+    mask-image: radial-gradient(circle 120px at var(--lx, 50%) var(--ly, 50%), black 0%, rgba(0,0,0,0.05) 100%);
+    -webkit-mask-image: radial-gradient(circle 120px at var(--lx, 50%) var(--ly, 50%), black 0%, rgba(0,0,0,0.05) 100%);
+  }
+
   .film-holes { display: flex; justify-content: space-between; margin-bottom: 8px; }
   .hole { width: 6px; height: 6px; background: #000; border-radius: 2px; }
 
   /* =========================================
-     PAGE 3: YOUNG LIONS (Tĩnh, Cấu trúc lại)
+     PAGE 3: YOUNG LIONS 
      ========================================= */
   #page-3 { background: #020202; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; }
   
@@ -164,7 +176,6 @@
 
   .yl-media-grid { display: flex; gap: 50px; align-items: center; justify-content: center; z-index: 10; }
   
-  /* Khung Video Dọc */
   .yl-video-vert {
     width: 280px; aspect-ratio: 9/16; border: 1px solid var(--border);
     position: relative; box-shadow: 0 0 30px rgba(0,0,0,0.8); overflow: hidden;
@@ -172,13 +183,14 @@
   .yl-video-vert video { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; transition: 0.5s;}
   .yl-video-vert:hover video { opacity: 1; }
 
-  /* Khung Ảnh Ngang */
   .yl-img-horiz {
     width: 500px; aspect-ratio: 16/9; border: 1px solid var(--border);
     position: relative; box-shadow: 0 0 30px rgba(0,0,0,0.8); overflow: hidden;
   }
   .yl-img-horiz img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(100%); opacity: 0.6; transition: 0.5s; }
   .yl-img-horiz:hover img { filter: grayscale(0%); opacity: 1; transform: scale(1.02); }
+
+  .yl-reflect { bottom: 10%; left: 10%; width: 400px; }
 
   /* =========================================
      PAGE 4: QUẬY QUỌ (ADVANCED GRAFFITI)
@@ -208,12 +220,17 @@
   .tools-panel { display: flex; flex-direction: column; gap: 20px; max-width: 300px;}
   .tool-group { display: flex; align-items: center; gap: 15px; }
   .tool-label { font-size: 0.65rem; color: #666; letter-spacing: 3px; text-transform: uppercase; width: 80px; }
-  .color-btn { width: 25px; height: 25px; border-radius: 50%; border: 2px solid transparent; transition: 0.3s;cursor: pointer; }
+  .color-btn { width: 25px; height: 25px; border-radius: 50%; border: 2px solid transparent; transition: 0.3s; cursor: pointer; }
   .color-btn.active { border-color: #fff; transform: scale(1.2); }
-  .size-slider { -webkit-appearance: none; width: 100%; height: 2px; background: #333; outline: none;cursor: pointer; }
+  .size-slider { -webkit-appearance: none; width: 100%; height: 2px; background: #333; outline: none; cursor: pointer; }
   .size-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; background: #fff; border-radius: 50%; }
-  .action-btn { background: transparent; border: 1px solid #444; color: #888; padding: 8px 15px; font-family: 'Space Mono'; font-size: 0.7rem; letter-spacing: 2px; transition: 0.3s;cursor: pointer; }
-  .action-btn:hover { border-color: #fff; color: #fff; }
+  
+  .action-btn { 
+    background: rgba(20,20,20,0.8); border: 1px solid #444; color: #888; padding: 8px 15px; 
+    font-family: 'Space Mono'; font-size: 0.7rem; letter-spacing: 2px; transition: 0.3s; cursor: pointer; 
+    pointer-events: auto; /* Quan trọng để click được */
+  }
+  .action-btn:hover { border-color: #fff; color: #fff; background: rgba(50,50,50,0.8); box-shadow: 0 0 15px rgba(255,255,255,0.2);}
 
 </style>
 </head>
@@ -272,9 +289,9 @@
       <img src="link_anh_san_khau_large.jpg" alt="" class="stage-bg">
       <div class="stage-title">TEDxFTU</div>
 
-      <div class="reflection-box interactable">
+      <div class="reflection-box stage-reflect interactable">
         <h3>Reflection.</h3>
-        <p contenteditable="true">Nhập suy nghĩ và những góc nhìn của bạn về dự án này vào đây...</p>
+        <p contenteditable="true">Những góc nhìn ẩn giấu sau ánh đèn sân khấu. Vỡ vụn và ghép lại...</p>
       </div>
       
       <div class="film-strip draggable-media interactable" style="top: 15%; left: 20%; transform: rotate(5deg);">
@@ -289,7 +306,7 @@
         <div class="film-holes" style="margin-top: 8px;"><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div></div>
       </div>
 
-      <div class="draggable-media interactable media-box" style="width: 200px; height: 200px; bottom: 10%; left: 15%; border-radius: 50%;">
+      <div class="draggable-media interactable media-box spotlight-media" style="width: 200px; height: 200px; bottom: 10%; left: 15%; border-radius: 50%;">
         <img src="link_anh_concept_detail.jpg" alt="Concept 4">
       </div>
     </div>
@@ -308,6 +325,11 @@
       <div class="yl-img-horiz interactable">
         <img src="link_anh_ngang_o_day.jpg" alt="Young Lions Display">
       </div>
+    </div>
+
+    <div class="reflection-box yl-reflect interactable">
+      <h3>Khải huyền.</h3>
+      <p contenteditable="true">Nhập suy nghĩ về những nỗ lực điên cuồng và hỗn độn tại đây...</p>
     </div>
   </section>
 
@@ -339,7 +361,7 @@
             <input type="range" class="size-slider interactable" id="brush-size" min="10" max="100" value="50">
           </div>
           <div class="tool-group" style="margin-top: 15px;">
-            <button class="action-btn interactable" onclick="clearGraffiti()">[ Xóa Tường ]</button>
+            <button type="button" class="action-btn interactable" onclick="clearWall()">[ Xóa Tường ]</button>
           </div>
         </div>
       </div>
@@ -365,14 +387,21 @@
 
   const inkCanvas = document.getElementById('ink-canvas');
   const iCtx = inkCanvas.getContext('2d');
-  inkCanvas.width = window.innerWidth; inkCanvas.height = window.innerHeight;
+  
+  function resizeCanvases() {
+    inkCanvas.width = window.innerWidth; inkCanvas.height = window.innerHeight;
+    const grafCanvas = document.getElementById('graffiti-canvas');
+    if(grafCanvas) { grafCanvas.width = window.innerWidth; grafCanvas.height = window.innerHeight; }
+  }
+  window.addEventListener('resize', resizeCanvases);
+  resizeCanvases();
 
   function renderLightTrail() {
     iCtx.clearRect(0, 0, inkCanvas.width, inkCanvas.height);
     for (let i = 0; i < inks.length; i++) {
       let p = inks[i];
       iCtx.beginPath(); iCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-      iCtx.fillStyle = `rgba(0, 51, 102, ${p.life*0.5})`; // Đổi màu xanh dương đậm mờ
+      iCtx.fillStyle = `rgba(0, 51, 102, ${p.life*0.5})`; 
       iCtx.fill();
       p.x += p.vx; p.y += p.vy; p.life -= 0.01; p.size += 0.1;
       if (p.life <= 0) inks.splice(i, 1);
@@ -456,23 +485,28 @@
   });
 
   /* =========================================
-     6. PAGE 2: DRAGGABLE & MOUSE SPOTLIGHT
+     6. PAGE 2: DRAGGABLE & LOCAL SPOTLIGHT
      ========================================= */
-  const page2 = document.getElementById('page-2');
-  document.addEventListener('mousemove', (e) => {
-    if (!page2.classList.contains('active')) return;
-    let x = (e.clientX / window.innerWidth) * 100; let y = (e.clientY / window.innerHeight) * 100;
-    page2.style.setProperty('--mouse-x', `${x}%`); page2.style.setProperty('--mouse-y', `${y}%`);
-  });
-
   const draggables = document.querySelectorAll('.draggable-media');
   let activeDrag = null, oX = 0, oY = 0;
+  
   draggables.forEach(item => {
+    // Kéo thả ảnh
     item.addEventListener('mousedown', (e) => {
       activeDrag = item; oX = e.clientX - item.getBoundingClientRect().left; oY = e.clientY - item.getBoundingClientRect().top;
       draggables.forEach(d => d.style.zIndex = '5'); activeDrag.style.zIndex = '100';
     });
+    
+    // Tạo hiệu ứng Spotlight chiếu rọi bên TRONG tấm ảnh khi di chuột
+    item.addEventListener('mousemove', (e) => {
+      let rect = item.getBoundingClientRect();
+      let localX = e.clientX - rect.left;
+      let localY = e.clientY - rect.top;
+      item.style.setProperty('--lx', `${localX}px`);
+      item.style.setProperty('--ly', `${localY}px`);
+    });
   });
+
   document.addEventListener('mousemove', (e) => {
     if (!activeDrag) return;
     activeDrag.style.left = `${e.clientX - oX}px`; activeDrag.style.top = `${e.clientY - oY}px`;
@@ -480,18 +514,16 @@
   document.addEventListener('mouseup', () => { activeDrag = null; });
 
   /* =========================================
-     7. PAGE 4: GRAFFITI (Đã fix mượt hơn)
+     7. PAGE 4: GRAFFITI (Fixed Brush & Clear)
      ========================================= */
   const gCtx = grafCanvas.getContext('2d', { willReadFrequently: true });
-  grafCanvas.width = window.innerWidth; grafCanvas.height = window.innerHeight;
   
   let isDrawing = false;
-  // Lấy màu từ CSS variable
   let paintColor = getComputedStyle(document.documentElement).getPropertyValue('--graffiti').trim(); 
   let bSizeInput = document.getElementById('brush-size');
 
-  function setColor(color, btn) {
-    // Nếu truyền vào biến CSS, get giá trị thực
+  // Đẩy biến hàm ra window object để HTML dễ dàng gọi được dù có bị bọc
+  window.setColor = function(color, btn) {
     if(color.startsWith('var')) {
         paintColor = getComputedStyle(document.documentElement).getPropertyValue(color.match(/\(([^)]+)\)/)[1]).trim();
     } else {
@@ -499,9 +531,11 @@
     }
     document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-  }
+  };
 
-  function clearGraffiti() { gCtx.clearRect(0, 0, grafCanvas.width, grafCanvas.height); }
+  window.clearWall = function() { 
+    gCtx.clearRect(0, 0, grafCanvas.width, grafCanvas.height); 
+  };
 
   grafCanvas.addEventListener('mousedown', () => isDrawing = true);
   grafCanvas.addEventListener('mouseup', () => isDrawing = false);
@@ -510,33 +544,30 @@
   grafCanvas.addEventListener('mousemove', (e) => {
     if (!isDrawing) return;
     
-    // Fix toạ độ để khớp chính xác mũi chuột
-    const rect = grafCanvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    // Do canvas fix 100vw/100vh và top 0 trái 0, e.clientX chính là toạ độ x
+    const x = e.clientX;
+    const y = e.clientY;
 
     let radius = parseInt(bSizeInput.value);
-    let density = radius * 4; // Tăng mật độ hạt để nét vẽ không đứt đoạn
+    let density = radius * 4; // Airbrush mượt hơn
     gCtx.fillStyle = paintColor;
 
     for (let i = 0; i < density; i++) {
-      let oX = (Math.random()*2-1) * radius;
-      let oY = (Math.random()*2-1) * radius;
-      if (oX*oX + oY*oY <= radius*radius) {
-        let size = Math.random() * 2 + 0.5;
-        gCtx.fillRect(x + oX, y + oY, size, size);
-      }
+      let angle = Math.random() * Math.PI * 2;
+      let r = Math.random() * radius;
+      let oX = Math.cos(angle) * r;
+      let oY = Math.sin(angle) * r;
+      
+      let size = Math.random() * 2.5 + 0.5; // Kích thước hạt sơn
+      gCtx.beginPath();
+      gCtx.arc(x + oX, y + oY, size/2, 0, Math.PI*2);
+      gCtx.fill();
     }
     
-    // Drip effect
-    if(Math.random() > 0.85 && radius > 30) {
-      gCtx.fillRect(x, y, 2, Math.random()*60+20);
+    // Sơn chảy dột ngẫu nhiên
+    if(Math.random() > 0.88 && radius > 30) {
+      gCtx.fillRect(x, y, 2, Math.random()*80+30);
     }
-  });
-
-  window.addEventListener('resize', () => { 
-    inkCanvas.width = window.innerWidth; inkCanvas.height = window.innerHeight; 
-    grafCanvas.width = window.innerWidth; grafCanvas.height = window.innerHeight; 
   });
 
 </script>
