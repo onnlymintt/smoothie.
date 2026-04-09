@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Silent Voice - Drowning Love</title>
+<title>Silent Voice - Cẩm Tiên</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -17,7 +17,7 @@
   }
 
   /* RESET & BASIC */
-  * { box-sizing: border-box; cursor: none !important; /* Tắt trỏ chuột mặc định */ }
+  * { box-sizing: border-box; cursor: none !important; }
   body, html {
     margin: 0; padding: 0; background-color: var(--bg);
     color: var(--text-main); font-family: 'Space Mono', monospace;
@@ -45,19 +45,7 @@
   #ink-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; opacity: 0.5; }
   #graffiti-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 50; pointer-events: none; }
 
-  /* CINEMATIC INTRO */
-  #cinematic-intro {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: #000; z-index: 99999; display: flex; align-items: center; justify-content: center;
-    flex-direction: column; transition: opacity 1.5s ease-in-out;
-  }
-  .intro-text {
-    font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-style: italic;
-    color: #fff; opacity: 0; transition: opacity 2s; text-align: center; line-height: 2;
-  }
-  .intro-text.show { opacity: 1; }
-
-  /* PAGE TRANSITION */
+  /* MÀNG CHUYỂN TRANG */
   #transition-layer {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background: #000; z-index: 99995; display: flex; align-items: center; justify-content: center;
@@ -84,24 +72,18 @@
     writing-mode: vertical-rl; transform: rotate(180deg); transition: all 0.5s;
   }
   nav a.active { color: #fff; letter-spacing: 12px; text-shadow: 0 0 15px rgba(255,255,255,0.4); }
-  
-  /* SCRIPT OVERLAY (DIRECTOR'S MIND) */
-  #script-overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.95); z-index: 99998; backdrop-filter: blur(10px);
-    display: flex; align-items: center; justify-content: center;
-    opacity: 0; pointer-events: none; transition: opacity 0.5s;
+
+  /* KHUNG ẢNH CHUNG (Tái sử dụng nhiều lần) */
+  .media-box {
+    background: #050505; border: 1px solid var(--border);
+    position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center;
+    color: var(--text-dim); font-size: 0.6rem; letter-spacing: 2px; text-align: center;
   }
-  #script-overlay.active { opacity: 1; pointer-events: all; }
-  .script-board {
-    width: 80%; max-width: 900px; border: 1px solid var(--border); padding: 40px;
-    background: #050505; color: #aaa; font-size: 0.85rem; box-shadow: 0 0 50px rgba(138,3,3,0.2);
+  .media-box img, .media-box video {
+    width: 100%; height: 100%; object-fit: cover; opacity: 0.4;
+    transition: all 0.8s ease; filter: grayscale(100%); position: absolute; top: 0; left: 0;
   }
-  .script-header { font-family: 'Cormorant Garamond', serif; font-size: 2rem; color: #fff; margin-bottom: 20px; border-bottom: 1px solid var(--accent); padding-bottom: 10px; display: flex; justify-content: space-between; align-items: flex-end; }
-  .close-script { font-size: 0.8rem; letter-spacing: 3px; cursor: pointer; color: var(--accent); }
-  .script-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-  .script-table th, .script-table td { border: 1px solid #222; padding: 15px; text-align: left; vertical-align: top; }
-  .script-table th { color: #fff; letter-spacing: 2px; text-transform: uppercase; font-size: 0.7rem; }
+  .media-box:hover img, .media-box:hover video { opacity: 1; filter: grayscale(0%); transform: scale(1.05); z-index: 2;}
 
   /* MAIN LAYOUT */
   main { position: relative; width: 100%; height: 100%; padding-left: 100px; z-index: 10; }
@@ -110,89 +92,100 @@
   h1, h2, h3 { font-family: 'Cormorant Garamond', serif; font-weight: normal; color: #fff; margin: 0; }
 
   /* =========================================
-     PAGE 1: ĐÁY SÂU (BẢN NGÃ)
+     PAGE 1: ĐÁY SÂU (BẢN NGÃ) - 4 ẢNH PARALLAX
      ========================================= */
   #page-1 { display: flex; align-items: center; justify-content: center; }
-  .abyss-box { max-width: 800px; z-index: 2; position: relative; }
-  .abyss-title { font-size: 6rem; font-style: italic; letter-spacing: -3px; margin-bottom: 50px; text-shadow: 0 0 20px rgba(0,0,0,0.8); }
-  .abyss-text { font-size: 0.95rem; line-height: 2.5; color: #888; margin-bottom: 30px; text-shadow: 0 0 10px rgba(0,0,0,0.9); }
+  .abyss-box { max-width: 700px; z-index: 10; position: relative; text-align: center; mix-blend-mode: difference; }
+  .abyss-title { font-size: 6rem; font-style: italic; letter-spacing: -3px; margin-bottom: 50px; }
+  .abyss-text { font-size: 0.95rem; line-height: 2.5; color: #888; margin-bottom: 30px; }
   .redacted { background-color: #111; color: #111; padding: 2px 10px; transition: 0.4s; }
   .redacted:hover { background-color: transparent; color: #fff; text-shadow: 0 0 8px #fff; }
-  
-  /* Nút xé toạc kịch bản */
-  .glitch-btn {
-    display: inline-block; margin-top: 40px; padding: 10px 20px; border: 1px solid var(--text-dim);
-    font-size: 0.7rem; letter-spacing: 4px; color: var(--text-dim); text-transform: uppercase;
-    position: relative; overflow: hidden; transition: 0.3s;
-  }
-  .glitch-btn::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: var(--accent); transition: 0.4s; z-index: -1; }
-  .glitch-btn:hover { color: #fff; border-color: var(--accent); }
-  .glitch-btn:hover::before { left: 0; }
+
+  /* Parallax Images cho Page 1 */
+  .p1-img-1 { width: 250px; height: 350px; position: absolute; top: 10%; right: 15%; z-index: 2; }
+  .p1-img-2 { width: 300px; height: 200px; position: absolute; bottom: 15%; left: 10%; z-index: 3; }
+  .p1-img-3 { width: 180px; height: 250px; position: absolute; top: 20%; left: 20%; z-index: 1; opacity: 0.5; }
+  .p1-img-4 { width: 220px; height: 300px; position: absolute; bottom: 10%; right: 25%; z-index: 4; }
 
   /* =========================================
-     PAGE 2: SÂN KHẤU (TEDx & FOOTAGE)
+     PAGE 2: SÂN KHẤU (4 FILM STRIPS + 1 BG)
      ========================================= */
   #page-2 { background: #000; mask-image: radial-gradient(circle 350px at var(--mouse-x, 50%) var(--mouse-y, 50%), black 0%, transparent 100%); -webkit-mask-image: radial-gradient(circle 350px at var(--mouse-x, 50%) var(--mouse-y, 50%), black 0%, transparent 100%); }
   .stage-arena { width: 100%; height: 100%; position: relative; display: flex; align-items: center; justify-content: center; }
-  .stage-title { position: absolute; z-index: 1; font-size: 8rem; color: transparent; -webkit-text-stroke: 1px rgba(255,255,255,0.1); letter-spacing: 30px; text-transform: uppercase; pointer-events: none; }
+  .stage-bg { position: absolute; width: 100%; height: 100%; object-fit: cover; opacity: 0.3; filter: grayscale(100%) contrast(150%); z-index: 1; }
+  .stage-title { position: absolute; z-index: 2; font-size: 8rem; color: transparent; -webkit-text-stroke: 1px rgba(255,255,255,0.2); letter-spacing: 30px; text-transform: uppercase; pointer-events: none; }
   
-  /* Draggable Film Strips */
   .film-strip {
-    position: absolute; width: 250px; background: #050505; padding: 10px; padding-bottom: 30px;
-    border: 1px solid #222; box-shadow: 5px 5px 20px rgba(0,0,0,0.8);
+    position: absolute; width: 220px; background: #050505; padding: 10px; padding-bottom: 30px;
+    border: 1px solid #222; box-shadow: 5px 5px 20px rgba(0,0,0,0.9);
     transition: transform 0.2s; z-index: 5;
   }
   .film-strip:active { transform: scale(1.05); z-index: 100; border-color: var(--text-dim); }
-  .film-img { width: 100%; height: 150px; background: #111; overflow: hidden; filter: grayscale(100%); transition: 0.5s; }
-  .film-strip:hover .film-img { filter: grayscale(0%); }
-  .film-img img { width: 100%; height: 100%; object-fit: cover; opacity: 0.6; }
-  .film-caption { margin-top: 15px; font-size: 0.65rem; color: #666; letter-spacing: 2px; text-transform: uppercase; text-align: center; }
-  .film-holes { display: flex; justify-content: space-between; margin-bottom: 10px; }
-  .hole { width: 8px; height: 8px; background: #000; border-radius: 2px; }
+  .film-img { width: 100%; height: 140px; background: #111; overflow: hidden; position: relative; }
+  .film-img img { width: 100%; height: 100%; object-fit: cover; opacity: 0.6; transition: 0.5s; filter: grayscale(100%); }
+  .film-strip:hover .film-img img { filter: grayscale(0%); opacity: 1; }
+  .film-holes { display: flex; justify-content: space-between; margin-bottom: 8px; }
+  .hole { width: 6px; height: 6px; background: #000; border-radius: 2px; }
 
   /* =========================================
-     PAGE 3: YOUNG LIONS (PHYSICS CHAOS)
+     PAGE 3: YOUNG LIONS (1 VIDEO + 3 ẢNH)
      ========================================= */
   #page-3 { background: #020202; overflow: hidden; }
   .physics-arena { width: 100%; height: 100%; position: relative; }
-  .center-core { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; pointer-events: none; opacity: 0.2; transition: 1s; }
-  .physics-arena:hover .center-core { opacity: 0.8; }
-  .center-core h2 { font-size: 5rem; letter-spacing: -2px; }
   
-  /* Floating elements governed by JS Physics */
-  .phys-word {
-    position: absolute; font-family: 'Cormorant Garamond', serif; font-size: 2rem; color: #555;
-    font-style: italic; white-space: nowrap; user-select: none; transition: color 0.3s;
+  /* Khung Video Trung Tâm */
+  .video-core {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 500px; height: 300px; border: 1px solid var(--accent);
+    z-index: 5; box-shadow: 0 0 30px rgba(138,3,3,0.3);
   }
+  .video-core video { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; mix-blend-mode: screen; }
+  .video-core::after {
+    content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.2) 2px, rgba(0,0,0,0.2) 4px);
+    pointer-events: none;
+  }
+
+  .phys-word { position: absolute; font-family: 'Cormorant Garamond', serif; font-size: 2rem; color: #555; font-style: italic; white-space: nowrap; user-select: none; transition: color 0.3s; z-index: 10; }
   .phys-word:hover { color: var(--accent); text-shadow: 0 0 10px rgba(138,3,3,0.5); }
+  
+  /* Ảnh trôi nổi trong chaos */
+  .phys-img { position: absolute; width: 180px; height: 250px; z-index: 8; border: 1px solid #333; }
+  .phys-img img { width: 100%; height: 100%; object-fit: cover; opacity: 0.5; filter: grayscale(80%); transition: 0.3s; }
+  .phys-img:hover img { opacity: 1; filter: grayscale(0%); }
 
   /* =========================================
-     PAGE 4: QUẬY QUỌ (ADVANCED GRAFFITI)
+     PAGE 4: QUẬY QUỌ (3 POSTERS TRÊN TƯỜNG)
      ========================================= */
-  #page-4 { background: #050505; display: flex; }
+  #page-4 { background: #050505; display: flex; position: relative; }
   .brick-wall {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
     background: url('https://images.unsplash.com/photo-1518640467707-6811f4a6ab73?q=80&w=2000') center/cover;
     opacity: 0.3; filter: grayscale(100%); z-index: 1; pointer-events: none;
   }
+  
+  /* Posters dán trên tường (Nằm dưới lớp graffiti z-index 50) */
+  .poster { position: absolute; z-index: 10; background: #fff; padding: 5px; padding-bottom: 25px; box-shadow: 2px 2px 15px rgba(0,0,0,0.8); transform: rotate(Math.random() * 10 - 5deg); }
+  .poster img { width: 100%; height: 100%; object-fit: cover; filter: sepia(30%) grayscale(50%); }
+  .poster-1 { width: 250px; height: 350px; top: 15%; left: 45%; transform: rotate(-3deg); }
+  .poster-2 { width: 300px; height: 200px; top: 60%; left: 65%; transform: rotate(4deg); }
+  .poster-3 { width: 200px; height: 200px; top: 20%; right: 10%; transform: rotate(8deg); }
+
   .graf-ui {
     position: relative; z-index: 60; padding: 10vh 5vw; width: 35%; height: 100%;
-    border-right: 1px solid var(--border); background: linear-gradient(90deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%);
+    border-right: 1px solid var(--border); background: linear-gradient(90deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%); pointer-events: none; /* Let clicks pass through to canvas */
   }
+  .graf-ui-content { pointer-events: all; } /* Only UI elements are clickable */
   .graf-title { font-size: 4rem; margin-bottom: 20px; font-style: italic; }
   .graf-text { font-size: 0.85rem; line-height: 2.2; color: #888; margin-bottom: 40px; }
   
-  /* Tools */
   .tools-panel { display: flex; flex-direction: column; gap: 20px; }
   .tool-group { display: flex; align-items: center; gap: 15px; }
   .tool-label { font-size: 0.65rem; color: #666; letter-spacing: 3px; text-transform: uppercase; width: 80px; }
-  
   .color-btn { width: 25px; height: 25px; border-radius: 50%; border: 2px solid transparent; transition: 0.3s; }
   .color-btn.active { border-color: #fff; transform: scale(1.2); }
-  
   .size-slider { -webkit-appearance: none; width: 150px; height: 2px; background: #333; outline: none; }
   .size-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; background: #fff; border-radius: 50%; }
-
   .action-btn { background: transparent; border: 1px solid #444; color: #888; padding: 8px 15px; font-family: 'Space Mono'; font-size: 0.7rem; letter-spacing: 2px; transition: 0.3s; }
   .action-btn:hover { border-color: #fff; color: #fff; }
 
@@ -206,48 +199,6 @@
 <canvas id="ink-canvas"></canvas>
 <canvas id="graffiti-canvas"></canvas>
 <div id="transition-layer"><div class="glitch-flash" id="loader-line"></div></div>
-
-<div id="script-overlay">
-  <div class="script-board">
-    <div class="script-header">
-      <span>Director's Vision // Scene 01</span>
-      <span class="close-script interactable" onclick="closeScript()">[ CLOSE ]</span>
-    </div>
-    <table class="script-table">
-      <tr><th>STT</th><th>Mô tả Scene</th><th>Visual</th><th>Sound (SFX/BGM)</th><th>Timing</th></tr>
-      <tr>
-        <td>01</td>
-        <td>Ánh đèn spotlight chẻ dọc bóng tối. Khán giả chỉ thấy một bề mặt hoàn hảo.</td>
-        <td>Góc máy One-shot từ dưới lên. Chân dung nhân vật bị cắt xén. Ánh sáng Neon đỏ.</td>
-        <td>Tiếng thở dốc. Tiếng còi ù ù (Deaf metaphor). BGM: Drowning Love (piano cut).</td>
-        <td>00:00 - 00:15</td>
-      </tr>
-      <tr>
-        <td>02</td>
-        <td>Quá khứ của một thằng nhóc mua sắm qua lớp màn kính.</td>
-        <td>Collage art. Lớp kính vỡ. Xé toạc khung hình.</td>
-        <td>Tiếng thủy tinh vỡ. SFX: Tiếng xịt sơn (Graffiti).</td>
-        <td>00:15 - 00:40</td>
-      </tr>
-      <tr>
-        <td>03</td>
-        <td>Implicit Meaning: Không cố gắng kể lể. Cấu trúc bị bẻ gãy.</td>
-        <td>Glitch transition. Màn hình chớp tắt đen trắng.</td>
-        <td>Silence (Im lặng tuyệt đối).</td>
-        <td>00:40 - End</td>
-      </tr>
-    </table>
-    <div style="margin-top: 20px; font-size: 0.75rem; color: var(--accent); font-style: italic;">
-      *Note: Everything Everywhere All at Once - Đập vỡ cấu trúc kịch bản tuyến tính.
-    </div>
-  </div>
-</div>
-
-<div id="cinematic-intro">
-  <div class="intro-text" id="intro-1">i have all and then,</div>
-  <div class="intro-text" id="intro-2">most of you, some</div>
-  <div class="intro-text" id="intro-3" style="color: var(--accent); font-size: 2.5rem; margin-top: 20px;">and now, none of you.</div>
-</div>
 
 <audio id="bg-audio" loop><source src="drowninglove.mp3" type="audio/mpeg"></audio>
 
@@ -265,6 +216,24 @@
 
 <main>
   <section id="page-1" class="active">
+    
+    <div class="media-box p1-img-1 parallax-item interactable" data-speed="20">
+      [ ĐIỀN LINK ẢNH 1 TẠI ĐÂY ]
+      <img src="link_anh_1.jpg" alt="Abyss Memory 1">
+    </div>
+    <div class="media-box p1-img-2 parallax-item interactable" data-speed="-15">
+      [ ĐIỀN LINK ẢNH 2 TẠI ĐÂY ]
+      <img src="link_anh_2.jpg" alt="Abyss Memory 2">
+    </div>
+    <div class="media-box p1-img-3 parallax-item interactable" data-speed="10">
+      [ ĐIỀN LINK ẢNH 3 TẠI ĐÂY ]
+      <img src="link_anh_3.jpg" alt="Abyss Memory 3">
+    </div>
+    <div class="media-box p1-img-4 parallax-item interactable" data-speed="-25">
+      [ ĐIỀN LINK ẢNH 4 TẠI ĐÂY ]
+      <img src="link_anh_4.jpg" alt="Abyss Memory 4">
+    </div>
+
     <div class="abyss-box">
       <h1 class="abyss-title">vỏ ốc rỗng.</h1>
       <div class="abyss-text">
@@ -275,68 +244,87 @@
         Lại một lần nữa cơn triều xám xịt dâng lên từ dưới chân, nhấn chìm căn phòng.<br>
         Phải học cách thở dưới nước. <span class="redacted interactable">Sự thăng hoa sinh ra từ kiệt quệ.</span>
       </div>
-      <div class="glitch-btn interactable" onclick="openScript()">[ Xem kịch bản ẩn ]</div>
     </div>
   </section>
 
   <section id="page-2">
     <div class="stage-arena" id="stage-arena">
+      
+      <img src="link_anh_background_san_khau.jpg" alt="" class="stage-bg">
+      
       <div class="stage-title">TEDxFTU</div>
       
       <div class="film-strip interactable draggable" style="top: 15%; left: 20%;">
         <div class="film-holes"><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div></div>
-        <div class="film-img"><img src="link_anh_tedx_1.jpg" alt="Footage 1"></div>
-        <div class="film-caption">Scene 01: Spotlight</div>
-        <div class="film-holes" style="margin-top: 10px; margin-bottom:0;"><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div></div>
+        <div class="film-img"><img src="link_anh_ted_1.jpg" alt="Footage 1"></div>
+        <div class="film-holes" style="margin-top: 8px;"><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div></div>
       </div>
 
-      <div class="film-strip interactable draggable" style="top: 40%; left: 60%; transform: rotate(5deg);">
+      <div class="film-strip interactable draggable" style="top: 10%; right: 15%; transform: rotate(10deg);">
         <div class="film-holes"><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div></div>
-        <div class="film-img"><img src="link_anh_tedx_2.jpg" alt="Footage 2"></div>
-        <div class="film-caption">Scene 02: Blind Spot</div>
-        <div class="film-holes" style="margin-top: 10px; margin-bottom:0;"><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div></div>
+        <div class="film-img"><img src="link_anh_ted_2.jpg" alt="Footage 2"></div>
+        <div class="film-holes" style="margin-top: 8px;"><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div></div>
       </div>
-      
-      <div class="film-strip interactable draggable" style="top: 60%; left: 25%; transform: rotate(-8deg);">
+
+      <div class="film-strip interactable draggable" style="top: 55%; left: 55%; transform: rotate(-5deg);">
         <div class="film-holes"><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div></div>
-        <div class="film-img"><img src="link_anh_tedx_3.jpg" alt="Footage 3"></div>
-        <div class="film-caption">Scene 03: The Void</div>
-        <div class="film-holes" style="margin-top: 10px; margin-bottom:0;"><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div></div>
+        <div class="film-img"><img src="link_anh_ted_3.jpg" alt="Footage 3"></div>
+        <div class="film-holes" style="margin-top: 8px;"><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div></div>
+      </div>
+
+      <div class="film-strip interactable draggable" style="top: 60%; left: 15%; transform: rotate(8deg);">
+        <div class="film-holes"><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div></div>
+        <div class="film-img"><img src="link_anh_ted_4.jpg" alt="Footage 4"></div>
+        <div class="film-holes" style="margin-top: 8px;"><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div></div>
       </div>
     </div>
   </section>
 
   <section id="page-3">
     <div class="physics-arena" id="physics-arena">
-      <div class="center-core">
-        <h2>Vietnam Young Lions</h2>
-        <p style="color: var(--accent); letter-spacing: 5px; font-size: 0.8rem; text-transform: uppercase;">Sự ngớ ngẩn có mục đích</p>
+      
+      <div class="video-core interactable">
+        [ ĐIỀN LINK VIDEO TẠI ĐÂY - NHỚ THÊM THUỘC TÍNH AUTOPLAY LOOP MUTED NẾU CẦN ]
+        <video src="link_video_young_lions.mp4" autoplay loop muted playsinline></video>
       </div>
+
+      <div class="phys-img interactable" style="top: 20%; left: 15%;"><img src="link_anh_yl_1.jpg" alt="Chaos 1"></div>
+      <div class="phys-img interactable" style="bottom: 20%; right: 20%; width: 220px; height: 150px;"><img src="link_anh_yl_2.jpg" alt="Chaos 2"></div>
+      <div class="phys-img interactable" style="top: 15%; right: 10%; width: 150px; height: 150px; border-radius: 50%; overflow: hidden;"><img src="link_anh_yl_3.jpg" alt="Chaos 3"></div>
+
       </div>
   </section>
 
   <section id="page-4">
     <div class="brick-wall"></div>
+    
+    <div class="poster poster-1"><img src="link_anh_remake_1.jpg" alt="Poster 1"></div>
+    <div class="poster poster-2"><img src="link_anh_remake_2.jpg" alt="Poster 2"></div>
+    <div class="poster poster-3"><img src="link_anh_remake_3.jpg" alt="Poster 3"></div>
+
     <div class="graf-ui">
-      <h1 class="graf-title">Remake.</h1>
-      <div class="graf-text">
-        Xé toạc vết thương và lấp đầy bằng những dải màu ngông cuồng nhất. Đừng sợ phá vỡ cấu trúc.
-      </div>
-      
-      <div class="tools-panel">
-        <div class="tool-group">
-          <div class="tool-label">Colors</div>
-          <div class="color-btn interactable active" style="background: var(--neon-red);" onclick="setColor('#ff1e1e', this)"></div>
-          <div class="color-btn interactable" style="background: #ffffff;" onclick="setColor('#ffffff', this)"></div>
-          <div class="color-btn interactable" style="background: var(--neon-cyan);" onclick="setColor('#00f0ff', this)"></div>
-          <div class="color-btn interactable" style="background: #111111;" onclick="setColor('#111111', this)"></div>
+      <div class="graf-ui-content">
+        <h1 class="graf-title">Remake.</h1>
+        <div class="graf-text">
+          Xé toạc vết thương và lấp đầy bằng những dải màu ngông cuồng nhất. <br>
+          (Bấm giữ chuột để vẽ lên bóng tối và những bức ảnh cũ).
         </div>
-        <div class="tool-group">
-          <div class="tool-label">Brush Size</div>
-          <input type="range" class="size-slider interactable" id="brush-size" min="10" max="60" value="30">
-        </div>
-        <div class="tool-group" style="margin-top: 10px;">
-          <button class="action-btn interactable" onclick="clearGraffiti()">[ Xóa Tường ]</button>
+        
+        <div class="tools-panel">
+          <div class="tool-group">
+            <div class="tool-label">Colors</div>
+            <div class="color-btn interactable active" style="background: var(--neon-red);" onclick="setColor('#ff1e1e', this)"></div>
+            <div class="color-btn interactable" style="background: #ffffff;" onclick="setColor('#ffffff', this)"></div>
+            <div class="color-btn interactable" style="background: var(--neon-cyan);" onclick="setColor('#00f0ff', this)"></div>
+            <div class="color-btn interactable" style="background: #111111;" onclick="setColor('#111111', this)"></div>
+          </div>
+          <div class="tool-group">
+            <div class="tool-label">Brush Size</div>
+            <input type="range" class="size-slider interactable" id="brush-size" min="10" max="80" value="40">
+          </div>
+          <div class="tool-group" style="margin-top: 10px;">
+            <button class="action-btn interactable" onclick="clearGraffiti()">[ Xóa Tường ]</button>
+          </div>
         </div>
       </div>
     </div>
@@ -352,33 +340,13 @@
   document.addEventListener('mousemove', (e) => {
     cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px';
   });
-
   document.querySelectorAll('.interactable').forEach(el => {
     el.addEventListener('mouseenter', () => cursor.classList.add('hovering'));
     el.addEventListener('mouseleave', () => cursor.classList.remove('hovering'));
   });
 
   /* =========================================
-     2. CINEMATIC INTRO SEQUENCE
-     ========================================= */
-  const introBlock = document.getElementById('cinematic-intro');
-  const t1 = document.getElementById('intro-1');
-  const t2 = document.getElementById('intro-2');
-  const t3 = document.getElementById('intro-3');
-
-  window.onload = () => {
-    setTimeout(() => t1.classList.add('show'), 500);
-    setTimeout(() => t2.classList.add('show'), 2000);
-    setTimeout(() => t3.classList.add('show'), 4000);
-    
-    setTimeout(() => {
-      introBlock.style.opacity = '0';
-      setTimeout(() => { introBlock.style.display = 'none'; }, 1500);
-    }, 7000); // Intro kéo dài 7s
-  };
-
-  /* =========================================
-     3. AUDIO CONTROLS
+     2. AUDIO CONTROLS
      ========================================= */
   const audio = document.getElementById('bg-audio');
   const recordDisc = document.getElementById('record-disc');
@@ -392,7 +360,7 @@
   }
 
   /* =========================================
-     4. PAGE TRANSITION & SCRIPT OVERLAY
+     3. PAGE TRANSITION
      ========================================= */
   const loader = document.getElementById('transition-layer');
   const loaderLine = document.getElementById('loader-line');
@@ -401,7 +369,6 @@
   function switchPage(pageId) {
     loader.style.pointerEvents = 'all'; loader.style.opacity = '1'; loaderLine.style.transform = 'scaleX(1)';
     
-    // Toggle Graffiti Mode pointer events
     if(pageId === 'page-4') { grafCanvas.style.pointerEvents = 'all'; cursor.classList.add('spray'); } 
     else { grafCanvas.style.pointerEvents = 'none'; cursor.classList.remove('spray'); }
 
@@ -414,18 +381,14 @@
     }, 800);
   }
 
-  const scriptOverlay = document.getElementById('script-overlay');
-  function openScript() { scriptOverlay.classList.add('active'); }
-  function closeScript() { scriptOverlay.classList.remove('active'); }
-
   /* =========================================
-     5. PAGE 1: INK & ASHES CANVAS
+     4. PAGE 1: INK & ASHES CANVAS + PARALLAX
      ========================================= */
   const inkCanvas = document.getElementById('ink-canvas');
   const iCtx = inkCanvas.getContext('2d');
   inkCanvas.width = window.innerWidth; inkCanvas.height = window.innerHeight;
-  
   let ashes = [];
+  
   document.addEventListener('mousemove', (e) => {
     if(!document.getElementById('page-1').classList.contains('active')) return;
     if(Math.random() > 0.5) {
@@ -447,8 +410,18 @@
   }
   renderAshes();
 
+  const pItems = document.querySelectorAll('.parallax-item');
+  document.addEventListener('mousemove', (e) => {
+    if (!document.getElementById('page-1').classList.contains('active')) return;
+    let x = (window.innerWidth - e.pageX * 2) / 100; let y = (window.innerHeight - e.pageY * 2) / 100;
+    pItems.forEach(item => {
+      let speed = item.getAttribute('data-speed');
+      item.style.transform = `translate3d(${x * speed}px, ${y * speed}px, 0)`;
+    });
+  });
+
   /* =========================================
-     6. PAGE 2: DRAGGABLE FILM STRIPS & SPOTLIGHT
+     5. PAGE 2: DRAGGABLE FILM STRIPS & SPOTLIGHT
      ========================================= */
   const page2 = document.getElementById('page-2');
   document.addEventListener('mousemove', (e) => {
@@ -459,7 +432,6 @@
 
   const draggables = document.querySelectorAll('.draggable');
   let activeDrag = null, oX = 0, oY = 0;
-
   draggables.forEach(item => {
     item.addEventListener('mousedown', (e) => {
       activeDrag = item; oX = e.clientX - item.getBoundingClientRect().left; oY = e.clientY - item.getBoundingClientRect().top;
@@ -473,7 +445,7 @@
   document.addEventListener('mouseup', () => { activeDrag = null; });
 
   /* =========================================
-     7. PAGE 3: BOUNCING PHYSICS WORDS
+     6. PAGE 3: BOUNCING PHYSICS WORDS
      ========================================= */
   const arena = document.getElementById('physics-arena');
   const wordList = [
@@ -488,32 +460,26 @@
     el.className = 'phys-word interactable'; el.innerText = text;
     arena.appendChild(el);
     physObjects.push({
-      el: el, x: Math.random() * (window.innerWidth - 200), y: Math.random() * (window.innerHeight - 100),
+      el: el, x: Math.random() * (window.innerWidth - 300), y: Math.random() * (window.innerHeight - 100),
       vx: (Math.random() - 0.5) * 2, vy: (Math.random() - 0.5) * 2, width: el.offsetWidth, height: el.offsetHeight
     });
   });
 
-  // Repel interaction with mouse
   let mouseX = 0, mouseY = 0;
   document.addEventListener('mousemove', e => { mouseX = e.clientX; mouseY = e.clientY; });
 
   function runPhysics() {
     if(document.getElementById('page-3').classList.contains('active')) {
       physObjects.forEach(obj => {
-        // Apply velocity
         obj.x += obj.vx; obj.y += obj.vy;
-        // Bounce off walls
         if(obj.x <= 0 || obj.x + obj.width >= window.innerWidth) obj.vx *= -1;
         if(obj.y <= 0 || obj.y + obj.height >= window.innerHeight) obj.vy *= -1;
         
-        // Mouse repel effect
         let dx = obj.x + obj.width/2 - mouseX; let dy = obj.y + obj.height/2 - mouseY;
         let dist = Math.sqrt(dx*dx + dy*dy);
         if(dist < 150) { obj.vx += dx * 0.005; obj.vy += dy * 0.005; }
         
-        // Friction to prevent infinite speeding
         obj.vx *= 0.99; obj.vy *= 0.99;
-        // Min speed
         if(Math.abs(obj.vx) < 0.5) obj.vx = obj.vx > 0 ? 0.5 : -0.5;
         if(Math.abs(obj.vy) < 0.5) obj.vy = obj.vy > 0 ? 0.5 : -0.5;
 
@@ -525,7 +491,7 @@
   runPhysics();
 
   /* =========================================
-     8. PAGE 4: ADVANCED GRAFFITI
+     7. PAGE 4: ADVANCED GRAFFITI
      ========================================= */
   const gCtx = grafCanvas.getContext('2d');
   grafCanvas.width = window.innerWidth; grafCanvas.height = window.innerHeight;
@@ -549,24 +515,19 @@
     if (!isDrawing) return;
     
     let radius = parseInt(brushSizeInput.value);
-    let density = radius * 1.5; // Mật độ hạt tùy theo độ to của cọ
-    
+    let density = radius * 2; 
     gCtx.fillStyle = paintColor;
 
     for (let i = 0; i < density; i++) {
       let offsetX = (Math.random() * 2 - 1) * radius;
       let offsetY = (Math.random() * 2 - 1) * radius;
-      
-      // Spray pattern: Tập trung ở tâm, loãng ở viền
       if (offsetX * offsetX + offsetY * offsetY <= radius * radius) {
         gCtx.fillRect(e.clientX + offsetX, e.clientY + offsetY, Math.random() * 3, Math.random() * 3);
       }
     }
     
-    // Thỉnh thoảng tạo giọt nhiễu giỏ xuống (Drip effect)
-    if(Math.random() > 0.9) {
-      let dripLength = Math.random() * 50 + 20;
-      gCtx.fillStyle = paintColor;
+    if(Math.random() > 0.85) {
+      let dripLength = Math.random() * 60 + 20;
       gCtx.fillRect(e.clientX, e.clientY, 2, dripLength);
     }
   });
