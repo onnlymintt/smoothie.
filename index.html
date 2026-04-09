@@ -333,20 +333,41 @@
     }
   });
 
-  function animateSinking() {
+function animateSinking() {
     if(currentPage === 0) {
       s1Ctx.clearRect(0, 0, s1Canvas.width, s1Canvas.height);
-      // Vẽ bọt khí nổi lên
+      
+      // 1. Bọt khí chậm và đặc hơn -> cảm giác dưới nước sâu
       for (let i = 0; i < bubbles.length; i++) {
         let b = bubbles[i];
         s1Ctx.beginPath(); s1Ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
-        s1Ctx.fillStyle = `rgba(255, 255, 255, ${b.opacity})`; s1Ctx.fill();
-        b.y -= b.speedY; b.opacity -= 0.01;
+        // Bọt khí đổi sang màu xanh xám lạnh lẽo
+        s1Ctx.fillStyle = `rgba(180, 200, 220, ${b.opacity})`; 
+        s1Ctx.fill();
+        b.y -= b.speedY * 0.4; // Nổi lên rất chậm, ngột ngạt
+        b.opacity -= 0.003;
         if (b.opacity <= 0) bubbles.splice(i, 1);
       }
-      // Hiệu ứng lực kéo chìm ảnh (Dựa vào vị trí chuột)
-      let dragOffset = (mouseY / window.innerHeight) * 30; // Kéo xuống tối đa 30px
-      sinkingItems.forEach(item => { item.style.transform = `translateY(${dragOffset}px)`; });
+
+      // 2. Hiệu ứng kéo chìm cực mạnh (Heavy-duty Sinking)
+      // Tỷ lệ độ sâu dựa trên chuột (từ 0 đến 1)
+      let depthRatio = mouseY / window.innerHeight; 
+      
+      let dragOffset = depthRatio * 150; // Bị kéo rịt xuống 150px
+      let scaleDown = 1 - (depthRatio * 0.15); // Teo nhỏ lại do áp suất
+      let blurEffect = depthRatio * 5; // Nhòe đi khi chìm sâu
+      let darkness = 1 - (depthRatio * 0.6); // Tối sầm lại
+
+      sinkingItems.forEach((item, index) => {
+        // Ảnh 1 và Ảnh 2 chìm với tốc độ khác nhau tạo cảm giác lơ lửng 3D (Parallax)
+        let weight = index === 0 ? 1 : 1.3; 
+        
+        item.style.transform = `translateY(${dragOffset * weight}px) scale(${scaleDown})`;
+        item.style.filter = `blur(${blurEffect}px) brightness(${darkness})`;
+      });
+
+      // 3. Background đặc quánh lại khi chuột kéo xuống
+      document.getElementById('s1').style.background = `linear-gradient(180deg, #020202 0%, rgba(1, 10, 18, ${0.5 + depthRatio}) 100%)`;
     }
     requestAnimationFrame(animateSinking);
   }
