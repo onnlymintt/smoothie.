@@ -3,299 +3,400 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title> do you hear my silent voice </title>
+<title>Vực Thẳm - Minh Thy</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Space+Mono:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #020202;
-    --text: #d0d0d0;
-    --accent: #ff3333;
-    --gold: #d4af37;
-    --dim: #1a1a1a;
+    --bg: #050505;
+    --text-main: #d4d4d4;
+    --text-dim: #666666;
+    /* Một sắc hồng neon ma mị, sắc sảo nhưng không chói */
+    --accent: #ff2a75; 
+    --border: #1f1f1f;
   }
 
-  * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+  * { box-sizing: border-box; }
 
   body, html {
     margin: 0; padding: 0;
     background-color: var(--bg);
-    color: var(--text);
-    font-family: 'Courier New', Courier, monospace;
+    color: var(--text-main);
+    font-family: 'Space Mono', monospace; /* Phông chữ thô ráp kiểu máy đánh chữ */
     overflow: hidden;
-    cursor: none;
+    cursor: crosshair;
   }
 
-  /* CUSTOM CURSOR */
-  #cursor {
-    position: fixed; width: 6px; height: 6px; background: #fff;
-    border-radius: 50%; pointer-events: none; z-index: 100000;
-    mix-blend-mode: difference; transition: transform 0.2s;
-  }
-  #cursor-follower {
-    position: fixed; width: 30px; height: 30px; border: 1px solid rgba(255,255,255,0.2);
-    border-radius: 50%; pointer-events: none; z-index: 99999;
-    transition: transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1);
-  }
-
-  /* AUDIO VISUALIZER (NHỊP THỞ CỦA WEB) */
-  .visualizer {
-    position: fixed; bottom: 0; left: 0; width: 100%; height: 5px;
-    display: flex; align-items: flex-end; gap: 2px; z-index: 1000;
-    padding: 0 80px; opacity: 0.3;
-  }
-  .vis-bar { width: 3px; background: var(--text); height: 2px; transition: height 0.1s; }
-
-  /* TRANSITION LAYER */
-  #transition-mask {
+  /* LỚP FILM NOISE ẢO ẢNH */
+  .noise-overlay {
     position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-    background: #000; z-index: 9999; pointer-events: none;
-    opacity: 0; transition: opacity 1s;
+    background: url('https://www.transparenttextures.com/patterns/stardust.png');
+    opacity: 0.3; z-index: 99998; pointer-events: none;
   }
 
-  /* NAVIGATION */
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--text-dim); }
+  ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+  /* MÀNG CHẮN CHUYỂN TRANG */
+  #transition-layer {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background: var(--bg); z-index: 99999;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .loading-line {
+    width: 0; height: 1px; background: var(--accent);
+    transition: width 0.6s cubic-bezier(0.7, 0, 0.3, 1);
+    box-shadow: 0 0 10px var(--accent);
+  }
+
+  /* MUSIC PLAYER - ĐĨA THAN XOAY */
+  .music-player {
+    position: fixed; bottom: 40px; right: 40px; z-index: 10000;
+    display: flex; align-items: center; gap: 15px;
+    cursor: pointer;
+  }
+  .record {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: radial-gradient(circle, #111 30%, #333 40%, #111 60%, #333 80%, #000 100%);
+    border: 2px solid var(--border);
+    animation: spin 4s linear infinite;
+    animation-play-state: paused;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .record::after {
+    content: ''; width: 10px; height: 10px; border-radius: 50%; background: var(--accent);
+  }
+  .record.playing { animation-play-state: running; border-color: var(--accent); }
+  @keyframes spin { 100% { transform: rotate(360deg); } }
+  .track-info {
+    font-size: 0.7rem; letter-spacing: 2px; color: var(--text-dim);
+    text-transform: uppercase; transition: color 0.3s;
+  }
+  .music-player:hover .track-info { color: var(--accent); }
+
+  /* THANH ĐIỀU HƯỚNG */
   nav {
     position: fixed; top: 50vh; left: 30px; transform: translateY(-50%);
     display: flex; flex-direction: column; gap: 40px; z-index: 10000;
   }
   nav a {
-    color: #444; text-decoration: none; font-size: 0.75rem;
+    color: var(--text-dim); text-decoration: none; font-size: 0.8rem;
     letter-spacing: 4px; text-transform: lowercase; cursor: pointer;
     writing-mode: vertical-rl; transform: rotate(180deg);
-    transition: all 0.5s ease;
+    transition: all 0.4s ease;
   }
-  nav a.active, nav a:hover { color: #fff; letter-spacing: 7px; }
+  nav a.active, nav a:hover {
+    color: var(--accent); letter-spacing: 8px; 
+    text-shadow: 0 0 8px rgba(255, 42, 117, 0.4);
+  }
 
-  /* MAIN STRUCTURE */
   main { position: relative; width: 100vw; height: 100vh; padding-left: 100px; }
+  
   section {
     position: absolute; top: 0; left: 100px; width: calc(100vw - 100px); height: 100vh;
-    opacity: 0; visibility: hidden; transition: opacity 1.2s;
+    opacity: 0; visibility: hidden; transition: opacity 1.2s ease;
   }
   section.active { opacity: 1; visibility: visible; z-index: 10; }
 
-  /* TYPOGRAPHY */
-  .editorial-text { max-width: 550px; line-height: 2.2; font-size: 1rem; color: #888; }
-  .editorial-text h1 { font-size: 3.5rem; color: #fff; font-weight: normal; margin-bottom: 40px; }
-  .highlight { color: var(--accent); position: relative; cursor: help; }
-  .highlight:hover::after {
-    content: attr(data-sub); position: absolute; left: 0; top: 100%;
-    width: 200px; font-size: 0.7rem; color: #555; line-height: 1.4;
-  }
-
-  /* MEDIA BOXES */
+  /* CHUNG CHO ẢNH */
   .img-box {
-    background: #050505; border: 1px solid var(--dim);
+    background: #080808; border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-dim); font-size: 0.7rem; letter-spacing: 2px;
     position: relative; overflow: hidden;
   }
-  .img-box video, .img-box img {
-    width: 100%; height: 100%; object-fit: cover; opacity: 0.3;
-    filter: grayscale(100%); transition: all 1s;
+  .img-box img, .img-box video {
+    width: 100%; height: 100%; object-fit: cover; opacity: 0.4;
+    transition: opacity 1s, filter 1s, transform 2s; filter: grayscale(100%) contrast(120%);
   }
-  .img-box:hover video, .img-box:hover img { opacity: 0.8; filter: grayscale(0%); }
+  .img-box:hover img, .img-box:hover video { 
+    opacity: 1; filter: grayscale(20%) contrast(100%); transform: scale(1.05);
+  }
 
-  /* ==========================================================
-     PAGE 1: BẢN NGÃ (PHYSICS TEXT)
-     ========================================================== */
-  #page-1 { display: flex; align-items: center; justify-content: space-around; }
-  .p1-content { position: relative; z-index: 2; }
-  .p1-bg-elements { position: absolute; width: 100%; height: 100%; top: 0; left: 0; z-index: 1; }
-  .floating-img { position: absolute; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+  /* --- TRANG 1 --- */
+  #page-1 { display: flex; }
+  .p1-text-zone { width: 45%; height: 100%; padding: 10vh 5vw 10vh 0; overflow-y: auto; }
+  .p1-visual-zone { width: 55%; height: 100%; position: relative; overflow: hidden; }
+  
+  /* Đưa font Serif vào các tiêu đề để tạo sự sang trọng, có chiều sâu */
+  .title-glitch { 
+    font-family: 'Cormorant Garamond', serif; 
+    font-size: 4rem; font-style: italic; margin-bottom: 40px; color: #fff;
+  }
+  .deep-paragraph { font-size: 0.95rem; line-height: 2.2; color: #999; margin-bottom: 30px; }
+  .deep-paragraph highlight { color: var(--accent); background: rgba(255,42,117,0.1); padding: 0 5px; }
 
-  /* ==========================================================
-     PAGE 2: TEDx (DISTORTION SPOTLIGHT)
-     ========================================================== */
+  /* Chữ ký Minh Thy */
+  .signature {
+    font-family: 'Cormorant Garamond', serif; font-size: 2.5rem; font-style: italic;
+    color: var(--accent); margin-top: 50px; opacity: 0.8;
+    border-top: 1px solid var(--border); padding-top: 20px; width: max-content;
+  }
+
+  .parallax-item { position: absolute; transition: transform 0.1s linear; }
+
+  /* --- TRANG 2 --- */
   #page-2 {
-    background: #000;
-    mask-image: radial-gradient(circle 300px at var(--mx, 50%) var(--my, 50%), black 0%, transparent 100%);
-    -webkit-mask-image: radial-gradient(circle 300px at var(--mx, 50%) var(--my, 50%), black 0%, transparent 100%);
+    background: #020202;
+    mask-image: radial-gradient(circle 400px at var(--mouse-x, 50%) var(--mouse-y, 50%), black 0%, transparent 100%);
+    -webkit-mask-image: radial-gradient(circle 400px at var(--mouse-x, 50%) var(--mouse-y, 50%), black 0%, transparent 100%);
   }
-  .spotlight-grid {
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; padding: 100px;
+  .spotlight-wrapper { width: 100%; height: 100%; overflow-y: auto; padding: 10vh 5vw; }
+  .masonry-grid { column-count: 3; column-gap: 40px; max-width: 1200px; margin: 0 auto; }
+  .masonry-item { break-inside: avoid; margin-bottom: 40px; }
+  .thought-block {
+    padding: 30px; border-left: 1px solid var(--border);
+    font-size: 0.9rem; line-height: 2; color: #888; transition: border-color 0.4s;
   }
+  .thought-block:hover { border-left-color: var(--accent); color: #ccc; }
 
-  /* ==========================================================
-     PAGE 3: YOUNG LIONS (THE PULSE)
-     ========================================================== */
-  #page-3 { display: flex; align-items: center; overflow-x: auto; scrollbar-width: none; }
-  #page-3::-webkit-scrollbar { display: none; }
-  .pulse-line {
-    position: fixed; left: 100px; width: 100%; height: 1px; background: var(--accent);
-    top: 50%; opacity: 0.1; pointer-events: none;
-  }
-  .h-container { display: flex; gap: 150px; padding: 0 10vw; align-items: center; }
+  /* --- TRANG 3 --- */
+  #page-3 { display: flex; align-items: center; background: #030303; }
+  .h-scroll-zone { display: flex; gap: 8vw; padding: 0 15vw; height: 70vh; align-items: center; overflow-x: auto; width: 100%; }
+  .h-scroll-zone::-webkit-scrollbar { display: none; }
+  
+  .h-text-pillar { min-width: 400px; display: flex; flex-direction: column; justify-content: center; }
+  .h-text-pillar h2 { font-family: 'Cormorant Garamond', serif; font-size: 3.5rem; font-style: italic; margin-bottom: 20px; color: #fff; }
+  .h-text-pillar p { font-size: 0.95rem; line-height: 2; color: #777; }
+  .h-img-pillar { min-width: 450px; height: 100%; }
 
-  /* ==========================================================
-     PAGE 4: REMAKE (KINTSUGI HEALING)
-     ========================================================== */
-  #page-4 { display: flex; align-items: center; justify-content: center; gap: 100px; }
-  .kintsugi-box { width: 450px; height: 600px; position: relative; cursor: pointer; }
+  /* --- TRANG 4 --- */
+  #page-4 { display: flex; align-items: center; justify-content: space-between; padding-right: 5vw; }
+  .heal-visual { width: 50%; display: flex; justify-content: center; }
+  .shard-container { width: 350px; height: 450px; position: relative; cursor: crosshair; }
+  .shard-grid { width: 100%; height: 100%; position: absolute; top: 0; left: 0; display: grid; grid-template-columns: repeat(6, 1fr); grid-template-rows: repeat(6, 1fr); }
   .shard {
-    position: absolute; background-image: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2000');
-    background-size: 450px 600px; border: 0.5px solid rgba(212, 175, 55, 0.2); /* Đường viền vàng mỏng */
-    transition: all 1.5s cubic-bezier(0.19, 1, 0.22, 1);
+    background-image: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2000');
+    background-size: 350px 450px; transition: all 1.2s cubic-bezier(0.2, 0.8, 0.2, 1); filter: grayscale(50%);
   }
+  .heal-diary { width: 45%; height: 70vh; overflow-y: auto; border-left: 1px solid var(--border); padding-left: 50px; }
+  .diary-date { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; font-style: italic; color: var(--accent); margin-bottom: 15px; }
+  .diary-entry { font-size: 0.9rem; line-height: 2.2; color: #888; margin-bottom: 60px; }
+
 </style>
 </head>
 <body>
 
-<div id="cursor"></div>
-<div id="cursor-follower"></div>
-<div id="transition-mask"></div>
+<div class="noise-overlay"></div>
+<div id="transition-layer"><div class="loading-line" id="loader-line"></div></div>
 
-<div class="visualizer" id="visualizer"></div>
+<audio id="bg-audio" loop>
+  <source src="drowninglove.mp3" type="audio/mpeg">
+</audio>
+<div class="music-player" onclick="toggleAudio()">
+  <div class="track-info" id="audio-text">track: silence</div>
+  <div class="record" id="record-disc"></div>
+</div>
 
 <nav>
   <a onclick="switchPage('page-1')" id="nav-1" class="active">bản_ngã</a>
   <a onclick="switchPage('page-2')" id="nav-2">điểm_mù</a>
   <a onclick="switchPage('page-3')" id="nav-3">ép_xác</a>
-  <a onclick="switchPage('page-4')" id="nav-4">hàn_gắn</a>
+  <a onclick="switchPage('page-4')" id="nav-4">nhật_ký</a>
 </nav>
-
-<audio id="bg-audio" loop><source src="" type="audio/mpeg"></audio>
 
 <main>
   <section id="page-1" class="active">
-    <div class="p1-content editorial-text">
-      <h1>khoảng rỗng.</h1>
-      <p>Đèn đường chao nghiêng. <span class="highlight" data-sub="như cách Nhật từng kéo em lên">Vệt mật ong sóng sánh.</span></p>
-      <p>Ngân thấy mình rỗng tuếch như một chiếc vỏ ốc. Bầu không khí đặc sệt tràn vào phổi sau mỗi nhịp thở hụt.</p>
-      <p>Cái phao cứu sinh ba năm trước chỉ còn là mẩu gỗ mục. Ngân không vùng vẫy, để mình rơi tự do xuống đáy sâu mười mét nước.</p>
-    </div>
-    <div class="p1-bg-elements">
-      <div class="img-box floating-img" style="width: 300px; height: 400px; top: 15%; right: 10%;" data-depth="0.2">
-        <video autoplay loop muted playsinline><source src="v1.mp4" type="video/mp4"></video>
+    <div class="p1-text-zone">
+      <h1 class="title-glitch">vỏ ốc rỗng.</h1>
+      
+      <div class="deep-paragraph">
+        Đèn đường chao nghiêng, đổ những vệt mật ong sóng sánh xuống mặt lộ. Ngân bước đi giữa những quầng sáng neon rực rỡ, tiếng giày gõ đều như nhịp phim cũ. 
       </div>
-      <div class="img-box floating-img" style="width: 200px; height: 200px; bottom: 10%; right: 25%;" data-depth="0.5">
-        <img src="a1.jpg" alt="">
+      
+      <div class="deep-paragraph">
+        Ánh nhìn anh sâu thẳm, phong kín cả thời gian. Ngân bám vào anh như nhành dây leo ký sinh, ủy thác hết nhựa sống vào cái điểm tựa ngỡ là vĩnh cửu ấy. <highlight>Cô chỉ sợ nếu mình chớp mắt, mọi thứ sẽ vỡ vụn.</highlight>
+      </div>
+      
+      <div class="deep-paragraph">
+        Đùng. Tiếng sấm rạch ngang trời. Bóng tối ùa vào đặc quánh. 00:00. Ngân tỉnh giấc. Lại một lần nữa cơn triều xanh xám dâng lên từ dưới chân, nhấn chìm căn phòng.
+      </div>
+      
+      <div class="deep-paragraph" style="border-left: 2px solid var(--accent); padding-left: 20px;">
+        Giữa bóng tối ướt sũng và trống hoác, viên thuốc là chiếc phao còn sót lại. <br>
+        Ngân biết mình phải học cách thở dưới nước. Tuyệt đối không được quên thuốc. Để không phải một lần nữa, chìm, chìm rất sâu.
+      </div>
+
+      <div class="signature">Minh Thy.</div>
+    </div>
+
+    <div class="p1-visual-zone" id="parallax-area">
+      <div class="img-box parallax-item" data-speed="30" style="width: 320px; height: 450px; top: 15%; right: 10%;">
+        [ vis: chân dung vỡ ]
+        <img src="" alt="">
+      </div>
+      <div class="img-box parallax-item" data-speed="-15" style="width: 220px; height: 280px; bottom: 10%; left: 15%;">
+        [ vis: mảnh ghép ]
+        <img src="" alt="">
       </div>
     </div>
   </section>
 
   <section id="page-2">
-    <div class="spotlight-grid">
-      <div class="img-box" style="height: 300px;"><img src="a2.jpg" alt=""></div>
-      <div class="editorial-text" style="grid-column: span 2;">
-        <h2>ánh sáng giả.</h2>
-        <p>Sân khấu rực rỡ, những luồng sáng đan chéo nhau đâm thủng màn đêm. Một không gian để nhào nặn khối óc.</p>
+    <div class="spotlight-wrapper">
+      <div class="masonry-grid">
+        <div class="masonry-item thought-block">Sân khấu rực rỡ, những luồng sáng đan chéo nhau đâm thủng màn đêm...</div>
+        <div class="masonry-item img-box" style="height: 400px;">ảnh sự kiện 1</div>
+        <div class="masonry-item thought-block" style="border-color: var(--accent);">Đứng giữa trung tâm của sự chú ý nhưng đôi khi lại cảm thấy mình tàng hình...</div>
+        <div class="masonry-item img-box" style="height: 300px;">ảnh hậu trường 2</div>
       </div>
-      <div class="editorial-text">
-        <p>Vỏ bọc càng hoàn hảo, bên trong càng trống rỗng. Chỉ sợ chớp mắt mọi thứ sẽ vỡ vụn.</p>
-      </div>
-      <div class="img-box" style="height: 400px; grid-column: span 2;"><video autoplay loop muted playsinline><source src="v2.mp4" type="video/mp4"></video></div>
     </div>
   </section>
 
   <section id="page-3">
-    <div class="pulse-line" id="pulse"></div>
-    <div class="h-container">
-      <div class="editorial-text" style="min-width: 500px;">
-        <h1>ép xác.</h1>
-        <p>Những vệt sáng neon rực rỡ lướt qua. Trí tuệ bị ép đến giới hạn cuối cùng trong những đêm trắng.</p>
-        <p><span class="highlight" data-sub="20mg Fluoxetine">Vị đắng buốt sắc</span> chạy dọc thực quản. Sự thăng hoa sinh ra từ trạng thái kiệt quệ.</p>
-      </div>
-      <div class="img-box" style="min-width: 600px; height: 400px;"><video autoplay loop muted playsinline><source src="v3.mp4" type="video/mp4"></video></div>
-      <div class="editorial-text" style="min-width: 400px;">
-        <p>Ngân nằm đó, thấy mình rỗng tuếch. Cơn triều xanh xám dâng lên từ dưới chân, nhấn chìm căn phòng.</p>
-      </div>
+    <div class="h-scroll-zone" id="h-scroll">
+      <div class="h-text-pillar"><h2>ép xác.</h2><p>Những vệt sáng neon rực rỡ lướt qua...</p></div>
+      <div class="img-box h-img-pillar glitch-item">ảnh chiến dịch 1</div>
+      <div class="h-text-pillar"><h2>vị đắng.</h2><p>Quờ quạng trên bàn. Vội lấy vỉ bạc...</p></div>
+      <div class="img-box h-img-pillar glitch-item">ảnh chiến dịch 2</div>
     </div>
   </section>
 
   <section id="page-4">
-    <div class="kintsugi-box" id="kintsugi-box" onmouseenter="heal()" onmouseleave="shatter()">
+    <div class="heal-visual">
+      <div class="shard-container" id="heal-box" onmouseenter="healImage()" onmouseleave="shatterImage()">
+        <div class="shard-grid" id="shard-grid"></div>
+        <div style="position: absolute; bottom: -50px; width: 100%; text-align: center; color: var(--text-dim); font-size: 0.7rem; letter-spacing: 3px;">
+          [ lướt qua để hàn gắn ]
+        </div>
       </div>
-    <div class="editorial-text">
-      <h1>hàn gắn.</h1>
-      <p>Ngày cẩn trọng kéo bản thân lên từ vực sâu. Gắn kết lại những mảnh vỡ. Không phải để trở về hình dáng cũ.</p>
-      <p><span class="highlight" data-sub="Vết sẹo vàng lấp lánh">Kintsugi tâm hồn.</span> Cấu trúc mới vững chãi hơn, chấp nhận tì vết.</p>
-      <p>Vết sẹo vẫn ở đó, nhưng nó không còn rỉ máu nữa.</p>
+    </div>
+    <div class="heal-diary">
+      <div class="diary-date">01.03 / TÁI TẠO</div>
+      <div class="diary-entry">21.2, tình cờ thật. 3 năm trước, trên vệ đường...</div>
+      <div class="diary-date">15.03 / MẢNH VỠ</div>
+      <div class="diary-entry">Gắn kết lại những mảnh vỡ. Không phải để trở về hình dáng cũ...</div>
     </div>
   </section>
+
 </main>
 
 <script>
-  // CURSOR LOGIC
-  const cursor = document.getElementById('cursor');
-  const follower = document.getElementById('cursor-follower');
-  document.addEventListener('mousemove', (e) => {
-    cursor.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
-    follower.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
-    // Update spotlight
-    document.getElementById('page-2').style.setProperty('--mx', (e.clientX / window.innerWidth * 100) + '%');
-    document.getElementById('page-2').style.setProperty('--my', (e.clientY / window.innerHeight * 100) + '%');
-  });
+  /* CHUYỂN TRANG */
+  const loader = document.getElementById('transition-layer');
+  const loaderLine = document.getElementById('loader-line');
 
-  // VISUALIZER LOGIC
-  const vis = document.getElementById('visualizer');
-  for(let i=0; i<50; i++) {
-    let bar = document.createElement('div');
-    bar.className = 'vis-bar';
-    vis.appendChild(bar);
-  }
-  function animateVis() {
-    document.querySelectorAll('.vis-bar').forEach(bar => {
-      bar.style.height = (Math.random() * 20 + 2) + 'px';
-    });
-    requestAnimationFrame(animateVis);
-  }
-  animateVis();
-
-  // SWITCH PAGE LOGIC
   function switchPage(pageId) {
-    const mask = document.getElementById('transition-mask');
-    mask.style.opacity = '1';
+    loader.style.pointerEvents = 'all';
+    loader.style.opacity = '1';
+    loaderLine.style.width = '0';
+    
     setTimeout(() => {
-      document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+      loaderLine.style.width = '100vw'; 
+      document.querySelectorAll('section').forEach(sec => sec.classList.remove('active'));
       document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+      
       document.getElementById(pageId).classList.add('active');
       document.getElementById('nav-' + pageId.split('-')[1]).classList.add('active');
-      mask.style.opacity = '0';
-    }, 1000);
+
+      setTimeout(() => {
+        loader.style.opacity = '0';
+        loader.style.pointerEvents = 'none';
+        loaderLine.style.width = '0';
+      }, 600);
+    }, 400);
   }
 
-  // SHARD LOGIC (PAGE 4)
-  const kBox = document.getElementById('kintsugi-box');
-  const shards = [];
-  for(let i=0; i<100; i++) {
-    let shard = document.createElement('div');
-    shard.className = 'shard';
-    shard.style.width = '45px'; shard.style.height = '60px';
-    shard.style.left = (i % 10 * 45) + 'px';
-    shard.style.top = (Math.floor(i / 10) * 60) + 'px';
-    shard.style.backgroundPosition = `-${i % 10 * 45}px -${Math.floor(i / 10) * 60}px`;
-    kBox.appendChild(shard);
-    shards.push(shard);
+  /* TRÌNH PHÁT NHẠC */
+  const audio = document.getElementById('bg-audio');
+  const recordDisc = document.getElementById('record-disc');
+  const audioText = document.getElementById('audio-text');
+  let isPlaying = false;
+
+  function toggleAudio() {
+    if (isPlaying) { 
+      audio.pause(); 
+      recordDisc.classList.remove('playing');
+      audioText.innerText = 'track: paused';
+    } else { 
+      audio.play().catch(e => console.log("Cần tương tác người dùng trước")); 
+      recordDisc.classList.add('playing');
+      audioText.innerText = 'track: playing';
+    }
+    isPlaying = !isPlaying;
   }
 
-  function shatter() {
-    shards.forEach(s => {
-      s.style.transform = `translate(${(Math.random()-0.5)*600}px, ${(Math.random()-0.5)*600}px) rotate(${(Math.random()-0.5)*200}deg) scale(0)`;
-      s.style.opacity = '0';
-    });
-  }
-  function heal() {
-    shards.forEach(s => {
-      s.style.transform = `translate(0,0) rotate(0) scale(1)`;
-      s.style.opacity = '1';
-      s.style.borderColor = 'rgba(212, 175, 55, 1)'; // Hiện đường chỉ vàng khi lành
-    });
-  }
-  shatter(); // Start shattered
-
-  // PARALLAX PAGE 1
+  /* TRANG 1: PARALLAX */
+  const pItems = document.querySelectorAll('.parallax-item');
   document.addEventListener('mousemove', (e) => {
-    if(!document.getElementById('page-1').classList.contains('active')) return;
-    document.querySelectorAll('.floating-img').forEach(el => {
-      let depth = el.getAttribute('data-depth');
-      let moveX = (window.innerWidth / 2 - e.clientX) * depth;
-      let moveY = (window.innerHeight / 2 - e.clientY) * depth;
-      el.style.transform = `translate3d(${moveX}px, ${moveY}px, 0)`;
+    if (!document.getElementById('page-1').classList.contains('active')) return;
+    let x = (window.innerWidth - e.pageX * 2) / 120;
+    let y = (window.innerHeight - e.pageY * 2) / 120;
+    pItems.forEach(item => {
+      let speed = item.getAttribute('data-speed');
+      item.style.transform = `translate3d(${x * speed}px, ${y * speed}px, 0)`;
     });
   });
 
-  // AUDIO PLACEHOLDER
-  function toggleAudio() {
-    const a = document.getElementById('drowninglove.mp3');
-    if(a.paused) a.play(); else a.pause();
+  /* TRANG 2: SPOTLIGHT */
+  const page2 = document.getElementById('page-2');
+  document.addEventListener('mousemove', (e) => {
+    if (!page2.classList.contains('active')) return;
+    let x = (e.clientX / window.innerWidth) * 100;
+    let y = (e.clientY / window.innerHeight) * 100;
+    page2.style.setProperty('--mouse-x', `${x}%`);
+    page2.style.setProperty('--mouse-y', `${y}%`);
+  });
+
+  /* TRANG 3: SCROLL NGANG & GLITCH */
+  const hScroll = document.getElementById('h-scroll');
+  const glitchItems = document.querySelectorAll('.glitch-item');
+  let isDown = false, startX, scrollLeft, lastScrollX = 0;
+
+  hScroll.addEventListener('mousedown', e => { isDown = true; startX = e.pageX - hScroll.offsetLeft; scrollLeft = hScroll.scrollLeft; });
+  hScroll.addEventListener('mouseleave', () => { isDown = false; resetGlitch(); });
+  hScroll.addEventListener('mouseup', () => { isDown = false; resetGlitch(); });
+  hScroll.addEventListener('mousemove', e => {
+    if (!isDown) return;
+    e.preventDefault();
+    hScroll.scrollLeft = scrollLeft - (e.pageX - hScroll.offsetLeft - startX) * 2;
+  });
+
+  hScroll.addEventListener('scroll', () => {
+    let scrollVelocity = hScroll.scrollLeft - lastScrollX;
+    lastScrollX = hScroll.scrollLeft;
+    let skewValue = Math.min(Math.max(scrollVelocity * 0.05, -5), 5);
+    glitchItems.forEach(item => item.style.transform = `skewX(${skewValue}deg) scale(1.02)`);
+    clearTimeout(window.glitchTimer);
+    window.glitchTimer = setTimeout(resetGlitch, 100);
+  });
+  function resetGlitch() { glitchItems.forEach(item => item.style.transform = `skewX(0deg) scale(1)`); }
+  hScroll.addEventListener('wheel', e => { if (e.deltaY !== 0) { e.preventDefault(); hScroll.scrollLeft += e.deltaY * 2; } });
+
+  /* TRANG 4: PHÂN RÃ */
+  const gridBox = document.getElementById('shard-grid');
+  const shards = [];
+  for (let i = 0; i < 6; i++) {
+    for (let j = 0; j < 6; j++) {
+      let shard = document.createElement('div');
+      shard.classList.add('shard');
+      shard.style.backgroundPosition = `${(j / 5) * 100}% ${(i / 5) * 100}%`;
+      gridBox.appendChild(shard);
+      shards.push(shard);
+    }
   }
+
+  function shatterImage() {
+    shards.forEach(shard => {
+      let transX = (Math.random() - 0.5) * 400;
+      let transY = (Math.random() - 0.5) * 400;
+      let rot = (Math.random() - 0.5) * 120;
+      shard.style.transform = `translate(${transX}px, ${transY}px) rotate(${rot}deg) scale(0.4)`;
+      shard.style.opacity = '0';
+    });
+  }
+
+  function healImage() {
+    shards.forEach(shard => {
+      shard.style.transform = `translate(0px, 0px) rotate(0deg) scale(1)`;
+      shard.style.opacity = '1';
+    });
+  }
+  setTimeout(shatterImage, 500);
+
 </script>
 </body>
 </html>
