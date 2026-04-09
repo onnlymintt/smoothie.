@@ -3,227 +3,531 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Khoảng Không của Thy</title>
+<title>Vực Thẳm - Thy</title>
 <style>
+  /* ==========================================================================
+     CORE VARIABLES & RESET
+     ========================================================================== */
   :root {
-    --bg: #040404;
-    --text: #d0d0d0;
+    --bg: #020202;
+    --text: #c0c0c0;
     --accent: #ffffff;
-    --vein: rgba(255, 255, 255, 0.15);
+    --blood: #8a0303;
+    --noise: url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E');
   }
 
+  * { box-sizing: border-box; }
+  
   body, html {
     margin: 0; padding: 0;
     background-color: var(--bg);
     color: var(--text);
     font-family: 'Courier New', Courier, monospace;
-    overflow: hidden; /* Cố định màn hình, không cuộn dọc */
-    cursor: crosshair;
+    overflow-x: hidden;
+    cursor: none; /* Ẩn chuột mặc định */
+    scroll-behavior: smooth;
   }
 
-  /* --- SỢI CHỈ SINH MỆNH (THE VEIN) --- */
-  .the-vein {
-    position: fixed;
-    top: 0; left: 80px;
-    width: 1px; height: 100vh;
-    background: var(--vein);
-    z-index: 100;
-  }
-  .vein-blood {
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 0%;
-    background: var(--accent);
-    box-shadow: 0 0 10px rgba(255,255,255,0.8);
-    transition: height 1.5s cubic-bezier(0.7, 0, 0.3, 1);
+  /* Lớp Noise nhiễu hạt mờ ảo phủ lên toàn bộ trang */
+  body::before {
+    content: ""; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background-image: var(--noise); opacity: 0.04; z-index: 9999; pointer-events: none;
   }
 
-  /* --- ĐIỀU HƯỚNG DỌC (VERTICAL NAV) --- */
+  /* ==========================================================================
+     CUSTOM CURSOR (CON TRỎ)
+     ========================================================================== */
+  #cursor-dot {
+    position: fixed; top: 0; left: 0; width: 4px; height: 4px;
+    background: var(--accent); border-radius: 50%;
+    transform: translate(-50%, -50%); z-index: 10000; pointer-events: none;
+  }
+  #cursor-ring {
+    position: fixed; top: 0; left: 0; width: 40px; height: 40px;
+    border: 1px solid rgba(255,255,255,0.3); border-radius: 50%;
+    transform: translate(-50%, -50%); z-index: 9999; pointer-events: none;
+    transition: width 0.3s, height 0.3s, background 0.3s, border-color 0.3s;
+  }
+  /* Trạng thái hover của chuột */
+  body.hovering #cursor-ring {
+    width: 80px; height: 80px; background: rgba(255,255,255,0.1);
+    border-color: transparent; backdrop-filter: invert(1);
+  }
+
+  /* ==========================================================================
+     CANVAS BACKGROUND (TÀN TRO)
+     ========================================================================== */
+  #ash-canvas {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    z-index: 0; pointer-events: none;
+  }
+
+  /* ==========================================================================
+     CUSTOM RIGHT-CLICK MENU (CẤM KỴ)
+     ========================================================================== */
+  #custom-context-menu {
+    position: fixed; background: rgba(10, 10, 10, 0.9); border: 1px solid #333;
+    padding: 15px; display: none; z-index: 20000; font-size: 0.8rem;
+    letter-spacing: 2px; text-transform: lowercase; backdrop-filter: blur(5px);
+  }
+  #custom-context-menu p { margin: 0 0 10px 0; color: var(--blood); }
+  #custom-context-menu ul { list-style: none; padding: 0; margin: 0; }
+  #custom-context-menu li { padding: 5px 0; color: #666; cursor: not-allowed; }
+  #custom-context-menu li:hover { color: #fff; text-decoration: line-through; }
+
+  /* ==========================================================================
+     NAVIGATION (ĐIỀU HƯỚNG TỪ TÍNH)
+     ========================================================================== */
   nav {
-    position: fixed;
-    top: 50vh; left: 80px;
-    transform: translateY(-50%);
-    display: flex; flex-direction: column; gap: 40px;
-    z-index: 9999;
+    position: fixed; top: 0; left: 0; width: 100%; height: 100px;
+    display: flex; justify-content: center; align-items: center; gap: 60px;
+    z-index: 1000; mix-blend-mode: difference;
   }
-  nav a {
-    color: #666; text-decoration: none; text-transform: lowercase;
-    font-size: 0.8rem; letter-spacing: 4px; cursor: pointer;
-    writing-mode: vertical-rl; transform: rotate(180deg);
-    transition: all 0.5s ease; position: relative; left: -10px;
+  .magnetic-btn {
+    display: inline-block; color: var(--accent); text-decoration: none;
+    text-transform: lowercase; font-size: 0.85rem; letter-spacing: 2px;
+    cursor: pointer; opacity: 0.3; padding: 20px; transition: opacity 0.5s;
   }
-  nav a:hover, nav a.active {
-    color: var(--accent); letter-spacing: 8px; text-shadow: 0 0 8px rgba(255,255,255,0.5);
+  .magnetic-btn.active, .magnetic-btn:hover { opacity: 1; letter-spacing: 5px; }
+
+  /* ==========================================================================
+     GLITCH EFFECT (VẾT NỨT THỊ GIÁC)
+     ========================================================================== */
+  .glitch-wrapper { position: relative; display: inline-block; }
+  .glitch-text {
+    font-size: 4rem; font-weight: 300; letter-spacing: -2px; margin-bottom: 20px;
+    position: relative; color: var(--accent);
+  }
+  .glitch-text::before, .glitch-text::after {
+    content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    opacity: 0.8;
+  }
+  .glitch-text::before {
+    left: 2px; text-shadow: -2px 0 red; clip: rect(44px, 450px, 56px, 0);
+    animation: glitch-anim 5s infinite linear alternate-reverse;
+  }
+  .glitch-text::after {
+    left: -2px; text-shadow: -2px 0 blue; clip: rect(44px, 450px, 56px, 0);
+    animation: glitch-anim2 5s infinite linear alternate-reverse;
+  }
+  @keyframes glitch-anim {
+    0% { clip: rect(10px, 9999px, 86px, 0); }
+    5% { clip: rect(65px, 9999px, 3px, 0); }
+    10% { clip: rect(98px, 9999px, 12px, 0); }
+    15% { clip: rect(31px, 9999px, 78px, 0); }
+    20% { clip: rect(5px, 9999px, 99px, 0); }
+    25% { clip: rect(44px, 9999px, 44px, 0); }
+    100% { clip: rect(44px, 9999px, 44px, 0); }
+  }
+  @keyframes glitch-anim2 {
+    0% { clip: rect(65px, 9999px, 100px, 0); }
+    5% { clip: rect(12px, 9999px, 4px, 0); }
+    10% { clip: rect(9px, 9999px, 88px, 0); }
+    15% { clip: rect(31px, 9999px, 32px, 0); }
+    20% { clip: rect(55px, 9999px, 19px, 0); }
+    25% { clip: rect(2px, 9999px, 2px, 0); }
+    100% { clip: rect(2px, 9999px, 2px, 0); }
   }
 
-  /* --- BỐ CỤC CHÍNH CHIA ĐÔI (SPLIT SCREEN) --- */
-  main { position: relative; width: 100vw; height: 100vh; margin-left: 120px; }
+  /* ==========================================================================
+     LAYOUT CHUNG TỪNG TRANG
+     ========================================================================== */
+  main { position: relative; width: 100vw; height: 100vh; }
   
   section {
-    position: absolute; top: 0; left: 0;
-    width: calc(100% - 120px); height: 100vh;
-    display: flex; opacity: 0; visibility: hidden;
-    transition: opacity 1.5s ease, visibility 1.5s ease;
+    position: absolute; top: 0; left: 0; width: 100%; min-height: 100vh;
+    padding: 150px 10% 100px; box-sizing: border-box;
+    display: none; opacity: 0; z-index: 10;
   }
-  section.active { opacity: 1; visibility: visible; z-index: 10; }
+  section.active { display: block; animation: fadeInSec 2s ease forwards; }
+  @keyframes fadeInSec { from { opacity: 0; transform: translateY(30px); filter: blur(10px); } to { opacity: 1; transform: translateY(0); filter: blur(0); } }
 
-  /* CỘT CHỮ (BÊN TRÁI) */
-  .text-col {
-    width: 40%; height: 100%;
-    display: flex; flex-direction: column; justify-content: center;
-    padding: 0 5%; box-sizing: border-box;
-    transform: translateX(-30px); transition: transform 1.5s ease;
-  }
-  section.active .text-col { transform: translateX(0); }
-
-  h1 { font-size: 2.5rem; font-weight: 300; margin-bottom: 40px; letter-spacing: -1px; }
+  .text-block { max-width: 600px; margin-bottom: 50px; position: relative; z-index: 2; }
+  p { line-height: 2.2; font-size: 1rem; color: #a0a0a0; margin-bottom: 30px; letter-spacing: 0.5px; }
   
-  p { line-height: 2.4; font-size: 0.95rem; color: #999; margin-bottom: 30px; }
+  /* Class dùng cho hiệu ứng chữ chạy ma trận (Scramble) */
+  .scramble-text { visibility: hidden; }
 
-  /* KỸ THUẬT VĂN BẢN ẨN GẤU (SUBLIMINAL TEXT) */
-  .sub-text-wrapper { position: relative; display: inline-block; cursor: pointer; }
-  .surface-text { transition: opacity 0.5s; border-bottom: 1px dotted #444; }
-  .deep-text {
-    position: absolute; top: 0; left: 0; width: max-content;
-    color: var(--accent); font-style: italic; font-weight: bold;
-    opacity: 0; pointer-events: none; transition: opacity 0.5s, transform 0.5s;
-    transform: translateY(10px);
+  /* Bố cục ảnh/video */
+  .media-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 40px; margin-top: 60px; }
+  .media-box {
+    width: 100%; aspect-ratio: 16/9; background: #050505; border: 1px solid #111;
+    position: relative; overflow: hidden;
   }
-  .sub-text-wrapper:hover .surface-text { opacity: 0; }
-  .sub-text-wrapper:hover .deep-text { opacity: 1; transform: translateY(0); }
+  .media-box img, .media-box video {
+    width: 100%; height: 100%; object-fit: cover; opacity: 0.4;
+    transition: opacity 1s, filter 1s, transform 3s; filter: grayscale(100%);
+  }
+  .media-box:hover img, .media-box:hover video {
+    opacity: 1; filter: grayscale(0%); transform: scale(1.05);
+  }
+  .media-caption {
+    position: absolute; bottom: -30px; left: 20px; font-size: 0.75rem; letter-spacing: 3px;
+    color: #fff; transition: bottom 0.5s ease; mix-blend-mode: difference; text-transform: lowercase;
+  }
+  .media-box:hover .media-caption { bottom: 20px; }
 
-  /* CỘT VIDEO (BÊN PHẢI) - HIỆU ỨNG MỞ KHE (SLIT MASK) */
-  .video-col {
-    width: 60%; height: 100%;
-    display: flex; align-items: center; justify-content: center;
-    padding: 50px; box-sizing: border-box;
+  /* Tương tác đè chữ (Reveal on hover) */
+  .reveal-wrapper { position: relative; display: inline-block; cursor: crosshair; }
+  .reveal-surface { transition: opacity 0.4s; border-bottom: 1px solid #333; }
+  .reveal-deep {
+    position: absolute; top: 0; left: 0; width: max-content; color: var(--blood); font-weight: bold;
+    opacity: 0; pointer-events: none; transition: all 0.4s; transform: scale(0.9); font-style: italic;
   }
-  
-  .video-container {
-    width: 100%; height: 80vh; position: relative; overflow: hidden;
-    /* Ban đầu video bị bóp lại thành một dải nhỏ ở giữa */
-    clip-path: polygon(30% 0, 70% 0, 70% 100%, 30% 100%);
-    transition: clip-path 1.5s cubic-bezier(0.7, 0, 0.3, 1), filter 1.5s ease;
-    filter: grayscale(100%) opacity(0.6);
-  }
-  
-  .video-container:hover {
-    /* Khi hover, video mở toang ra toàn bộ khung */
-    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
-    filter: grayscale(0%) opacity(1);
-  }
-
-  .video-container video { width: 100%; height: 100%; object-fit: cover; }
-  
-  .video-caption {
-    position: absolute; bottom: 20px; left: 20px;
-    font-size: 0.75rem; letter-spacing: 4px; text-transform: uppercase;
-    color: #fff; mix-blend-mode: difference;
-    opacity: 0; transition: opacity 1s 0.5s;
-  }
-  .video-container:hover .video-caption { opacity: 1; }
+  .reveal-wrapper:hover .reveal-surface { opacity: 0; }
+  .reveal-wrapper:hover .reveal-deep { opacity: 1; transform: scale(1); text-shadow: 0 0 10px rgba(138, 3, 3, 0.8); }
 
 </style>
 </head>
 <body>
 
-<audio id="bg-audio" loop><source src="" type="audio/mpeg"></audio>
-<div id="audio-control" onclick="toggleAudio()" style="position: fixed; top: 40px; right: 50px; z-index: 10000; color: #fff; opacity: 0.3; cursor: pointer; font-size: 0.8rem; letter-spacing: 2px; text-transform: lowercase;">[ play flow ]</div>
+<div id="cursor-dot"></div>
+<div id="cursor-ring"></div>
 
-<div class="the-vein"><div class="vein-blood" id="blood"></div></div>
+<canvas id="ash-canvas"></canvas>
+
+<div id="custom-context-menu">
+  <p>[ xâm phạm ]</p>
+  <ul>
+    <li>không có gì để sao chép ở đây.</li>
+    <li>những mảnh vỡ này là của riêng tôi.</li>
+    <li>hãy quay lại và nhìn cho kỹ.</li>
+  </ul>
+</div>
+
+<audio id="bg-audio" loop><source src="" type="audio/mpeg"></audio>
+<div class="magnetic-btn" id="audio-control" onclick="toggleAudio()" style="position: fixed; bottom: 30px; right: 30px; z-index: 10000; font-size: 0.7rem;">[ audio : flow ]</div>
 
 <nav>
-  <a onclick="switchPage('page-thy')" id="nav-thy" class="active">bản ngã</a>
-  <a onclick="switchPage('page-tedx')" id="nav-tedx">tedxftu</a>
-  <a onclick="switchPage('page-vyl')" id="nav-vyl">young_lions</a>
-  <a onclick="switchPage('page-remake')" id="nav-remake">remake</a>
+  <a class="magnetic-btn active" onclick="switchPage('page-thy')" id="nav-thy">bản ngã</a>
+  <a class="magnetic-btn" onclick="switchPage('page-tedx')" id="nav-tedx">tedxftu</a>
+  <a class="magnetic-btn" onclick="switchPage('page-vyl')" id="nav-vyl">young_lions</a>
+  <a class="magnetic-btn" onclick="switchPage('page-remake')" id="nav-remake">remake</a>
 </nav>
 
 <main>
   <section id="page-thy" class="active">
-    <div class="text-col">
-      <h1>khoảng rỗng.</h1>
-      <p>Đèn đường chao nghiêng, đổ những vệt mật ong sóng sánh xuống mặt lộ.</p>
-      <p>Ngân nằm đó, thấy mình rỗng tuếch như một chiếc vỏ ốc bị sóng đánh dạt vào bờ. Bầu không khí đặc sệt tràn vào phổi sau mỗi nhịp thở hụt. 
-        <span class="sub-text-wrapper">
-          <span class="surface-text">Viên thuốc là chiếc phao còn sót lại.</span>
-          <span class="deep-text">Tuyệt đối không được quên thuốc.</span>
+    <div class="text-block">
+      <div class="glitch-wrapper">
+        <h1 class="glitch-text" data-text="vỏ ốc rỗng.">vỏ ốc rỗng.</h1>
+      </div>
+      
+      <p class="scramble-text" data-text="Đèn đường chao nghiêng, đổ những vệt mật ong sóng sánh xuống mặt lộ.">Đèn đường chao nghiêng, đổ những vệt mật ong sóng sánh xuống mặt lộ.</p>
+      
+      <p>Ngân nằm đó, thấy mình rỗng tuếch như một chiếc vỏ ốc bị sóng đánh dạt vào bờ. Bầu không khí đặc sệt tràn vào phổi sau mỗi nhịp thở hụt. Lại một lần nữa cơn triều xanh xám dâng lên từ dưới chân.</p>
+      
+      <p>Cái phao cứu sinh ba năm trước kia giờ chỉ còn là mẩu gỗ mục rệu rã. Ngân không vùng vẫy, chỉ để mình rơi tự do xuống đáy sâu mười mét nước. 
+        <span class="reveal-wrapper">
+          <span class="reveal-surface">Viên thuốc là chiếc phao còn sót lại.</span>
+          <span class="reveal-deep">Tuyệt đối không được quên thuốc.</span>
         </span>
       </p>
     </div>
-    <div class="video-col">
-      <div class="video-container">
-        <video autoplay loop muted playsinline><source src="video1.mp4" type="video/mp4"></video>
-        <div class="video-caption">sự tĩnh lặng rợn người</div>
+
+    <div class="media-grid" style="grid-template-columns: 2fr 1fr;">
+      <div class="media-box magnetic-media">
+        <video autoplay loop muted playsinline><source src="link_video_1.mp4" type="video/mp4"></video>
+        <div class="media-caption">vị đắng buốt sắc</div>
+      </div>
+      <div class="media-box magnetic-media">
+        <img src="link_anh_1.jpg" alt="">
+        <div class="media-caption">bóng tối ùa vào</div>
       </div>
     </div>
   </section>
 
   <section id="page-tedx">
-    <div class="text-col">
-      <h1>ánh sáng giả.</h1>
-      <p>Những luồng sáng đan chéo nhau trên sân khấu. Một không gian để nhào nặn khối óc.</p>
+    <div class="text-block" style="margin-left: auto; text-align: right;">
+      <div class="glitch-wrapper">
+        <h1 class="glitch-text" data-text="điểm mù.">điểm mù.</h1>
+      </div>
+      
+      <p class="scramble-text" data-text="Những luồng sáng đan chéo nhau trên sân khấu. Một không gian để nhào nặn khối óc.">Những luồng sáng đan chéo nhau trên sân khấu. Một không gian để nhào nặn khối óc.</p>
+      
       <p>
-        <span class="sub-text-wrapper">
-          <span class="surface-text">Sự lan tỏa mạnh mẽ dưới vỏ bọc hoàn hảo.</span>
-          <span class="deep-text">Chỉ sợ chớp mắt mọi thứ sẽ vỡ vụn.</span>
+        <span class="reveal-wrapper">
+          <span class="reveal-surface">Sự lan tỏa mạnh mẽ dưới vỏ bọc hoàn hảo.</span>
+          <span class="reveal-deep">Sợ hãi nếu chớp mắt mọi thứ sẽ vỡ vụn.</span>
         </span>
       </p>
-      <p>Đứng giữa trung tâm chú ý nhưng lại thấy mình tàng hình. Áp lực đè nặng lên từng nếp nhăn não bộ.</p>
+      <p>Đứng giữa trung tâm chú ý nhưng lại thấy mình tàng hình. Áp lực của sự hoàn hảo đè nặng lên từng nếp nhăn của não bộ.</p>
     </div>
-    <div class="video-col">
-      <div class="video-container">
-        <video autoplay loop muted playsinline><source src="video2.mp4" type="video/mp4"></video>
-        <div class="video-caption">điểm mù sau cánh gà</div>
+
+    <div class="media-grid">
+      <div class="media-box magnetic-media" style="aspect-ratio: 3/4;">
+        <video autoplay loop muted playsinline><source src="link_video_2.mp4" type="video/mp4"></video>
+        <div class="media-caption">sân khấu rực rỡ</div>
+      </div>
+      <div class="media-box magnetic-media" style="aspect-ratio: 3/4; transform: translateY(50px);">
+        <img src="link_anh_2.jpg" alt="">
+        <div class="media-caption">cơn triều xanh xám</div>
       </div>
     </div>
   </section>
 
   <section id="page-vyl">
-    <div class="text-col">
-      <h1>giới hạn.</h1>
-      <p>Những vệt sáng neon rực rỡ lướt qua. Trí tuệ bị ép đến mức kiệt quệ trong những đêm trắng.</p>
-      <p>
-        <span class="sub-text-wrapper">
-          <span class="surface-text">Sự thăng hoa của những ý tưởng sắc bén.</span>
-          <span class="deep-text">Vị đắng buốt sắc chạy dọc thực quản.</span>
+    <div class="text-block">
+      <div class="glitch-wrapper">
+        <h1 class="glitch-text" data-text="ép xác.">ép xác.</h1>
+      </div>
+      
+      <p class="scramble-text" data-text="Những vệt sáng neon rực rỡ lướt qua. Tiếng giày gõ đều như nhịp phim cũ.">Những vệt sáng neon rực rỡ lướt qua. Tiếng giày gõ đều như nhịp phim cũ.</p>
+      
+      <p>Trí tuệ bị ép đến giới hạn cuối cùng trong những đêm không ngủ. 
+        <span class="reveal-wrapper">
+          <span class="reveal-surface">Sự thăng hoa rực rỡ của những ý tưởng.</span>
+          <span class="reveal-deep">Mảnh kim loại chạy dọc thực quản.</span>
         </span>
       </p>
     </div>
-    <div class="video-col">
-      <div class="video-container">
-        <video autoplay loop muted playsinline><source src="video3.mp4" type="video/mp4"></video>
-        <div class="video-caption">đêm trắng rạch nát</div>
+
+    <div class="media-grid" style="grid-template-columns: 1fr;">
+      <div class="media-box magnetic-media" style="aspect-ratio: 21/9;">
+        <video autoplay loop muted playsinline><source src="link_video_3.mp4" type="video/mp4"></video>
+        <div class="media-caption">quờ quạng trên bàn</div>
       </div>
     </div>
   </section>
 
   <section id="page-remake">
-    <div class="text-col">
-      <h1>hình hài mới.</h1>
-      <p>Ngày cẩn trọng kéo bản thân lên từ vực sâu thăm thẳm. Lần đầu thấy mình khô ráo và ấm áp.</p>
-      <p>Không phải để trở về hình dáng cũ, mà tạo ra một cấu trúc mới vững chãi hơn. 
-        <span class="sub-text-wrapper">
-          <span class="surface-text">Sự chữa lành trọn vẹn.</span>
-          <span class="deep-text">Vết sẹo vẫn ở đó, chỉ là ngừng rỉ máu.</span>
+    <div class="text-block" style="margin: 0 auto; text-align: center; max-width: 800px;">
+      <div class="glitch-wrapper">
+        <h1 class="glitch-text" data-text="tái tạo.">tái tạo.</h1>
+      </div>
+      
+      <p class="scramble-text" data-text="Lần đầu sau hai mươi lăm năm, thấy mình khô ráo và ấm áp.">Lần đầu sau hai mươi lăm năm, thấy mình khô ráo và ấm áp.</p>
+      
+      <p>Ngày cẩn trọng kéo bản thân lên từ vực sâu thăm thẳm. Gắn kết lại những mảnh vỡ. Không phải để trở về hình dáng cũ, mà để tạo ra một cấu trúc mới vững chãi hơn, chấp nhận tì vết.</p>
+      
+      <p>
+        <span class="reveal-wrapper" style="font-size: 1.2rem; margin-top: 20px;">
+          <span class="reveal-surface">Một sự tái sinh trọn vẹn.</span>
+          <span class="reveal-deep" style="color: var(--accent); text-shadow: 0 0 10px #fff;">Vết sẹo vẫn ở đó, nhưng không còn rỉ máu.</span>
         </span>
       </p>
     </div>
-    <div class="video-col">
-      <div class="video-container" style="clip-path: polygon(10% 10%, 90% 10%, 90% 90%, 10% 90%);"> <video autoplay loop muted playsinline><source src="video4.mp4" type="video/mp4"></video>
-        <div class="video-caption">hơi thở</div>
+
+    <div class="media-grid">
+      <div class="media-box magnetic-media">
+        <video autoplay loop muted playsinline><source src="link_video_4.mp4" type="video/mp4"></video>
+        <div class="media-caption">mẩu gỗ mục</div>
+      </div>
+      <div class="media-box magnetic-media">
+        <img src="link_anh_4.jpg" alt="">
+        <div class="media-caption">hơi thở dưới nước</div>
       </div>
     </div>
   </section>
 </main>
 
 <script>
-  // KHO CHỨA NHẠC NHƯ CŨ
+  // ==========================================================================
+  // THỦ THUẬT 1: HỆ THỐNG CON TRỎ & HOVER
+  // ==========================================================================
+  const cursorDot = document.getElementById('cursor-dot');
+  const cursorRing = document.getElementById('cursor-ring');
+  let mouseX = 0, mouseY = 0;
+  let ringX = 0, ringY = 0;
+
+  document.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX; mouseY = e.clientY;
+    cursorDot.style.left = mouseX + 'px';
+    cursorDot.style.top = mouseY + 'px';
+  });
+
+  // Tạo độ trễ (lag) nghệ thuật cho vòng tròn theo sau
+  function animateCursor() {
+    ringX += (mouseX - ringX) * 0.15;
+    ringY += (mouseY - ringY) * 0.15;
+    cursorRing.style.left = ringX + 'px';
+    cursorRing.style.top = ringY + 'px';
+    requestAnimationFrame(animateCursor);
+  }
+  animateCursor();
+
+  // Đổi trạng thái con trỏ khi hover vào thẻ a, thẻ có class từ tính, hoặc chỗ reveal
+  const interactives = document.querySelectorAll('a, .magnetic-btn, .magnetic-media, .reveal-wrapper');
+  interactives.forEach(el => {
+    el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
+    el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
+  });
+
+  // ==========================================================================
+  // THỦ THUẬT 2: TỪ TÍNH (MAGNETIC ELEMENTS)
+  // Bẻ cong không gian khi chuột lại gần nút bấm hoặc ảnh
+  // ==========================================================================
+  const magnetics = document.querySelectorAll('.magnetic-btn, .magnetic-media');
+  magnetics.forEach(mag => {
+    mag.addEventListener('mousemove', (e) => {
+      const rect = mag.getBoundingClientRect();
+      const h = rect.width / 2;
+      const v = rect.height / 2;
+      // Tính khoảng cách từ tâm phần tử đến chuột
+      const x = e.clientX - rect.left - h;
+      const y = e.clientY - rect.top - v;
+      // Di chuyển phần tử nhẹ theo hướng chuột
+      mag.style.transform = `translate(${x * 0.2}px, ${y * 0.2}px)`;
+    });
+    mag.addEventListener('mouseleave', () => {
+      mag.style.transform = `translate(0px, 0px)`;
+      mag.style.transition = 'transform 0.5s ease'; // Trả về mượt mà
+    });
+    mag.addEventListener('mouseenter', () => {
+      mag.style.transition = 'none'; // Tắt transition khi đang bị hút
+    });
+  });
+
+  // ==========================================================================
+  // THỦ THUẬT 3: SCRAMBLE TEXT (GIẢI MÃ KÝ TỰ MÃ HÓA)
+  // ==========================================================================
+  class TextScramble {
+    constructor(el) {
+      this.el = el;
+      this.chars = '!<>-_\\/[]{}—=+*^?#________';
+      this.update = this.update.bind(this);
+    }
+    setText(newText) {
+      const oldText = this.el.innerText;
+      const length = Math.max(oldText.length, newText.length);
+      const promise = new Promise((resolve) => this.resolve = resolve);
+      this.queue = [];
+      for (let i = 0; i < length; i++) {
+        const from = oldText[i] || '';
+        const to = newText[i] || '';
+        const start = Math.floor(Math.random() * 40);
+        const end = start + Math.floor(Math.random() * 40);
+        this.queue.push({ from, to, start, end });
+      }
+      cancelAnimationFrame(this.frameRequest);
+      this.frame = 0;
+      this.update();
+      return promise;
+    }
+    update() {
+      let output = '';
+      let complete = 0;
+      for (let i = 0, n = this.queue.length; i < n; i++) {
+        let { from, to, start, end, char } = this.queue[i];
+        if (this.frame >= end) {
+          complete++;
+          output += to;
+        } else if (this.frame >= start) {
+          if (!char || Math.random() < 0.28) {
+            char = this.randomChar();
+            this.queue[i].char = char;
+          }
+          output += `<span style="color:#555">${char}</span>`;
+        } else {
+          output += from;
+        }
+      }
+      this.el.innerHTML = output;
+      if (complete === this.queue.length) {
+        this.resolve();
+      } else {
+        this.frameRequest = requestAnimationFrame(this.update);
+        this.frame++;
+      }
+    }
+    randomChar() {
+      return this.chars[Math.floor(Math.random() * this.chars.length)];
+    }
+  }
+
+  // Kích hoạt giải mã khi lướt tới
+  function triggerScrambleForSection(sectionId) {
+    const section = document.getElementById(sectionId);
+    const scrambles = section.querySelectorAll('.scramble-text');
+    scrambles.forEach(el => {
+      el.style.visibility = 'visible';
+      const text = el.getAttribute('data-text');
+      const fx = new TextScramble(el);
+      fx.setText(text);
+    });
+  }
+
+  // ==========================================================================
+  // THỦ THUẬT 4: CANVAS TÀN TRO KHUẤY ĐỘNG
+  // ==========================================================================
+  const canvas = document.getElementById('ash-canvas');
+  const ctx = canvas.getContext('2d');
+  let width, height, particles;
+
+  function initCanvas() {
+    width = canvas.width = window.innerWidth;
+    height = canvas.height = window.innerHeight;
+    particles = [];
+    for (let i = 0; i < 150; i++) {
+      particles.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        r: Math.random() * 1.5,
+        dx: (Math.random() - 0.5) * 0.5,
+        dy: (Math.random() - 0.5) * 0.5,
+        baseX: Math.random() * width,
+        baseY: Math.random() * height
+      });
+    }
+  }
+  
+  function drawParticles() {
+    ctx.clearRect(0, 0, width, height);
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+    particles.forEach(p => {
+      // Logic chạy trốn chuột
+      let dist = Math.hypot(mouseX - p.x, mouseY - p.y);
+      if (dist < 100) {
+        let angle = Math.atan2(p.y - mouseY, p.x - mouseX);
+        p.x += Math.cos(angle) * 3;
+        p.y += Math.sin(angle) * 3;
+      }
+      
+      // Chuyển động nhẹ nhàng
+      p.x += p.dx; p.y += p.dy;
+      
+      // Xuyên tường
+      if (p.x < 0) p.x = width; if (p.x > width) p.x = 0;
+      if (p.y < 0) p.y = height; if (p.y > height) p.y = 0;
+
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fill();
+    });
+    requestAnimationFrame(drawParticles);
+  }
+  
+  window.addEventListener('resize', initCanvas);
+  initCanvas();
+  drawParticles();
+
+  // ==========================================================================
+  // THỦ THUẬT 5: CUSTOM CONTEXT MENU (CẤM KỴ CLICK CHUỘT PHẢI)
+  // ==========================================================================
+  const contextMenu = document.getElementById('custom-context-menu');
+  document.addEventListener('contextmenu', (e) => {
+    e.preventDefault(); // Chặn menu mặc định
+    contextMenu.style.display = 'block';
+    
+    // Tính toán để menu không bị tràn màn hình
+    let x = e.clientX, y = e.clientY;
+    if (x + 200 > window.innerWidth) x -= 200;
+    if (y + 150 > window.innerHeight) y -= 150;
+    
+    contextMenu.style.left = x + 'px';
+    contextMenu.style.top = y + 'px';
+  });
+  document.addEventListener('click', () => {
+    contextMenu.style.display = 'none'; // Ẩn khi click trái
+  });
+
+  // ==========================================================================
+  // HỆ THỐNG ÂM THANH & ĐIỀU HƯỚNG TRÔI CHẢY (FLOW)
+  // ==========================================================================
   const soundtracks = {
-    'page-thy': 'nhac1.mp3',
-    'page-tedx': 'nhac2.mp3',
-    'page-vyl': 'nhac3.mp3',
-    'page-remake': 'nhac4.mp3'
+    'page-thy': 'nhac_1.mp3',
+    'page-tedx': 'nhac_2.mp3',
+    'page-vyl': 'nhac_3.mp3',
+    'page-remake': 'nhac_4.mp3'
   };
 
   const audio = document.getElementById('bg-audio');
@@ -233,8 +537,11 @@
   audio.src = soundtracks[currentTrackId];
 
   function toggleAudio() {
-    if (isPlaying) { audio.pause(); audioBtn.innerText = '[ play flow ]'; audioBtn.style.opacity = '0.3'; } 
-    else { audio.play(); audioBtn.innerText = '[ muting ]'; audioBtn.style.opacity = '1'; }
+    if (isPlaying) { 
+      audio.pause(); audioBtn.innerText = '[ audio : off ]'; audioBtn.style.opacity = '0.3'; 
+    } else { 
+      audio.play(); audioBtn.innerText = '[ audio : flow ]'; audioBtn.style.opacity = '1'; 
+    }
     isPlaying = !isPlaying;
   }
 
@@ -254,24 +561,25 @@
     }, 100);
   }
 
-  // LOGIC CHUYỂN TRANG & BƠM MÁU VÀO SỢI CHỈ
   function switchPage(pageId) {
     fluidAudioTransition(pageId);
-
-    // Kích hoạt Sợi chỉ sinh mệnh chạy từ trên xuống
-    const blood = document.getElementById('blood');
-    blood.style.height = '0%'; // Rút về
-    setTimeout(() => { blood.style.height = '100%'; }, 50); // Bơm đầy xuống
 
     document.querySelectorAll('section').forEach(sec => sec.classList.remove('active'));
     document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
     
-    document.getElementById(pageId).classList.add('active');
+    const activeSec = document.getElementById(pageId);
+    activeSec.classList.add('active');
     document.getElementById('nav-' + pageId.split('-')[1]).classList.add('active');
+
+    // Chạy thủ thuật Scramble text cho trang mới
+    setTimeout(() => { triggerScrambleForSection(pageId); }, 300);
   }
 
-  // Chạy sợi chỉ lần đầu khi load trang
-  window.onload = () => { document.getElementById('blood').style.height = '100%'; };
+  // Khởi chạy lúc ban đầu
+  window.onload = () => {
+    triggerScrambleForSection('page-thy');
+  };
+
 </script>
 
 </body>
