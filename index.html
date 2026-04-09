@@ -6,343 +6,272 @@
 <title>Khoảng Không của Thy</title>
 <style>
   :root {
-    --bg-dark: #030303;
-    --text-main: #d0d0d0;
+    --bg: #040404;
+    --text: #d0d0d0;
     --accent: #ffffff;
-    --border-dim: #1a1a1a;
+    --vein: rgba(255, 255, 255, 0.15);
   }
 
   body, html {
     margin: 0; padding: 0;
-    background-color: var(--bg-dark);
-    color: var(--text-main);
+    background-color: var(--bg);
+    color: var(--text);
     font-family: 'Courier New', Courier, monospace;
-    overflow-x: hidden;
+    overflow: hidden; /* Cố định màn hình, không cuộn dọc */
     cursor: crosshair;
   }
 
-  /* --- ĐIỀU HƯỚNG --- */
-  nav {
+  /* --- SỢI CHỈ SINH MỆNH (THE VEIN) --- */
+  .the-vein {
     position: fixed;
-    top: 40px; left: 0; width: 100%;
-    display: flex; justify-content: center; gap: 40px;
-    z-index: 9999;
-    mix-blend-mode: difference;
+    top: 0; left: 80px;
+    width: 1px; height: 100vh;
+    background: var(--vein);
+    z-index: 100;
   }
-
-  nav a {
-    color: var(--accent);
-    text-decoration: none;
-    text-transform: lowercase;
-    font-size: 0.85rem;
-    letter-spacing: 2px;
-    cursor: pointer;
-    opacity: 0.4;
-    transition: all 0.5s ease;
-  }
-
-  nav a:hover, nav a.active {
-    opacity: 1; letter-spacing: 5px;
-  }
-
-  /* --- CẤU TRÚC LÕI --- */
-  main { position: relative; width: 100vw; height: 100vh; }
-  
-  section {
+  .vein-blood {
     position: absolute;
     top: 0; left: 0;
-    width: 100%; min-height: 100vh;
-    padding: 120px 5% 100px;
-    box-sizing: border-box;
-    display: none; /* Ẩn mặc định */
+    width: 100%; height: 0%;
+    background: var(--accent);
+    box-shadow: 0 0 10px rgba(255,255,255,0.8);
+    transition: height 1.5s cubic-bezier(0.7, 0, 0.3, 1);
   }
 
-  section.active { display: block; }
+  /* --- ĐIỀU HƯỚNG DỌC (VERTICAL NAV) --- */
+  nav {
+    position: fixed;
+    top: 50vh; left: 80px;
+    transform: translateY(-50%);
+    display: flex; flex-direction: column; gap: 40px;
+    z-index: 9999;
+  }
+  nav a {
+    color: #666; text-decoration: none; text-transform: lowercase;
+    font-size: 0.8rem; letter-spacing: 4px; cursor: pointer;
+    writing-mode: vertical-rl; transform: rotate(180deg);
+    transition: all 0.5s ease; position: relative; left: -10px;
+  }
+  nav a:hover, nav a.active {
+    color: var(--accent); letter-spacing: 8px; text-shadow: 0 0 8px rgba(255,255,255,0.5);
+  }
 
-  /* KHUNG ẢNH CHUNG */
-  .img-box {
-    background-color: #050505;
-    border: 1px solid var(--border-dim);
+  /* --- BỐ CỤC CHÍNH CHIA ĐÔI (SPLIT SCREEN) --- */
+  main { position: relative; width: 100vw; height: 100vh; margin-left: 120px; }
+  
+  section {
+    position: absolute; top: 0; left: 0;
+    width: calc(100% - 120px); height: 100vh;
+    display: flex; opacity: 0; visibility: hidden;
+    transition: opacity 1.5s ease, visibility 1.5s ease;
+  }
+  section.active { opacity: 1; visibility: visible; z-index: 10; }
+
+  /* CỘT CHỮ (BÊN TRÁI) */
+  .text-col {
+    width: 40%; height: 100%;
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 0 5%; box-sizing: border-box;
+    transform: translateX(-30px); transition: transform 1.5s ease;
+  }
+  section.active .text-col { transform: translateX(0); }
+
+  h1 { font-size: 2.5rem; font-weight: 300; margin-bottom: 40px; letter-spacing: -1px; }
+  
+  p { line-height: 2.4; font-size: 0.95rem; color: #999; margin-bottom: 30px; }
+
+  /* KỸ THUẬT VĂN BẢN ẨN GẤU (SUBLIMINAL TEXT) */
+  .sub-text-wrapper { position: relative; display: inline-block; cursor: pointer; }
+  .surface-text { transition: opacity 0.5s; border-bottom: 1px dotted #444; }
+  .deep-text {
+    position: absolute; top: 0; left: 0; width: max-content;
+    color: var(--accent); font-style: italic; font-weight: bold;
+    opacity: 0; pointer-events: none; transition: opacity 0.5s, transform 0.5s;
+    transform: translateY(10px);
+  }
+  .sub-text-wrapper:hover .surface-text { opacity: 0; }
+  .sub-text-wrapper:hover .deep-text { opacity: 1; transform: translateY(0); }
+
+  /* CỘT VIDEO (BÊN PHẢI) - HIỆU ỨNG MỞ KHE (SLIT MASK) */
+  .video-col {
+    width: 60%; height: 100%;
     display: flex; align-items: center; justify-content: center;
-    color: #333; font-size: 0.8rem; letter-spacing: 2px;
-    text-transform: lowercase; overflow: hidden; position: relative;
-  }
-  .img-box img {
-    width: 100%; height: 100%; object-fit: cover; opacity: 0.4;
-    transition: opacity 0.8s ease, filter 0.8s ease;
-    filter: grayscale(100%);
-  }
-  .img-box:hover img { opacity: 0.9; filter: grayscale(0%); }
-
-  /* =========================================
-     TRANG 1: BẢN NGÃ (THY)
-     Movement: Scale & Blur (Sự phóng to và rõ nét dần từ tiềm thức)
-     Layout: Chân dung thân mật, trôi nổi
-  ========================================= */
-  #page-thy {
-    display: flex; align-items: center; justify-content: center;
+    padding: 50px; box-sizing: border-box;
   }
   
-  .thy-container { position: relative; width: 100%; max-width: 900px; height: 70vh; }
-  
-  .thy-center {
-    position: absolute; top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    width: 350px; height: 450px; z-index: 2;
-  }
-
-  .thy-float { position: absolute; z-index: 1; opacity: 0.6; }
-  .thy-float.f1 { width: 200px; height: 250px; top: 10%; left: 10%; }
-  .thy-float.f2 { width: 250px; height: 150px; bottom: 15%; right: 5%; }
-  
-  .thy-text {
-    position: absolute; bottom: 0; left: 15%; width: 300px;
-    z-index: 3; font-style: italic; font-size: 0.9rem; line-height: 1.8;
-  }
-
-  /* Animation Trang 1 */
-  #page-thy.active .thy-center { animation: zoomBlur 2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
-  #page-thy.active .thy-float { animation: floatDrift 3s ease-out forwards; }
-  #page-thy.active .thy-text { animation: fadeIn 2.5s ease forwards 0.5s; opacity: 0; }
-
-  @keyframes zoomBlur {
-    0% { transform: translate(-50%, -50%) scale(0.8); filter: blur(20px); opacity: 0; }
-    100% { transform: translate(-50%, -50%) scale(1); filter: blur(0); opacity: 1; }
-  }
-  @keyframes floatDrift {
-    0% { transform: translateY(40px); opacity: 0; }
-    100% { transform: translateY(0); opacity: 0.6; }
-  }
-
-  /* =========================================
-     TRANG 2: TEDxFTU
-     Movement: Burst & Expand (Sự bùng nổ năng lượng, lan tỏa)
-     Layout: Lưới bất đối xứng (Asymmetric Grid), hình học
-  ========================================= */
-  #page-tedx .tedx-grid {
-    display: grid;
-    grid-template-columns: 1fr 1.5fr 1fr;
-    grid-auto-rows: 250px;
-    gap: 15px; max-width: 1100px; margin: 0 auto;
-  }
-
-  .tedx-item { position: relative; }
-  .tedx-item.large { grid-column: span 2; grid-row: span 2; }
-  .tedx-item.tall { grid-row: span 2; }
-  
-  .tedx-quote {
-    display: flex; align-items: center; padding: 30px;
-    font-size: 1.2rem; line-height: 1.6; color: var(--accent);
-  }
-
-  /* Animation Trang 2 */
-  #page-tedx.active .tedx-item {
-    opacity: 0; transform: scale(0.95);
-    animation: burstIn 1.2s cubic-bezier(0.19, 1, 0.22, 1) forwards;
-  }
-  #page-tedx.active .tedx-item:nth-child(1) { animation-delay: 0.1s; }
-  #page-tedx.active .tedx-item:nth-child(2) { animation-delay: 0.3s; }
-  #page-tedx.active .tedx-item:nth-child(3) { animation-delay: 0.2s; }
-  #page-tedx.active .tedx-item:nth-child(4) { animation-delay: 0.4s; }
-
-  @keyframes burstIn {
-    0% { opacity: 0; transform: scale(0.8) translateY(20px); filter: blur(10px); }
-    100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
-  }
-
-  /* =========================================
-     TRANG 3: VIETNAM YOUNG LIONS
-     Movement: Neon Trace (Vệt sáng chạy quanh, chớp tắt nhịp điệu)
-     Layout: Đô thị, ngột ngạt, dạng hộp chồng chéo
-  ========================================= */
-  #page-vyl {
-    display: flex; flex-direction: column; align-items: center; gap: 40px;
-  }
-
-  .vyl-row {
-    display: flex; gap: 30px; width: 100%; max-width: 1000px; justify-content: center;
-  }
-
-  .vyl-box {
-    width: 400px; height: 300px; border: 1px solid transparent;
-    position: relative; box-sizing: border-box;
-  }
-
-  .vyl-text {
-    width: 300px; display: flex; align-items: center; font-size: 0.95rem; line-height: 2;
-    text-shadow: 0 0 5px rgba(255,255,255,0); transition: text-shadow 0.5s;
-  }
-  .vyl-text:hover { text-shadow: 0 0 10px rgba(255,255,255,0.8); }
-
-  /* Animation Trang 3 */
-  #page-vyl.active .vyl-box { animation: neonTrace 1.5s ease-out forwards; }
-  #page-vyl.active .vyl-row:nth-child(2) .vyl-box { animation-delay: 0.5s; }
-
-  @keyframes neonTrace {
-    0% { border-color: transparent; box-shadow: 0 0 0 transparent; opacity: 0; transform: translateX(-20px); }
-    50% { border-color: rgba(255,255,255,0.2); opacity: 1; }
-    100% { border-color: var(--accent); box-shadow: 0 0 15px rgba(255,255,255,0.2), inset 0 0 10px rgba(255,255,255,0.1); opacity: 1; transform: translateX(0); }
-  }
-
-  /* =========================================
-     TRANG 4: REMAKE REMAC
-     Movement: Dissolve & Flow (Hòa tan, trôi chảy, nối tiếp)
-     Layout: Các lớp Layer đè lên nhau, dòng chảy uốn éo
-  ========================================= */
-  #page-remake {
-    display: flex; flex-direction: column; align-items: center;
-  }
-
-  .remake-wrapper {
-    position: relative; width: 100%; max-width: 800px; margin-top: 50px;
-  }
-
-  .remake-layer {
-    width: 80%; height: 400px; position: relative; margin-bottom: -150px;
-    mix-blend-mode: screen; /* Hiệu ứng hòa trộn lớp */
+  .video-container {
+    width: 100%; height: 80vh; position: relative; overflow: hidden;
+    /* Ban đầu video bị bóp lại thành một dải nhỏ ở giữa */
+    clip-path: polygon(30% 0, 70% 0, 70% 100%, 30% 100%);
+    transition: clip-path 1.5s cubic-bezier(0.7, 0, 0.3, 1), filter 1.5s ease;
+    filter: grayscale(100%) opacity(0.6);
   }
   
-  .remake-layer.l1 { margin-left: 0; }
-  .remake-layer.l2 { margin-left: 20%; }
-  .remake-layer.l3 { margin-left: 10%; margin-bottom: 0; }
-
-  .remake-desc {
-    position: absolute; right: -10%; top: 40%; width: 250px;
-    font-size: 0.85rem; padding-left: 20px; border-left: 1px solid #444;
+  .video-container:hover {
+    /* Khi hover, video mở toang ra toàn bộ khung */
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+    filter: grayscale(0%) opacity(1);
   }
 
-  /* Animation Trang 4 */
-  #page-remake.active .remake-layer {
-    opacity: 0; filter: contrast(200%) blur(10px);
-    animation: liquidFlow 2.5s ease forwards;
+  .video-container video { width: 100%; height: 100%; object-fit: cover; }
+  
+  .video-caption {
+    position: absolute; bottom: 20px; left: 20px;
+    font-size: 0.75rem; letter-spacing: 4px; text-transform: uppercase;
+    color: #fff; mix-blend-mode: difference;
+    opacity: 0; transition: opacity 1s 0.5s;
   }
-  #page-remake.active .remake-layer.l2 { animation-delay: 0.6s; }
-  #page-remake.active .remake-layer.l3 { animation-delay: 1.2s; }
-
-  @keyframes liquidFlow {
-    0% { opacity: 0; filter: contrast(200%) blur(20px); transform: translateY(50px); }
-    100% { opacity: 0.8; filter: contrast(100%) blur(0); transform: translateY(0); }
-  }
+  .video-container:hover .video-caption { opacity: 1; }
 
 </style>
 </head>
 <body>
 
+<audio id="bg-audio" loop><source src="" type="audio/mpeg"></audio>
+<div id="audio-control" onclick="toggleAudio()" style="position: fixed; top: 40px; right: 50px; z-index: 10000; color: #fff; opacity: 0.3; cursor: pointer; font-size: 0.8rem; letter-spacing: 2px; text-transform: lowercase;">[ play flow ]</div>
+
+<div class="the-vein"><div class="vein-blood" id="blood"></div></div>
+
 <nav>
   <a onclick="switchPage('page-thy')" id="nav-thy" class="active">bản ngã</a>
   <a onclick="switchPage('page-tedx')" id="nav-tedx">tedxftu</a>
-  <a onclick="switchPage('page-vyl')" id="nav-vyl">young lions</a>
+  <a onclick="switchPage('page-vyl')" id="nav-vyl">young_lions</a>
   <a onclick="switchPage('page-remake')" id="nav-remake">remake</a>
 </nav>
 
 <main>
   <section id="page-thy" class="active">
-    <div class="thy-container">
-      <div class="img-box thy-float f1">
-        <img src="" alt="ảnh ẩn dụ 1">
-        [kí ức 1]
-      </div>
-      
-      <div class="img-box thy-center">
-        <img src="" alt="ảnh chân dung chính">
-        [vỏ ốc rỗng tuếch]
-      </div>
-      
-      <div class="img-box thy-float f2">
-        <img src="" alt="ảnh ẩn dụ 2">
-        [viên fluoxetine]
-      </div>
-
-      <div class="thy-text">
-        Đèn đường chao nghiêng, đổ những vệt mật ong sóng sánh xuống mặt lộ... <br><br>
-        Ngân nằm đó, thấy mình rỗng tuếch như một chiếc vỏ ốc bị sóng đánh dạt vào bờ.
+    <div class="text-col">
+      <h1>khoảng rỗng.</h1>
+      <p>Đèn đường chao nghiêng, đổ những vệt mật ong sóng sánh xuống mặt lộ.</p>
+      <p>Ngân nằm đó, thấy mình rỗng tuếch như một chiếc vỏ ốc bị sóng đánh dạt vào bờ. Bầu không khí đặc sệt tràn vào phổi sau mỗi nhịp thở hụt. 
+        <span class="sub-text-wrapper">
+          <span class="surface-text">Viên thuốc là chiếc phao còn sót lại.</span>
+          <span class="deep-text">Tuyệt đối không được quên thuốc.</span>
+        </span>
+      </p>
+    </div>
+    <div class="video-col">
+      <div class="video-container">
+        <video autoplay loop muted playsinline><source src="video1.mp4" type="video/mp4"></video>
+        <div class="video-caption">sự tĩnh lặng rợn người</div>
       </div>
     </div>
   </section>
 
   <section id="page-tedx">
-    <div class="tedx-grid">
-      <div class="img-box tedx-item large">
-        <img src="" alt="sân khấu chính">
-        [sân khấu rực rỡ]
-      </div>
-      <div class="tedx-item tedx-quote">
-        "Chỉ sợ nếu mình chớp mắt, mọi thứ sẽ vỡ vụn trước hàng trăm ánh nhìn."
-      </div>
-      <div class="img-box tedx-item tall">
-        <img src="" alt="hậu trường 1">
-        [điểm mù sau cánh gà]
-      </div>
-      <div class="img-box tedx-item">
-        <img src="" alt="hậu trường 2">
-        [nụ cười biên độ chuẩn]
+    <div class="text-col">
+      <h1>ánh sáng giả.</h1>
+      <p>Những luồng sáng đan chéo nhau trên sân khấu. Một không gian để nhào nặn khối óc.</p>
+      <p>
+        <span class="sub-text-wrapper">
+          <span class="surface-text">Sự lan tỏa mạnh mẽ dưới vỏ bọc hoàn hảo.</span>
+          <span class="deep-text">Chỉ sợ chớp mắt mọi thứ sẽ vỡ vụn.</span>
+        </span>
+      </p>
+      <p>Đứng giữa trung tâm chú ý nhưng lại thấy mình tàng hình. Áp lực đè nặng lên từng nếp nhăn não bộ.</p>
+    </div>
+    <div class="video-col">
+      <div class="video-container">
+        <video autoplay loop muted playsinline><source src="video2.mp4" type="video/mp4"></video>
+        <div class="video-caption">điểm mù sau cánh gà</div>
       </div>
     </div>
   </section>
 
   <section id="page-vyl">
-    <div class="vyl-row">
-      <div class="vyl-text">
-        Những vệt sáng neon rực rỡ lướt qua. Trí tuệ bị ép đến giới hạn cuối cùng.<br><br>
-        Vị đắng buốt sắc như mảnh kim loại chạy dọc thực quản.
-      </div>
-      <div class="img-box vyl-box">
-        <img src="" alt="chiến dịch 1">
-        [đêm trắng rạch nát]
-      </div>
+    <div class="text-col">
+      <h1>giới hạn.</h1>
+      <p>Những vệt sáng neon rực rỡ lướt qua. Trí tuệ bị ép đến mức kiệt quệ trong những đêm trắng.</p>
+      <p>
+        <span class="sub-text-wrapper">
+          <span class="surface-text">Sự thăng hoa của những ý tưởng sắc bén.</span>
+          <span class="deep-text">Vị đắng buốt sắc chạy dọc thực quản.</span>
+        </span>
+      </p>
     </div>
-    <div class="vyl-row">
-      <div class="img-box vyl-box">
-        <img src="" alt="chiến dịch 2">
-        [sự thăng hoa kiệt quệ]
-      </div>
-      <div class="vyl-text" style="text-align: right;">
-        Giữa bóng tối ướt sũng, ý tưởng là chiếc phao còn sót lại. Phải học cách thở dưới áp lực.
+    <div class="video-col">
+      <div class="video-container">
+        <video autoplay loop muted playsinline><source src="video3.mp4" type="video/mp4"></video>
+        <div class="video-caption">đêm trắng rạch nát</div>
       </div>
     </div>
   </section>
 
   <section id="page-remake">
-    <div class="remake-wrapper">
-      <div class="img-box remake-layer l1">
-        <img src="" alt="quá trình 1">
-        [mảnh vỡ 1]
-        <div class="remake-desc">Ngày cẩn trọng kéo bản thân lên từ vực sâu. Quá trình lột xác đầy đau đớn.</div>
-      </div>
-      <div class="img-box remake-layer l2">
-        <img src="" alt="quá trình 2">
-        [mảnh vỡ 2]
-        <div class="remake-desc" style="right: auto; left: -20%; top: 60%; text-align: right;">Không phải để trở về hình dáng cũ, mà tạo ra cấu trúc mới vững chãi hơn.</div>
-      </div>
-      <div class="img-box remake-layer l3">
-        <img src="" alt="thành phẩm">
-        [hình hài mới]
-        <div class="remake-desc" style="top: 80%;">Lần đầu thấy mình khô ráo và ấm áp. Vết sẹo vẫn ở đó, nhưng không còn rỉ máu.</div>
+    <div class="text-col">
+      <h1>hình hài mới.</h1>
+      <p>Ngày cẩn trọng kéo bản thân lên từ vực sâu thăm thẳm. Lần đầu thấy mình khô ráo và ấm áp.</p>
+      <p>Không phải để trở về hình dáng cũ, mà tạo ra một cấu trúc mới vững chãi hơn. 
+        <span class="sub-text-wrapper">
+          <span class="surface-text">Sự chữa lành trọn vẹn.</span>
+          <span class="deep-text">Vết sẹo vẫn ở đó, chỉ là ngừng rỉ máu.</span>
+        </span>
+      </p>
+    </div>
+    <div class="video-col">
+      <div class="video-container" style="clip-path: polygon(10% 10%, 90% 10%, 90% 90%, 10% 90%);"> <video autoplay loop muted playsinline><source src="video4.mp4" type="video/mp4"></video>
+        <div class="video-caption">hơi thở</div>
       </div>
     </div>
   </section>
 </main>
 
 <script>
+  // KHO CHỨA NHẠC NHƯ CŨ
+  const soundtracks = {
+    'page-thy': 'nhac1.mp3',
+    'page-tedx': 'nhac2.mp3',
+    'page-vyl': 'nhac3.mp3',
+    'page-remake': 'nhac4.mp3'
+  };
+
+  const audio = document.getElementById('bg-audio');
+  const audioBtn = document.getElementById('audio-control');
+  let isPlaying = false;
+  let currentTrackId = 'page-thy';
+  audio.src = soundtracks[currentTrackId];
+
+  function toggleAudio() {
+    if (isPlaying) { audio.pause(); audioBtn.innerText = '[ play flow ]'; audioBtn.style.opacity = '0.3'; } 
+    else { audio.play(); audioBtn.innerText = '[ muting ]'; audioBtn.style.opacity = '1'; }
+    isPlaying = !isPlaying;
+  }
+
+  function fluidAudioTransition(newPageId) {
+    const newSrc = soundtracks[newPageId];
+    if (!isPlaying || currentTrackId === newPageId) { audio.src = newSrc; currentTrackId = newPageId; return; }
+    currentTrackId = newPageId;
+    let fadeOut = setInterval(() => {
+      if (audio.volume > 0.1) audio.volume -= 0.1;
+      else {
+        clearInterval(fadeOut); audio.volume = 0; audio.pause();
+        audio.src = newSrc; audio.play();
+        let fadeIn = setInterval(() => {
+          if (audio.volume < 0.9) audio.volume += 0.1; else { audio.volume = 1; clearInterval(fadeIn); }
+        }, 150);
+      }
+    }, 100);
+  }
+
+  // LOGIC CHUYỂN TRANG & BƠM MÁU VÀO SỢI CHỈ
   function switchPage(pageId) {
-    // Tắt class active của tất cả section
-    const sections = document.querySelectorAll('section');
-    sections.forEach(sec => {
-      sec.classList.remove('active');
-      // Hack nhỏ để reset CSS animation bằng cách reflow
-      void sec.offsetWidth; 
-    });
+    fluidAudioTransition(pageId);
 
-    // Tắt class active của các link nav
+    // Kích hoạt Sợi chỉ sinh mệnh chạy từ trên xuống
+    const blood = document.getElementById('blood');
+    blood.style.height = '0%'; // Rút về
+    setTimeout(() => { blood.style.height = '100%'; }, 50); // Bơm đầy xuống
+
+    document.querySelectorAll('section').forEach(sec => sec.classList.remove('active'));
     document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
-
-    // Kích hoạt trang mới
-    const targetSection = document.getElementById(pageId);
-    targetSection.classList.add('active');
     
-    // Kích hoạt nút nav tương ứng
+    document.getElementById(pageId).classList.add('active');
     document.getElementById('nav-' + pageId.split('-')[1]).classList.add('active');
   }
+
+  // Chạy sợi chỉ lần đầu khi load trang
+  window.onload = () => { document.getElementById('blood').style.height = '100%'; };
 </script>
 
 </body>
