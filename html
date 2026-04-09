@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thy - Lấy Lại Hình Hài</title>
+<style>
+  body {
+    margin: 0;
+    background-color: #030303;
+    color: #e0e0e0;
+    font-family: 'Courier New', Courier, monospace;
+    overflow-x: hidden;
+    cursor: none; /* Dùng cursor tùy chỉnh */
+  }
+
+  nav {
+    display: flex;
+    gap: 30px;
+    padding: 30px;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+    mix-blend-mode: difference;
+    justify-content: center;
+  }
+
+  nav a {
+    color: #fff;
+    text-decoration: none;
+    text-transform: lowercase;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: letter-spacing 0.4s ease, opacity 0.4s ease, color 0.4s ease;
+    opacity: 0.7;
+  }
+
+  nav a:hover, nav a.active-nav {
+    opacity: 1;
+    letter-spacing: 5px;
+    color: #fff;
+    text-shadow: 0 0 10px rgba(255,255,255,0.5);
+  }
+
+  main {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+  }
+
+  section {
+    display: none;
+    padding: 150px 20px 100px;
+    min-height: 100vh;
+    max-width: 900px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 10;
+  }
+
+  section.active {
+    display: block;
+  }
+
+  .layer {
+    opacity: 0;
+    filter: blur(10px);
+    transform: translateY(30px);
+    transition: all 1.5s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .layer.visible {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0);
+  }
+
+  /* --- Các loại suy nghĩ ẩn --- */
+  
+  /* Loại 1: Hover để hiện (như cũ) */
+  .thought-reveal {
+    display: block;
+    color: #090909; /* Gần như đen hoàn toàn */
+    margin: 40px 0;
+    font-size: 0.9rem;
+    font-style: italic;
+    transition: color 1s ease, text-shadow 1s ease;
+  }
+
+  .thought-reveal:hover {
+    color: #d0d0d0;
+    text-shadow: 0 0 10px rgba(200, 200, 200, 0.7);
+  }
+
+  /* Loại 2: Giữ chuột để gom lại (mô tả sự bấu víu) */
+  .thought-cling {
+    display: block;
+    color: #111;
+    margin: 50px 0;
+    font-size: 1rem;
+    letter-spacing: 8px; /* Ban đầu rã rời */
+    transition: letter-spacing 2s ease, color 1s ease;
+  }
+  
+  .thought-cling:active {
+    letter-spacing: 1px; /* Gom lại khi bấu víu */
+    color: #fff;
+  }
+
+  /* Loại 3: Click để vỡ vụn (mô tả sự đổ vỡ) */
+  .thought-shatter {
+    display: block;
+    color: #222;
+    margin: 50px 0;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.5s ease;
+  }
+  .thought-shatter.shattered {
+    animation: shatterEffect 0.5s forwards;
+    pointer-events: none;
+  }
+  @keyframes shatterEffect {
+    0% { transform: scale(1); opacity: 1; filter: blur(0); }
+    100% { transform: scale(1.5); opacity: 0; filter: blur(20px); }
+  }
+
+  /* --- Khoảng trống ảnh --- */
+  .img-placeholder {
+    width: 100%;
+    height: 500px;
+    border: 1px solid #1a1a1a;
+    margin: 70px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #333;
+    background: #050505;
+    transition: border-color 0.8s ease, box-shadow 0.8s ease;
+    text-transform: lowercase;
+    letter-spacing: 2px;
+    font-size: 0.8rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .img-placeholder::after {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 50%; height: 100%;
+    background: linear-gradient(to right, transparent, rgba(255,255,255,0.03), transparent);
+    transition: left 0.8s;
+  }
+
+  .img-placeholder:hover {
+    border-color: #444;
+    box-shadow: 0 0 20px rgba(255,255,255,0.05);
+  }
+  
+  .img-placeholder:hover::after {
+    left: 100%;
+  }
+
+  /* --- Text styles --- */
+  h1 {
+    font-size: 3rem;
+    font-weight: normal;
+    margin-bottom: 70px;
+    letter-spacing: 2px;
+    color: #fff;
+  }
+
+  p {
+    line-height: 2.4;
+    letter-spacing: 0.7px;
+    margin-bottom: 50px;
+    font-size: 1rem;
+    max-width: 700px;
+  }
+  
+  .highlight {
+    color: #fff;
+    font-weight: bold;
+  }
+
+  /* --- Khu vực tự vấn (Reflection) --- */
+  .reflection-box {
+    border-left: 2px solid #1a1a1a;
+    padding-left: 40px;
+    margin: 80px 0;
+    color: #444;
+    transition: border-color 1s ease, color 1s ease;
+    max-width: 600px;
+  }
+
+  .reflection-box:hover {
+    border-color: #fff;
+    color: #aaa;
+  }
+
+  .reflection-title {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 5px;
+    margin-bottom: 25px;
+    color: #333;
+    transition: color 1s ease;
+  }
+  
+  .reflection-box:hover .reflection-title {
+    color: #fff;
+  }
+
+  /* --- Con trỏ tùy chỉnh --- */
+  #custom-cursor {
+    position: fixed;
+    width: 20px;
+    height: 20px;
+    border: 1px solid #fff;
+    border-radius: 50%;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    z-index: 10000;
+    transition: width 0.3s ease, height 0.3s ease, background-color 0.3s ease;
+  }
+
+  body:active #custom-cursor {
+    width: 10px;
+    height: 10px;
+    background-color: #fff;
+  }
+
+  #cursor-blur {
+    position: fixed;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+  }
+  
+  /* Hiệu ứng 'rơi' khi chuyển trang */
+  .fall-down {
+    animation: fallDownEffect 1.5s forwards cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  
+  @keyframes fallDownEffect {
+    0% { transform: translateY(-50px); opacity: 0; filter: blur(10px); }
+    100% { transform: translateY(0); opacity: 1; filter: blur(0); }
+  }
+
+</style>
+</head>
+<body>
+
+<div id="custom-cursor"></div>
+<div id="cursor-blur"></div>
+
+<nav>
+  <a onclick="showSection('overview')" id="nav-overview">bản ngã</a>
+  <a onclick="showSection('tedx')" id="nav-tedx">tedxftu</a>
+  <a onclick="showSection('vyl')" id="nav-vyl">young lions</a>
+  <a onclick="showSection('remake')" id="nav-remake">remake remac</a>
+</nav>
+
+<main id="main-content">
+  <section id="overview" class="active fall-down">
+    <h1 class="layer">mảnh gỗ mục rệu rã</h1>
+    
+    <p class="layer">Đèn đường chao nghiêng. Những <span class="highlight">vệt mật ong sóng sánh</span> đổ xuống mặt lộ.</p>
+    
+    <div class="img-placeholder layer">
+      khoảng trống ảnh chân dung - <br>
+      nơi dung nhan ẩn hiện trong bóng tối
+    </div>
+    
+    <span class="thought-reveal layer">Bầu không khí đặc sệt tràn vào phổi sau mỗi nhịp thở hụt.</span>
+    
+    <p class="layer">Ngân bám vào anh như nhành dây leo ký sinh. Ủy thác hết nhựa sống vào cái điểm tựa ngỡ là vĩnh cửu.</p>
+    
+    <span class="thought-cling layer">Giữ chuột để thấy sự bấu víu tuyệt vọng... <br> Cô chỉ sợ nếu mình chớp mắt, mọi thứ sẽ vỡ vụn.</span>
+
+    <div class="reflection-box layer">
+      <div class="reflection-title">tự vấn về sự tồn tại</div>
+      <p>Viết về khoảnh khắc em nhận ra mình chẳng còn chút sức lực nào để bấu víu vào bất cứ đâu. Viết về ranh giới mỏng manh giữa việc buông xuôi và cố ngoi lên mặt nước. Em là chiếc vỏ ốc rỗng tuếch, hay là đại dương đang nuốt chửng nó?</p>
+    </div>
+    
+    <p class="layer">Đùng. Tiếng sấm rạch ngang trời. Bóng tối ùa vào đặc quánh. 00:00. Ngân tỉnh giấc.</p>
+    
+    <span class="thought-shatter layer" onclick="shatterThought(this)">Click để phá vỡ sự im lặng... <br> 21.2, tình cờ thật.</span>
+    
+    <div class="img-placeholder layer">
+      khoảng trống ảnh góc tối - <br>
+      nơi nỗi đau được nuôi dưỡng
+    </div>
+  </section>
+
+  <section id="tedx">
+    <h1 class="layer">ánh đèn và điểm mù</h1>
+    
+    <p class="layer">Những luồng sáng đan chéo nhau trên sân khấu. Một không gian rộng lớn để nhào nặn những khối óc và truyền đi thông điệp.</p>
+    
+    <div class="img-placeholder layer">
+      khoảng trống ảnh hậu trường tedx - <br>
+      sự hỗn loạn trước giờ G
+    </div>
+    
+    <span class="thought-reveal layer">Chỉ sợ nếu mình chớp mắt mọi thứ sẽ vỡ vụn ngay trước mặt đám đông.</span>
+    
+    <div class="img-placeholder layer">
+      khoảng trống ảnh sân khấu tedx - <br>
+      tâm điểm của sự chú ý
+    </div>
+    
+    <p class="layer">Đứng giữa trung tâm của sự chú ý nhưng đôi khi lại cảm thấy mình tàng hình. Áp lực của sự hoàn hảo đè nặng lên từng nếp nhăn của não bộ.</p>
+    
+    <span class="thought-cling layer">Vỏ bọc càng rực rỡ bên trong càng dễ trống rỗng. Giữ chuột để gom lại sự tự tin...</span>
+
+    <div class="reflection-box layer">
+      <div class="reflection-title">tự vấn sau cánh gà</div>
+      <p>Kể về những giọt mồ hôi lạnh toát. Về nụ cười phải giữ đúng biên độ dù bên trong cơn triều xanh xám đang chực chờ dâng lên. Ánh đèn sân khấu có làm ấm được tâm hồn khô ráo của Ngân?</p>
+    </div>
+    
+    <div class="img-placeholder layer">
+      khoảng trống ảnh diễn giả/team tedx - <br>
+      những gương mặt đồng hành
+    </div>
+  </section>
+
+  <section id="vyl">
+    <h1 class="layer">tiếng giày gõ nhịp neon</h1>
+    
+    <p class="layer">Những <span class="highlight">vệt sáng neon rực rỡ</span> lướt qua. Trí tuệ bị ép đến giới hạn cuối cùng trong những đêm không ngủ.</p>
+    
+    <div class="img-placeholder layer">
+      khoảng trống ảnh chiến dịch vyl - <br>
+      sản phẩm của sự kiệt quệ rực rỡ
+    </div>
+    
+    <span class="thought-reveal layer">Quờ quạng trên bàn. Vội lấy vỉ bạc.</span>
+    
+    <p class="layer Highlight">Một viên Fluoxetine 20mg.</p>
+    
+    <span class="thought-shatter layer" onclick="shatterThought(this)">Click để nuốt trọn vị đắng... <br> Vị đắng buốt sắc như mảnh kim loại chạy dọc thực quản.</span>
+    
+    <p class="layer">Giữa bóng tối ướt sũng viên thuốc là chiếc phao còn sót lại. Phải học cách thở dưới nước để không phải một lần nữa chìm rất sâu.</p>
+    
+    <span class="thought-reveal layer">Tuyệt đối không được quên thuốc. Tuyệt đối không được gục ngã.</span>
+
+    <div class="reflection-box layer">
+      <div class="reflection-title">tự vấn về cái giá của sáng tạo</div>
+      <p>Nhìn lại những ý tưởng điên rồ được sinh ra từ trạng thái kiệt quệ. Em đã đánh đổi bao nhiêu phần bình yên để đổi lấy những giải pháp sắc bén kia? Sư tử trẻ có sợ bóng tối của chính mình?</p>
+    </div>
+    
+    <div class="img-placeholder layer">
+      khoảng trống ảnh team/giải thưởng vyl - <br>
+      vinh quang và vết sẹo
+    </div>
+  </section>
+
+  <section id="remake">
+    <h1 class="layer">tái tạo lại hình hài</h1>
+    
+    <p class="layer">Ngày cẩn trọng kéo bản thân lên từ vực sâu thăm thẳm. Lần đầu sau bao nhiêu ngày tháng thấy mình <span class="highlight">khô ráo và ấm áp</span>.</p>
+    
+    <div class="img-placeholder layer">
+      khoảng trống ảnh quá trình remake - <br>
+      những mảnh vỡ được nhặt lại
+    </div>
+    
+    <span class="thought-reveal layer">Sự lột xác nào cũng đi kèm với những cơn đau xé thịt.</span>
+    
+    <p class="layer">Gắn kết lại những mảnh vỡ. Không phải để trở về hình dáng cũ mà để tạo ra một cấu trúc mới vững chãi hơn, chấp nhận tì vết.</p>
+    
+    <span class="thought-cling layer">Giữ chuột để chữa lành... <br> Vết sẹo vẫn ở đó nhưng nó không còn rỉ máu nữa.</span>
+
+    <div class="reflection-box layer">
+      <div class="reflection-title">tự vấn về sự chữa lành</div>
+      <p>Ghi lại hành trình bóc tách từng lớp vỏ cũ kỹ. Điều gì đã thực sự chữa lành em, hay em chỉ đang học cách sống chung với những mảnh sắc nhọn? Remake là làm mới, hay là chấp nhận bản ngã cũ?</p>
+    </div>
+    
+    <div class="img-placeholder layer">
+      khoảng trống ảnh thành quả remake - <br>
+      hình hài mới đầy kiêu hãnh
+    </div>
+  </section>
+</main>
+
+<script>
+  // Quản lý chuyển phần
+  function showSection(id) {
+    // Ẩn tất cả các phần và loại bỏ các lớp hiệu ứng
+    document.querySelectorAll('section').forEach(s => {
+      s.classList.remove('active', 'fall-down');
+      s.querySelectorAll('.layer').forEach(l => l.classList.remove('visible'));
+    });
+    
+    // Bỏ kích hoạt tất cả các liên kết điều hướng
+    document.querySelectorAll('nav a').forEach(a => a.classList.remove('active-nav'));
+
+    // Hiển thị phần được chọn
+    const activeSec = document.getElementById(id);
+    activeSec.classList.add('active');
+    
+    // Thêm hiệu ứng rơi cho phần nội dung chính
+    activeSec.classList.add('fall-down');
+    
+    // Kích hoạt liên kết điều hướng tương ứng
+    document.getElementById('nav-' + id).classList.add('active-nav');
+    
+    // Reset các suy nghĩ đã vỡ
+    document.querySelectorAll('.thought-shatter').forEach(t => t.classList.remove('shattered'));
+
+    // Hiển thị dần các lớp nội dung
+    setTimeout(() => {
+      revealLayers(activeSec);
+    }, 100);
+  }
+
+  // Hiệu ứng hiển thị dần
+  function revealLayers(section) {
+    const layers = section.querySelectorAll('.layer');
+    layers.forEach((layer, index) => {
+      setTimeout(() => {
+        layer.classList.add('visible');
+      }, index * 250); // Khoảng cách thời gian giữa các lớp
+    });
+  }
+
+  // Hiệu ứng vỡ vụn suy nghĩ
+  function shatterThought(element) {
+    element.classList.add('shattered');
+  }
+
+  // Quản lý con trỏ tùy chỉnh và hiệu ứng blur
+  const cursor = document.getElementById('custom-cursor');
+  const cursorBlur = document.getElementById('cursor-blur');
+
+  document.addEventListener('mousemove', (e) => {
+    // Cập nhật vị trí con trỏ
+    cursor.style.left = e.clientX + 'px';
+    cursor.style.top = e.clientY + 'px';
+    
+    // Cập nhật vị trí quầng sáng mờ
+    cursorBlur.style.left = e.clientX + 'px';
+    cursorBlur.style.top = e.clientY + 'px';
+  });
+
+  // Hiển thị phần đầu tiên khi tải trang
+  document.addEventListener('DOMContentLoaded', () => {
+    showSection('overview');
+  });
+</script>
+
+</body>
+</html>
