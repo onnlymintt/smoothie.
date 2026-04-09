@@ -3,180 +3,232 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hiến Tế - Minh Thy</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<title>Chìm Sâu - Minh Thy</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Space+Mono:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #000000;
-    --text-main: #cccccc;
-    --accent: #b30000; /* Máu sẫm */
-    --gold: #b38b4d; /* Ngai vàng hoen gỉ */
+    --honey: #dcb871; /* Vệt mật ong */
+    --deep-blue: #09121b; /* Đáy nước xanh xám */
+    --text-main: #d1d5db;
+    --text-dim: #6b7280;
+    --bg-start: #0a0a0a;
   }
 
   * { box-sizing: border-box; cursor: none !important; margin: 0; padding: 0; }
   
   body, html {
-    background-color: var(--bg); color: var(--text-main);
+    background-color: var(--bg-start); color: var(--text-main);
     font-family: 'Cormorant Garamond', serif; overflow-x: hidden;
     scroll-behavior: smooth;
   }
 
-  /* CUSTOM CURSOR - CON MẮT / VẾT CÀO */
-  #cursor {
-    position: fixed; top: 0; left: 0; width: 15px; height: 15px;
-    background: #fff; border-radius: 50%; pointer-events: none;
-    transform: translate(-50%, -50%); z-index: 999999;
-    mix-blend-mode: difference; transition: width 0.3s, height 0.3s, border-radius 0.3s;
+  /* CHUYỂN MÀU NỀN THEO CHIỀU SÂU CỦA NƯỚC */
+  .bg-gradient {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background: linear-gradient(180deg, var(--bg-start) 0%, var(--deep-blue) 100%);
+    z-index: -2;
   }
-  #cursor.scratching { width: 40px; height: 40px; background: transparent; border: 2px solid var(--accent); border-radius: 0%; transform: translate(-50%, -50%) rotate(45deg); }
 
-  /* OVERLAY NOISE */
-  .noise {
+  /* HIỆU ỨNG NOISE PHIM CŨ */
+  .film-grain {
     position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
     background: url('https://www.transparenttextures.com/patterns/stardust.png');
-    opacity: 0.15; z-index: 999990; pointer-events: none; mix-blend-mode: screen;
+    opacity: 0.2; z-index: 9999; pointer-events: none; mix-blend-mode: overlay;
   }
 
-  /* TYPOGRAPHY DÀNH CHO SỰ ĐIÊN RỒ */
-  h1 { font-size: 5vw; font-style: italic; line-height: 1; letter-spacing: -2px; color: #fff; }
-  p { font-family: 'Space Mono', monospace; font-size: 1.1rem; line-height: 2.2; color: #888; }
-  .highlight { color: var(--accent); font-weight: bold; }
-  .gold-text { color: var(--gold); font-family: 'Cormorant Garamond', serif; font-size: 2.5rem; font-style: italic; }
+  /* CUSTOM CURSOR - ÁNH SÁNG DƯỚI NƯỚC */
+  #cursor {
+    position: fixed; width: 20px; height: 20px;
+    background: radial-gradient(circle, rgba(220,184,113,0.8) 0%, rgba(220,184,113,0) 70%);
+    border-radius: 50%; pointer-events: none; transform: translate(-50%, -50%);
+    z-index: 10000; transition: width 0.3s, height 0.3s; mix-blend-mode: screen;
+  }
+  #cursor.hovering { width: 60px; height: 60px; background: radial-gradient(circle, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 70%); }
 
-  /* ====================================================
-     SCENE 1: THE INVASION (CUỘC XÂM LĂNG TÂM TRÍ)
-     ==================================================== */
-  #scene-1 {
-    position: relative; width: 100vw; min-height: 150vh; padding: 15vh 10vw;
-    display: flex; flex-direction: column; justify-content: center;
-  }
-  .s1-text { max-width: 60vw; z-index: 100; mix-blend-mode: difference; position: relative; }
-  
-  /* GHOST TRAIL CONTAINER (Lưu trữ ảnh bay theo chuột) */
-  #ghost-trail { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 10; }
-  .ghost-img {
-    position: absolute; width: 250px; height: 350px; object-fit: cover;
-    opacity: 0; transform: translate(-50%, -50%) scale(0.8);
-    transition: opacity 0.5s, transform 0.5s; filter: grayscale(100%) contrast(150%);
-    box-shadow: 0 0 30px rgba(0,0,0,0.9);
-  }
+  /* CANVAS BỌT NƯỚC */
+  #water-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none; opacity: 0.5; }
 
-  /* ====================================================
-     SCENE 2: THE SHATTERED MIRROR (TẤM GƯƠNG THỰC TẠI)
-     ==================================================== */
-  #scene-2 {
-    position: relative; width: 100vw; min-height: 150vh; padding: 10vh 5vw;
-    background: #020202; display: flex; align-items: center; justify-content: space-between;
+  /* AUDIO PLAYER TỐI GIẢN */
+  .audio-player {
+    position: fixed; bottom: 40px; right: 40px; z-index: 1000;
+    display: flex; align-items: center; gap: 15px;
   }
-  .s2-text { width: 40%; z-index: 100; }
-  .mirror-container {
-    width: 50%; height: 70vh; position: relative; cursor: crosshair;
-    perspective: 1000px;
+  .audio-btn {
+    width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--text-dim);
+    display: flex; align-items: center; justify-content: center; transition: 0.4s;
+    background: rgba(0,0,0,0.3); backdrop-filter: blur(5px);
   }
-  /* Lớp Video nền */
-  .mirror-video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.3; filter: grayscale(100%); z-index: 1; }
-  /* Lớp Kính vỡ */
-  .glass-shard {
-    position: absolute; background-size: 100% 100%; background-position: center;
-    transition: all 1.2s cubic-bezier(0.19, 1, 0.22, 1); z-index: 5;
-    border: 1px solid rgba(255,255,255,0.1);
-  }
-  /* Lời kêu gọi ẩn sau gương */
-  .hidden-scream {
-    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    font-size: 4rem; color: var(--accent); z-index: 2; opacity: 0; transition: 1s;
-    text-align: center; white-space: nowrap; font-style: italic;
-  }
+  .audio-btn.playing { border-color: var(--honey); box-shadow: 0 0 15px rgba(220,184,113,0.3); }
+  .audio-btn::inner { content: ''; width: 8px; height: 8px; background: var(--text-dim); border-radius: 50%; transition: 0.4s; }
+  .audio-btn.playing::inner { background: var(--honey); }
+  .track-name { font-family: 'Space Mono', monospace; font-size: 0.65rem; letter-spacing: 3px; color: var(--text-dim); text-transform: uppercase; }
 
-  /* ====================================================
-     SCENE 3: THE BLOOD SACRIFICE (CÀO RÁCH MÀN ĐÊM)
-     ==================================================== */
-  #scene-3 {
-    position: relative; width: 100vw; height: 100vh; overflow: hidden;
+  /* THANH ĐIỀU HƯỚNG DỌC */
+  nav { position: fixed; top: 50%; left: 40px; transform: translateY(-50%); display: flex; flex-direction: column; gap: 40px; z-index: 100; }
+  nav a {
+    color: var(--text-dim); text-decoration: none; font-family: 'Space Mono', monospace;
+    font-size: 0.65rem; letter-spacing: 5px; writing-mode: vertical-rl; transform: rotate(180deg);
+    transition: 0.4s; opacity: 0.5;
   }
-  /* Nội dung THẬT nằm bên dưới */
-  .truth-content {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    display: flex; align-items: center; justify-content: center;
-    background: #000; padding: 10vw; z-index: 1; flex-direction: column; text-align: center;
+  nav a.active { color: var(--honey); opacity: 1; letter-spacing: 8px; }
+
+  /* TYPOGRAPHY CHÍNH */
+  h1 { font-size: 3.5rem; font-style: italic; font-weight: 300; margin-bottom: 30px; letter-spacing: 1px; color: #fff; }
+  p { font-size: 1.15rem; line-height: 2.2; margin-bottom: 25px; color: #aaa; }
+  .highlight { color: var(--honey); }
+  .time-stamp { font-family: 'Space Mono', monospace; font-size: 0.9rem; color: var(--text-dim); letter-spacing: 2px; margin-bottom: 20px; display: block; }
+
+  /* LAYOUT CHUẨN: CHỮ VÀ ẢNH KHÔNG ĐÈ NHAU */
+  .section-container {
+    min-height: 100vh; width: 100%; padding: 15vh 10vw 15vh 15vw;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8vw; align-items: center;
+    opacity: 0; transform: translateY(30px); transition: opacity 1.5s ease, transform 1.5s ease;
   }
-  .truth-content h1 { font-size: 6vw; margin-bottom: 20px; color: #fff; }
-  .truth-content p { font-size: 1.5rem; color: #aaa; max-width: 800px; }
-  
-  /* Khung ảnh nằm rải rác dưới lớp máu */
-  .truth-img { position: absolute; opacity: 0.6; filter: sepia(50%) hue-rotate(-30deg); }
-  .truth-img:nth-child(1) { width: 300px; top: 10%; left: 10%; transform: rotate(-10deg); }
-  .truth-img:nth-child(2) { width: 250px; bottom: 15%; right: 15%; transform: rotate(15deg); }
-  
-  /* Lớp Canvas Máu phủ lên trên cùng */
-  #blood-canvas {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    z-index: 50; /* Top most interaction layer */
+  .section-container.visible { opacity: 1; transform: translateY(0); }
+
+  .text-zone { display: flex; flex-direction: column; justify-content: center; }
+  .visual-zone { display: flex; align-items: center; justify-content: center; position: relative; width: 100%; height: 100%; }
+
+  /* KHUNG MEDIA ĐIỆU NGHỆ */
+  .media-frame {
+    position: relative; overflow: hidden; background: #000;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.05);
+    transition: transform 0.5s ease;
   }
+  .media-frame img, .media-frame video {
+    width: 100%; height: 100%; object-fit: cover; opacity: 0.7; filter: grayscale(80%) sepia(10%);
+    transition: all 0.8s ease;
+  }
+  .media-frame:hover { transform: translateY(-10px); z-index: 10; border-color: rgba(220,184,113,0.3); }
+  .media-frame:hover img, .media-frame:hover video { opacity: 1; filter: grayscale(0%) sepia(0%); transform: scale(1.05); }
+
+  /* SẮP ĐẶT ẢNH CHO TỪNG TRANG */
+  /* Trang 1: 2 Ảnh Polaroid lệch nhau */
+  .p1-img-1 { width: 70%; aspect-ratio: 3/4; position: absolute; top: 0; left: 0; }
+  .p1-img-2 { width: 60%; aspect-ratio: 4/5; position: absolute; bottom: 0; right: 0; }
+
+  /* Trang 2: 3 Ảnh Masonry/Bậc thang */
+  .p2-img-1 { width: 50%; aspect-ratio: 1/1; position: absolute; top: 10%; left: 0; }
+  .p2-img-2 { width: 55%; aspect-ratio: 3/4; position: absolute; top: 30%; right: 0; }
+  .p2-img-3 { width: 60%; aspect-ratio: 16/9; position: absolute; bottom: 10%; left: 10%; }
+
+  /* Trang 3 (Young Lions): 1 Video To + 1 Ảnh Nhỏ đính kèm */
+  .vyl-video { width: 90%; aspect-ratio: 16/9; position: relative; z-index: 2; }
+  .vyl-img { width: 40%; aspect-ratio: 3/4; position: absolute; bottom: -10%; right: 0; z-index: 3; }
+
+  /* Trang 4 (Chữa Lành): 2 Ảnh nằm ngang và dọc */
+  .p4-img-1 { width: 80%; aspect-ratio: 16/9; position: absolute; top: 10%; right: 0; }
+  .p4-img-2 { width: 60%; aspect-ratio: 3/4; position: absolute; bottom: 10%; left: 10%; }
 
 </style>
 </head>
 <body>
 
-<div class="noise"></div>
+<div class="bg-gradient"></div>
+<div class="film-grain"></div>
+<canvas id="water-canvas"></canvas>
 <div id="cursor"></div>
 
-<div id="ghost-trail"></div>
-
 <audio id="bg-audio" loop><source src="drowninglove.mp3" type="audio/mpeg"></audio>
+<div class="audio-player interactable" onclick="toggleAudio()">
+  <div class="track-name" id="track-name">silence</div>
+  <div class="audio-btn" id="audio-btn"><div style="width: 8px; height: 8px; background: var(--text-dim); border-radius: 50%; transition: 0.4s;" id="audio-dot"></div></div>
+</div>
 
-<section id="scene-1">
-  <div class="s1-text">
-    <h1 style="margin-bottom: 40px;">Tiếng vỗ tay cướp đi nhịp thở.</h1>
+<nav>
+  <a href="#scene-1" class="nav-link active">ánh_đèn</a>
+  <a href="#scene-2" class="nav-link">tỉnh_giấc</a>
+  <a href="#scene-3" class="nav-link">đáy_sâu</a>
+  <a href="#scene-4" class="nav-link">chiếc_phao</a>
+</nav>
+
+<section class="section-container" id="scene-1">
+  <div class="text-zone">
+    <h1>Nhịp phim cũ.</h1>
     <p>
-      Họ hò vang. Họ tung hô và bảo tôi nhập vai thật đấy. Nhưng tôi thừa biết, ngay giây phút của thật giả lẫn lộn, đó là một cuộc xâm lăng tàn bạo của tâm trí.
-      <br><br>
-      Tôi nghĩ để đứng được trên đỉnh cao của nghề này, tôi cần một <span class="highlight">cơn say máu huy hoàng</span>. Tôi phải tự tay xé toạc linh hồn mình ra làm trăm mảnh vụn, hiến tế dòng máu nóng này cho những kẻ xa lạ vay mượn sự sống. 
-      <br><br>
-      Tôi mời gọi những con quỷ tưởng chừng chỉ nằm trên những khuôn giấy để ngự trị lên <span class="gold-text">ngai vàng của lý trí</span>, để chúng thoả sức giày xéo, cào cấu vào tiềm thức của tôi.
+      Đèn đường chao nghiêng, đổ những <span class="highlight">vệt mật ong sóng sánh</span> xuống mặt lộ. Ngân bước đi giữa những quầng sáng neon rực rỡ, tiếng giày gõ đều như nhịp phim cũ.
     </p>
-  </div>
-  <div style="position: absolute; bottom: 5vh; right: 5vw; font-family: 'Space Mono'; color: var(--accent); font-size: 0.8rem; letter-spacing: 5px;">[ CUỘN XUỐNG ĐỂ CHÌM SÂU HƠN ]</div>
-</section>
-
-<section id="scene-2">
-  <div class="s2-text">
-    <h1>Kẻ trừng mắt nhìn ta là ai?</h1>
-    <p style="margin-top: 30px;">
-      Tiếng vỗ tay dưới kia nghe như tiếng sấm rền của một cơn bão điên cuồng, còn tôi đứng giữa tâm bão, cười ngạo nghễ mà lệ tuôn như mưa lũ. 
-      <br><br>
-      Tôi mang lên mình lớp mặt nạ nhưng đã từ khi nào tôi không còn có khả năng tháo nó xuống. Khi màn nhung khép lại, tôi nhìn vào gương và thét lên câm lặng: Hắn là vua chúa, là tên ăn mày, hay là kẻ sát nhân máu lạnh?
-      <br><br>
-      <span style="color: #fff; font-size: 1.2rem;">Tôi hoảng loạn đập vỡ tấm gương thực tại, bởi tôi đã vĩnh viễn đánh mất lối về trong mê cung của hàng vạn kiếp người.</span>
+    <p>
+      Nhật dừng lại, siết lấy cổ tay cô. Ánh nhìn anh sâu thẳm, phong kín cả thời gian. 
+      Ngân bám vào anh như nhành dây leo ký sinh, ủy thác hết nhựa sống vào cái điểm tựa ngỡ là vĩnh cửu ấy. 
+    </p>
+    <p style="font-style: italic; color: #fff;">
+      Cô chỉ sợ nếu mình chớp mắt, mọi thứ sẽ vỡ vụn.
     </p>
   </div>
   
-  <div class="mirror-container" id="mirror-box">
-    <video class="mirror-video" src="link_video_cua_em.mp4" autoplay loop muted></video>
-    <div class="hidden-scream" id="scream-text">LẠC LỐI</div>
+  <div class="visual-zone">
+    <div class="media-frame p1-img-1 interactable"><img src="link_anh_neon_1.jpg" alt="Neon 1"></div>
+    <div class="media-frame p1-img-2 interactable"><img src="link_anh_neon_2.jpg" alt="Neon 2"></div>
+  </div>
+</section>
+
+<section class="section-container" id="scene-2" style="grid-template-columns: 1.2fr 0.8fr;">
+  <div class="visual-zone">
+    <div class="media-frame p2-img-1 interactable"><img src="link_anh_ted_1.jpg" alt="Memory 1"></div>
+    <div class="media-frame p2-img-2 interactable"><img src="link_anh_ted_2.jpg" alt="Memory 2"></div>
+    <div class="media-frame p2-img-3 interactable"><img src="link_anh_ted_3.jpg" alt="Memory 3"></div>
+  </div>
+
+  <div class="text-zone" style="padding-left: 3vw;">
+    <span class="time-stamp">Đùng. Tiếng sấm rạch ngang trời.</span>
+    <p>
+      Bóng tối ùa vào đặc quánh.<br>
+      <span style="font-family: 'Space Mono'; font-size: 2rem; color: #fff;">00:00</span><br>
+      Ngân tỉnh giấc.
+    </p>
+    <p>
+      21.2, tình cờ thật. 3 năm trước, trên vệ đường, ngày Nhật cẩn trọng kéo Ngân lên từ vực sâu thăm thẳm. Lần đầu, sau 25 năm, Ngân thấy mình khô ráo và ấm áp, nhờ Nhật.
+    </p>
+  </div>
+</section>
+
+<section class="section-container" id="scene-3">
+  <div class="text-zone">
+    <h1>Triều xanh xám.</h1>
+    <p>
+      Ong đầu quá. Lại một lần nữa cơn triều xanh xám dâng lên từ dưới chân, nhấn chìm căn phòng. Ga giường sũng nước, bầu không khí đặc sệt tràn vào phổi sau mỗi nhịp thở hụt. 
+    </p>
+    <p>
+      Ngân nằm đó, thấy mình rỗng tuếch như một chiếc <span class="highlight">vỏ ốc bị sóng đánh dạt vào bờ</span>, không còn gì bên trong ngoài sự lặng im đến rợn người.
+    </p>
+    <p>
+      Cái phao cứu sinh ba năm trước kia giờ chỉ còn là mẩu gỗ mục rệu rã giữa đại dương đen. Ngân không vùng vẫy, chỉ để mình <span style="font-style: italic; color: #fff;">rơi tự do xuống đáy sâu mười mét nước</span>. Ngân nhận ra mình chẳng còn chút sức lực nào để bấu víu vào bất cứ đâu.
+    </p>
+  </div>
+  
+  <div class="visual-zone">
+    <div class="media-frame vyl-video interactable">
+      <video src="link_video_young_lions.mp4" autoplay loop muted playsinline></video>
     </div>
+    <div class="media-frame vyl-img interactable">
+      <img src="link_anh_young_lions.jpg" alt="VYL Concept">
+    </div>
+  </div>
 </section>
 
-<section id="scene-3">
-  <div class="truth-content">
-    <img src="link_anh_hien_te_1.jpg" alt="" class="truth-img">
-    <img src="link_anh_hien_te_2.jpg" alt="" class="truth-img">
-    
-    <h1 style="color: var(--accent);">Đừng ai cứu tôi.</h1>
-    <p style="font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-style: italic; line-height: 1.5; color: #fff;">
-      Hãy để tôi chết, một cái chết rực rỡ và bi tráng. Bởi chỉ trong cơn hoang tưởng tột cùng ấy, khi ranh giới giữa Tôi và Nó bị xóa nhòa, tôi mới chạm tay được vào cái mà tôi hằng mong ước nhất, để Tôi được hoà vào Nó 1 lần và duy nhất.
+<section class="section-container" id="scene-4" style="grid-template-columns: 0.8fr 1.2fr;">
+  <div class="visual-zone">
+    <div class="media-frame p4-img-1 interactable"><img src="link_anh_thuoc_1.jpg" alt="Heal 1"></div>
+    <div class="media-frame p4-img-2 interactable"><img src="link_anh_thuoc_2.jpg" alt="Heal 2"></div>
+  </div>
+
+  <div class="text-zone" style="padding-left: 4vw;">
+    <span class="time-stamp">Fluoxetine 20mg.</span>
+    <p>
+      Quờ quạng trên bàn. Ngân vội lấy vỉ bạc. Một viên Fluoxetine 20mg. Vị đắng buốt sắc như mảnh kim loại chạy dọc thực quản.
     </p>
-    <p style="margin-top: 40px; border-top: 1px solid #333; padding-top: 20px;">
-      Là một diễn viên đại tài, tôi nắm giữ hỉ nộ ái ố nhân gian trong bàn tay, nhưng bất lực trước sự trống rỗng của chính mình. Tôi tự tay giết chết bản ngã của mình, để Nó được sống trong da thịt ấm nóng này. Nhờ có Nó, Tôi còn được sống thêm một tí nữa...
+    <p style="border-left: 2px solid var(--honey); padding-left: 20px;">
+      Giữa bóng tối ướt sũng và trống hoác, viên thuốc là chiếc phao còn sót lại. Ngân biết mình phải <span class="highlight">học cách thở dưới nước</span>. Tuyệt đối không được quên thuốc. 
+      <br><br>
+      Để không phải một lần nữa, chìm, chìm rất sâu.
     </p>
   </div>
-  
-  <canvas id="blood-canvas"></canvas>
 </section>
 
 <script>
   /* =========================================================
-     1. CUSTOM CURSOR & AUDIO TRICKS
+     1. CUSTOM CURSOR & INTERACTIONS
      ========================================================= */
   const cursor = document.getElementById('cursor');
   document.addEventListener('mousemove', (e) => {
@@ -184,196 +236,129 @@
     cursor.style.top = e.clientY + 'px';
   });
 
-  // Tự động bật nhạc khi user click bất kỳ đâu lần đầu
-  let audioPlayed = false;
-  document.addEventListener('click', () => {
-    if(!audioPlayed) {
-      document.getElementById('bg-audio').play();
-      audioPlayed = true;
-    }
+  document.querySelectorAll('.interactable').forEach(el => {
+    el.addEventListener('mouseenter', () => cursor.classList.add('hovering'));
+    el.addEventListener('mouseleave', () => cursor.classList.remove('hovering'));
   });
 
   /* =========================================================
-     2. GHOST TRAIL (HÀNG VẠN KIẾP NGƯỜI) - SCENE 1
+     2. AUDIO CONTROLS
      ========================================================= */
-  // Danh sách các link ảnh em muốn xuất hiện lởn vởn theo chuột
-  const ghostImages = [
-    "link_anh_mat_na_1.jpg", 
-    "link_anh_mat_na_2.jpg", 
-    "link_anh_mat_na_3.jpg",
-    "link_anh_mat_na_4.jpg"
-  ];
-  
-  const ghostContainer = document.getElementById('ghost-trail');
-  let lastGhostTime = 0;
-  let ghostIndex = 0;
+  const audio = document.getElementById('bg-audio');
+  const audioBtn = document.getElementById('audio-btn');
+  const audioDot = document.getElementById('audio-dot');
+  const trackName = document.getElementById('track-name');
+  let isPlaying = false;
 
-  document.addEventListener('mousemove', (e) => {
-    // Chỉ kích hoạt hiệu ứng Ghost khi đang cuộn ở Scene 1
-    if (window.scrollY > window.innerHeight) return;
-
-    let now = Date.now();
-    // Cứ mỗi 150ms di chuyển chuột sẽ đẻ ra 1 cái bóng
-    if (now - lastGhostTime > 150) {
-      let img = document.createElement('img');
-      img.src = ghostImages[ghostIndex % ghostImages.length];
-      img.className = 'ghost-img';
-      img.style.left = e.clientX + 'px';
-      img.style.top = e.clientY + 'px';
-      
-      // Random góc xoay để tạo sự hỗn loạn
-      let rot = (Math.random() - 0.5) * 40;
-      img.style.transform = `translate(-50%, -50%) scale(0.8) rotate(${rot}deg)`;
-      
-      ghostContainer.appendChild(img);
-      ghostIndex++;
-      lastGhostTime = now;
-
-      // Animation: Hiện ra rồi mờ dần chìm vào bóng tối
-      requestAnimationFrame(() => {
-        img.style.opacity = '0.4';
-        img.style.transform = `translate(-50%, -50%) scale(1.2) rotate(${rot}deg)`;
-      });
-
-      // Xóa ảnh sau 1.5 giây để không nặng máy
-      setTimeout(() => {
-        img.style.opacity = '0';
-        setTimeout(() => { if(img.parentNode) img.remove(); }, 500);
-      }, 1000);
+  function toggleAudio() {
+    if (isPlaying) { 
+      audio.pause(); 
+      audioBtn.classList.remove('playing'); 
+      audioDot.style.background = 'var(--text-dim)';
+      trackName.innerText = 'silence';
+    } else { 
+      audio.play(); 
+      audioBtn.classList.add('playing'); 
+      audioDot.style.background = 'var(--honey)';
+      trackName.innerText = 'drowninglove';
     }
-  });
-
-  /* =========================================================
-     3. THE SHATTERED MIRROR (ĐẬP VỠ GƯƠNG) - SCENE 2
-     ========================================================= */
-  const mirrorBox = document.getElementById('mirror-box');
-  const screamText = document.getElementById('scream-text');
-  
-  // ĐIỀN LINK ẢNH PHẢN CHIẾU CỦA GƯƠNG VÀO ĐÂY (Nên trùng với video/ảnh nền của box này)
-  const mirrorImgSrc = "link_anh_tam_guong.jpg"; 
-  
-  const rows = 5; const cols = 5;
-  const shards = [];
-
-  // Tạo ra mạng lưới kính vỡ
-  for (let i = 0; i < rows; i++) {
-    for (let j = 0; j < cols; j++) {
-      let shard = document.createElement('div');
-      shard.classList.add('glass-shard');
-      shard.style.width = `${100 / cols}%`;
-      shard.style.height = `${100 / rows}%`;
-      shard.style.top = `${(i / rows) * 100}%`;
-      shard.style.left = `${(j / cols) * 100}%`;
-      shard.style.backgroundImage = `url('${mirrorImgSrc}')`;
-      shard.style.backgroundSize = `${cols * 100}% ${rows * 100}%`;
-      shard.style.backgroundPosition = `${(j / (cols - 1)) * 100}% ${(i / (rows - 1)) * 100}%`;
-      mirrorBox.appendChild(shard);
-      shards.push(shard);
-    }
+    isPlaying = !isPlaying;
   }
 
-  // Tương tác: Đưa chuột vào là gương nổ tung
-  mirrorBox.addEventListener('mouseenter', () => {
-    screamText.style.opacity = '1';
-    screamText.style.transform = 'translate(-50%, -50%) scale(1.5)';
-    
-    shards.forEach(shard => {
-      let moveX = (Math.random() - 0.5) * 800; // Văng ra xa
-      let moveY = (Math.random() - 0.5) * 800;
-      let rotX = (Math.random() - 0.5) * 360;
-      let rotY = (Math.random() - 0.5) * 360;
-      let rotZ = (Math.random() - 0.5) * 360;
-      
-      shard.style.transform = `translate3d(${moveX}px, ${moveY}px, 200px) rotateX(${rotX}deg) rotateY(${rotY}deg) rotateZ(${rotZ}deg) scale(0)`;
-      shard.style.opacity = '0';
-    });
-  });
+  /* =========================================================
+     3. SCROLL ANIMATION (Hiệu ứng chìm sâu)
+     ========================================================= */
+  const sections = document.querySelectorAll('.section-container');
+  const navLinks = document.querySelectorAll('.nav-link');
 
-  // Rời chuột thì các mảnh ghép lại (hoặc em có thể xóa hàm này để nó vỡ vĩnh viễn)
-  mirrorBox.addEventListener('mouseleave', () => {
-    screamText.style.opacity = '0';
-    screamText.style.transform = 'translate(-50%, -50%) scale(1)';
-    shards.forEach(shard => {
-      shard.style.transform = `translate3d(0,0,0) rotateX(0) rotateY(0) rotateZ(0) scale(1)`;
-      shard.style.opacity = '1';
-    });
-  });
+  const observerOptions = {
+    root: null, rootMargin: '0px', threshold: 0.4
+  };
 
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        
+        // Cập nhật thanh điều hướng
+        let id = entry.target.getAttribute('id');
+        navLinks.forEach(link => {
+          link.classList.remove('active');
+          if(link.getAttribute('href') === '#' + id) {
+            link.classList.add('active');
+          }
+        });
+      }
+    });
+  }, observerOptions);
+
+  sections.forEach(sec => observer.observe(sec));
 
   /* =========================================================
-     4. THE BLOOD SACRIFICE (CÀO RÁCH MÀN ĐÊM) - SCENE 3
+     4. DEEP WATER PHYSICS CANVAS (Hạt bọt nước trôi dạt)
      ========================================================= */
-  const canvas = document.getElementById('blood-canvas');
+  const canvas = document.getElementById('water-canvas');
   const ctx = canvas.getContext('2d');
   
-  // Đảm bảo canvas phủ kín Scene 3
   function resizeCanvas() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-    // Phủ một lớp "máu đặc" đen đỏ lên toàn bộ canvas
-    ctx.fillStyle = '#1a0000'; // Đen pha đỏ máu thẫm
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
-    // Thêm texture vân máu/bẩn
-    for(let i=0; i<1000; i++) {
-      ctx.fillStyle = Math.random() > 0.5 ? '#2b0000' : '#000000';
-      ctx.beginPath();
-      ctx.arc(Math.random() * canvas.width, Math.random() * canvas.height, Math.random() * 5, 0, Math.PI*2);
-      ctx.fill();
-    }
   }
-  
-  // Khởi tạo ban đầu
+  window.addEventListener('resize', resizeCanvas);
   resizeCanvas();
 
-  // Khi kéo/chuột trên canvas, ta sẽ "xóa" (destination-out) lớp máu này đi
-  let isScratching = false;
+  const particles = [];
+  const particleCount = 80;
 
-  canvas.addEventListener('mousedown', () => { isScratching = true; cursor.classList.add('scratching'); });
-  canvas.addEventListener('mouseup', () => { isScratching = false; cursor.classList.remove('scratching'); });
-  canvas.addEventListener('mouseleave', () => { isScratching = false; cursor.classList.remove('scratching'); });
-  
-  // Xử lý cào bằng chuột
-  canvas.addEventListener('mousemove', (e) => {
-    if (!isScratching) return;
+  for (let i = 0; i < particleCount; i++) {
+    particles.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      radius: Math.random() * 2 + 0.5,
+      speedY: Math.random() * 0.5 + 0.1, // Nổi lên từ từ
+      speedX: (Math.random() - 0.5) * 0.5, // Lắc lư qua lại
+      opacity: Math.random() * 0.5 + 0.1
+    });
+  }
 
-    // Lấy tọa độ chuột tương đối với canvas
-    const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+  let mouseX = -1000, mouseY = -1000;
+  document.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX; mouseY = e.clientY;
+  });
 
-    ctx.globalCompositeOperation = 'destination-out';
-    
-    // Tạo vết cào rách (gai góc chứ không tròn vành vạnh)
-    ctx.beginPath();
-    ctx.moveTo(x, y);
-    ctx.lineTo(x + (Math.random()-0.5)*100, y + (Math.random()-0.5)*100);
-    ctx.lineWidth = Math.random() * 60 + 30; // Độ to của vết cào
-    ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
-    ctx.stroke();
+  function animateWater() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Thêm các giọt máu li ti bắn ra xung quanh vết cào
-    for(let i=0; i<5; i++) {
+    particles.forEach(p => {
+      // Tương tác đẩy bọt nước khi chuột lại gần
+      let dx = mouseX - p.x;
+      let dy = mouseY - p.y;
+      let dist = Math.sqrt(dx * dx + dy * dy);
+      
+      if (dist < 100) {
+        p.x -= dx * 0.02; // Đẩy dạt ra
+        p.y -= dy * 0.02;
+      }
+
+      // Di chuyển tự nhiên (Nổi lên)
+      p.y -= p.speedY;
+      p.x += Math.sin(p.y * 0.01) * p.speedX; // Quỹ đạo hình sin lượn sóng
+
+      // Nếu nổi qua màn hình thì reset chìm xuống đáy
+      if (p.y < -10) {
+        p.y = canvas.height + 10;
+        p.x = Math.random() * canvas.width;
+      }
+
       ctx.beginPath();
-      ctx.arc(x + (Math.random()-0.5)*150, y + (Math.random()-0.5)*150, Math.random() * 10, 0, Math.PI*2);
+      ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255, 255, 255, ${p.opacity})`;
       ctx.fill();
-    }
-    
-    // Trả lại composite mode bình thường (dù không cần thiết lắm vì ta chỉ dùng canvas để xóa)
-    ctx.globalCompositeOperation = 'source-over';
-  });
+    });
 
-  // Hỗ trợ resize trình duyệt
-  window.addEventListener('resize', () => {
-    // Lưu ý: Resize sẽ reset lại lớp máu. Nếu không muốn reset thì bỏ hàm resizeCanvas() ở đây.
-    // resizeCanvas(); 
-    // Tuy nhiên để đảm bảo kích thước đúng thì ta chỉ cập nhật width/height, không fill lại.
-    let oldCanvas = ctx.getImageData(0,0,canvas.width, canvas.height);
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    ctx.putImageData(oldCanvas, 0, 0);
-  });
+    requestAnimationFrame(animateWater);
+  }
+  animateWater();
 
 </script>
 </body>
