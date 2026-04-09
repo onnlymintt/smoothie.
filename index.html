@@ -3,374 +3,287 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title> u hear that ? my silent voice </title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400;1,600&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<title>Vực Thẳm - Minh Thy</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
 <style>
   /* ==========================================================================
-     1. GLOBAL VARIABLES & RESET
+     GLOBAL THEME & RESET
+     Đồng nhất duy nhất 1 font: Cormorant Garamond
      ========================================================================== */
   :root {
-    --c-void: #030508;       /* Màu vực thẳm */
-    --c-honey: #dcb871;      /* Vệt mật ong */
-    --c-text-main: #e5e7eb;
-    --c-text-dim: #6b7280;
-    --c-neon-pink: #ff2a7a;  /* Sự điên loạn Remake */
-    --c-neon-blue: #00f0ff;
-    --c-neon-yellow: #fffb00;
+    --bg-color: #030303;
+    --text-color: #d1d1d1;
+    --text-muted: #555555;
+    --accent-red: #8a0303;
+    --warm-light: #dcb871;
+    --neon-chaos: #00f0ff;
+    --paint-color: #ff2a7a;
     
-    --font-serif: 'Cormorant Garamond', serif;
-    --font-mono: 'Space Mono', monospace;
+    --nav-width: 80px;
   }
 
-  * { box-sizing: border-box; margin: 0; padding: 0; cursor: none !important; }
+  * { box-sizing: border-box; margin: 0; padding: 0; cursor: crosshair; }
 
   body, html {
     width: 100%; height: 100%;
-    background-color: var(--c-void); color: var(--c-text-main);
-    font-family: var(--font-serif);
-    overflow: hidden; /* Vô hiệu hóa scroll mặc định, dùng JS scroll snap */
+    background-color: var(--bg-color); color: var(--text-color);
+    font-family: 'Cormorant Garamond', serif; /* ĐỒNG NHẤT FONT */
+    overflow: hidden;
   }
 
   /* ==========================================================================
-     2. CUSTOM CURSOR
+     LEFT NAVIGATION (TITLE BÊN TRÁI)
      ========================================================================== */
-  #cursor-dot, #cursor-ring {
-    position: fixed; top: 0; left: 0; transform: translate(-50%, -50%);
-    border-radius: 50%; pointer-events: none; z-index: 999999;
-  }
-  #cursor-dot { width: 6px; height: 6px; background: #fff; transition: background 0.3s; }
-  #cursor-ring { 
-    width: 30px; height: 30px; border: 1px solid rgba(255,255,255,0.5); 
-    transition: width 0.3s, height 0.3s, border-color 0.3s, transform 0.1s ease-out; 
-  }
-  
-  /* Trạng thái Cursor theo từng trang */
-  body.theme-s1 #cursor-ring { border-color: rgba(255,255,255,0.2); background: rgba(0,20,50,0.1); }
-  body.theme-s2 #cursor-ring { width: 150px; height: 150px; background: radial-gradient(circle, rgba(220,184,113,0.15) 0%, transparent 70%); border: none; }
-  body.theme-s3 #cursor-ring { border-radius: 0; border: 2px dashed var(--c-neon-blue); animation: spin 4s linear infinite; }
-  body.theme-s4 #cursor-ring { width: 40px; height: 40px; background: var(--c-neon-pink); border: none; mix-blend-mode: difference; }
-
-  @keyframes spin { 100% { transform: translate(-50%, -50%) rotate(360deg); } }
-
-  /* ==========================================================================
-     3. AUDIO & UI ELEMENTS
-     ========================================================================== */
-  .noise-overlay {
-    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-    background: url('https://www.transparenttextures.com/patterns/stardust.png');
-    opacity: 0.15; z-index: 99999; pointer-events: none; mix-blend-mode: screen;
-  }
-
-  .audio-player {
-    position: fixed; bottom: 40px; right: 40px; z-index: 10000;
-    display: flex; align-items: center; gap: 15px;
-  }
-  .track-name { font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 4px; color: var(--c-text-dim); text-transform: uppercase; transition: color 0.3s; }
-  .audio-btn {
-    width: 45px; height: 45px; border-radius: 50%; border: 1px solid var(--c-text-dim);
+  #left-nav {
+    position: fixed; top: 0; left: 0; width: var(--nav-width); height: 100vh;
+    border-right: 1px solid rgba(255,255,255,0.05); z-index: 10000;
     display: flex; align-items: center; justify-content: center;
-    background: rgba(0,0,0,0.5); backdrop-filter: blur(5px); transition: all 0.4s;
+    background: var(--bg-color);
   }
-  .audio-indicator { width: 8px; height: 8px; background: var(--c-text-dim); border-radius: 50%; transition: 0.4s; }
-  
-  .audio-player:hover .audio-btn { transform: scale(1.1); border-color: #fff; }
-  .audio-player.playing .audio-btn { border-color: var(--c-honey); animation: pulseAudio 2s infinite; }
-  .audio-player.playing .audio-indicator { background: var(--c-honey); }
-  .audio-player.playing .track-name { color: var(--c-honey); }
-
-  @keyframes pulseAudio { 0% { box-shadow: 0 0 0 0 rgba(220,184,113,0.4); } 70% { box-shadow: 0 0 0 15px rgba(220,184,113,0); } 100% { box-shadow: 0 0 0 0 rgba(220,184,113,0); } }
-
-  nav.pagination {
-    position: fixed; top: 50%; left: 40px; transform: translateY(-50%);
-    display: flex; flex-direction: column; gap: 30px; z-index: 10000;
+  .nav-text {
+    transform: rotate(-90deg); white-space: nowrap;
+    font-size: 1.1rem; letter-spacing: 5px; color: var(--text-muted);
+    text-transform: uppercase; font-weight: 300; transition: color 0.5s;
   }
-  .dot { width: 8px; height: 8px; border-radius: 50%; border: 1px solid var(--c-text-dim); transition: 0.4s; }
-  .dot.active { background: #fff; border-color: #fff; box-shadow: 0 0 10px #fff; transform: scale(1.5); }
+  .nav-text span { color: #fff; font-weight: 600; margin-left: 15px; }
 
   /* ==========================================================================
-     4. MAIN LAYOUT & SECTIONS (KHÔNG BAO GIỜ ĐÈ NHAU)
+     AUDIO PLAYER (GÓC DƯỚI PHẢI)
      ========================================================================== */
-  main { width: 100%; height: 100%; transition: transform 0.8s cubic-bezier(0.64, 0.04, 0.35, 1); }
-  
+  #audio-ui {
+    position: fixed; bottom: 30px; right: 30px; z-index: 10000;
+    display: flex; align-items: center; gap: 15px; cursor: pointer;
+  }
+  .audio-status { font-size: 0.9rem; letter-spacing: 2px; color: var(--text-muted); font-style: italic; transition: 0.3s; }
+  .audio-btn { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--text-muted); display: flex; align-items: center; justify-content: center; transition: 0.3s; }
+  .audio-btn .core { width: 6px; height: 6px; border-radius: 50%; background: var(--text-muted); transition: 0.3s; }
+  #audio-ui.playing .audio-btn { border-color: var(--warm-light); animation: pulse 2s infinite; }
+  #audio-ui.playing .core { background: var(--warm-light); }
+  #audio-ui.playing .audio-status { color: var(--warm-light); }
+
+  @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(220,184,113,0.4); } 70% { box-shadow: 0 0 0 15px rgba(220,184,113,0); } 100% { box-shadow: 0 0 0 0 rgba(220,184,113,0); } }
+
+  /* ==========================================================================
+     LAYOUT CHÍNH: KHÔNG BAO GIỜ ĐÈ NHAU
+     ========================================================================== */
+  #scroll-container {
+    position: absolute; top: 0; left: var(--nav-width);
+    width: calc(100% - var(--nav-width)); height: 100%;
+    transition: transform 1s cubic-bezier(0.65, 0, 0.35, 1);
+  }
+
   .section {
-    width: 100vw; height: 100vh; padding: 10vh 8vw;
-    display: grid; grid-template-columns: 1fr 1fr; gap: 6vw;
-    align-items: center; position: relative; overflow: hidden;
+    width: 100%; height: 100vh; display: grid;
+    /* Grid cứng chia tỷ lệ 50-50 hoặc 60-40 tùy trang để giữ an toàn cho ảnh */
+    grid-template-columns: 1fr 1fr;
+    align-items: center; justify-content: center; position: relative;
+    padding: 10vh 5vw;
   }
 
-  .text-col { display: flex; flex-direction: column; justify-content: center; height: 100%; z-index: 10; position: relative; }
-  .visual-col { position: relative; width: 100%; height: 100%; z-index: 5; display: flex; align-items: center; justify-content: center; }
+  /* Cột chứa Chữ */
+  .text-zone { display: flex; flex-direction: column; justify-content: center; padding: 0 4vw; z-index: 10; }
+  h1 { font-size: 4.5rem; font-style: italic; font-weight: 300; line-height: 1.1; margin-bottom: 2rem; color: #fff; letter-spacing: -1px; }
+  p { font-size: 1.3rem; line-height: 2; margin-bottom: 1.5rem; color: #aaa; font-weight: 300; text-align: justify; }
+  .timestamp { font-size: 1rem; color: var(--text-muted); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 1rem; display: block; font-weight: 600; }
+  .highlight { color: var(--warm-light); font-style: italic; }
 
-  /* Typography */
-  h1 { font-size: 3.5rem; font-weight: 300; font-style: italic; line-height: 1.1; margin-bottom: 2rem; color: #fff; letter-spacing: 1px; }
-  p { font-size: 1.15rem; line-height: 2; margin-bottom: 1.5rem; color: #aaa; text-align: justify; }
-  .highlight { color: var(--c-honey); }
-  .time-stamp { font-family: var(--font-mono); font-size: 0.9rem; color: var(--c-text-dim); letter-spacing: 2px; margin-bottom: 1.5rem; display: block; }
-  .mono-text { font-family: var(--font-mono); font-size: 0.85rem; letter-spacing: 1px; color: var(--c-text-dim); }
-
-  /* Khuôn chứa Media Chung (Đảm bảo ảnh vuông vắn, không tràn) */
+  /* Cột chứa Hình/Video */
+  .visual-zone { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+  
+  /* Khung media chuẩn */
   .media-box {
-    position: absolute; background: #0a0a0a; border: 1px solid rgba(255,255,255,0.1);
-    overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+    position: absolute; overflow: hidden; background: #000;
+    border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 15px 35px rgba(0,0,0,0.8);
   }
-  .media-box img, .media-box video {
-    width: 100%; height: 100%; object-fit: cover; opacity: 0.6;
-    transition: opacity 0.5s, transform 0.8s, filter 0.5s; filter: grayscale(80%);
-  }
-  .media-box:hover img, .media-box:hover video { opacity: 1; filter: grayscale(0%); transform: scale(1.05); }
-  
-  /* Hiệu ứng tương tác cho các phần tử */
-  .interactable { /* Class dùng để trigger cursor to lên trong JS */ }
+  .media-box img, .media-box video { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; transition: 0.5s; }
+  .media-box:hover img, .media-box:hover video { opacity: 1; transform: scale(1.05); }
 
   /* ==========================================================================
-     5. PAGE 1: BẢN NGÃ (CHÌM SÂU)
+     TÙY CHỈNH TỪNG TRANG & INTERACTIVE
      ========================================================================== */
+
+  /* TRANG 1: CHÌM SÂU */
   #s1 { background: linear-gradient(180deg, #050505 0%, #010a12 100%); }
-  #s1-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; opacity: 0.6; pointer-events: none; }
-  
-  /* Bố cục ảnh chìm */
-  .s1-img-1 { width: 55%; aspect-ratio: 3/4; top: 10%; right: 5%; }
-  .s1-img-2 { width: 45%; aspect-ratio: 4/5; bottom: 15%; left: 5%; transform: translateY(50px); }
+  #s1-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; opacity: 0.7; }
+  .s1-img1 { width: 55%; aspect-ratio: 3/4; top: 10%; right: 10%; z-index: 3; transition: transform 0.2s ease-out; }
+  .s1-img2 { width: 45%; aspect-ratio: 4/5; bottom: 15%; left: 10%; z-index: 2; transition: transform 0.2s ease-out; }
 
-  /* ==========================================================================
-     6. PAGE 2: TEDxFTU (ÁNH ĐÈN TỪ DƯỚI LÊN)
-     ========================================================================== */
-  /* Text bên phải, Visual bên trái */
+  /* TRANG 2: TEDxFTU (ÁNH SÁNG) */
   #s2 { grid-template-columns: 1.2fr 0.8fr; background: #000; }
-  
-  /* Lớp mặt nạ bóng đêm: Chỉ hiện ra khi có ánh sáng chuột chiếu vào */
-  .spotlight-wrapper {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    mask-image: radial-gradient(circle 250px at var(--mouse-x, 50%) var(--mouse-y, 50%), black 0%, transparent 100%);
-    -webkit-mask-image: radial-gradient(circle 250px at var(--mouse-x, 50%) var(--mouse-y, 50%), black 0%, transparent 100%);
-    background: radial-gradient(circle at center, rgba(220,184,113,0.05) 0%, transparent 70%);
+  /* Lớp phủ đen kịt, ánh sáng xuyên qua mask */
+  .spotlight-mask {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5;
+    background: #000; transition: opacity 0.3s;
+    /* Ánh sáng sưởi ấm từ chuột */
+    mask-image: radial-gradient(circle 300px at var(--mx, 50%) var(--my, 50%), transparent 0%, black 100%);
+    -webkit-mask-image: radial-gradient(circle 300px at var(--mx, 50%) var(--my, 50%), transparent 0%, black 100%);
   }
-  .s2-img-1 { width: 60%; aspect-ratio: 16/9; top: 20%; left: 10%; }
-  .s2-img-2 { width: 40%; aspect-ratio: 1/1; bottom: 20%; right: 10%; }
-  .s2-hint { position: absolute; bottom: 5%; left: 50%; transform: translateX(-50%); color: var(--c-text-dim); font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 3px; z-index: 2; pointer-events: none; }
+  .s2-visual-wrapper { position: relative; width: 100%; height: 100%; }
+  /* Ảnh bên dưới lớp mask */
+  .s2-img1 { width: 65%; aspect-ratio: 16/9; top: 20%; left: 5%; z-index: 1; }
+  .s2-img2 { width: 45%; aspect-ratio: 1/1; bottom: 20%; right: 5%; z-index: 2; }
+  .s2-img3 { width: 35%; aspect-ratio: 3/4; top: 40%; left: 35%; z-index: 3; }
 
-  /* ==========================================================================
-     7. PAGE 3: YOUNG LIONS (ĐIÊN RỒ & NGỚ NGẨN - 1 VERTICAL VIDEO, 1 HORIZONTAL IMG)
-     ========================================================================== */
-  #s3 { background: #020202; overflow: visible; }
-  #s3 .visual-col { position: relative; perspective: 1000px; }
+  /* TRANG 3: YOUNG LIONS (HỖN ĐỘN) */
+  #s3 { background: #020202; }
+  #s3 .text-zone h1 { text-transform: uppercase; letter-spacing: 5px; font-weight: 700; color: #fff; text-shadow: 2px 2px 0px var(--neon-chaos); }
   
-  /* Bố cục chính xác theo yêu cầu */
-  .vyl-video-box {
-    width: 55%; aspect-ratio: 9/16; /* Dọc */
-    position: absolute; left: 10%; z-index: 2;
-    border: 1px solid var(--c-neon-blue); box-shadow: 0 0 30px rgba(0, 240, 255, 0.1);
-    transform: rotate(-3deg); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  }
-  .vyl-img-box {
-    width: 75%; aspect-ratio: 16/9; /* Ngang */
-    position: absolute; right: 0; bottom: 15%; z-index: 1;
-    border: 1px solid var(--c-text-dim);
-    transform: rotate(4deg); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  }
+  /* Draggable elements */
+  .draggable-item { cursor: grab; position: absolute; z-index: 10; }
+  .draggable-item:active { cursor: grabbing; z-index: 100; border: 1px solid var(--neon-chaos); box-shadow: 0 0 20px rgba(0,240,255,0.4); }
+  
+  .s3-vid { width: 50%; aspect-ratio: 9/16; top: 15%; left: 10%; } /* Video Dọc */
+  .s3-img { width: 65%; aspect-ratio: 16/9; bottom: 15%; right: 5%; } /* Ảnh Ngang */
 
-  /* Physics Hover Effect */
-  .vyl-video-box:hover { transform: rotate(0deg) scale(1.05) translateY(-20px); z-index: 10; border-color: #fff; }
-  .vyl-img-box:hover { transform: rotate(0deg) scale(1.05) translateY(-20px); z-index: 10; }
+  /* TRANG 4: REMAKE (QUẬY QUỌ) */
+  #s4 { grid-template-columns: 0.8fr 1.2fr; background: #0a0a0a; }
+  #s4 .text-zone h1 { color: var(--paint-color); font-weight: 700; }
   
-  .glitch-text { position: absolute; font-family: var(--font-mono); font-size: 2rem; font-weight: bold; color: rgba(255,255,255,0.1); text-transform: uppercase; letter-spacing: 10px; z-index: 0; pointer-events: none; white-space: nowrap; }
-
-  /* ==========================================================================
-     8. PAGE 4: REMAKE REMAC (QUẬY QUỌ, COLORFUL GRAFFITI)
-     ========================================================================== */
-  #s4 { grid-template-columns: 0.8fr 1.2fr; background: #080808; }
-  
-  .s4-visual-wrapper {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    background: #e0e0e0; /* Nền tường trắng sáng để xịt sơn nổi bật */
+  .s4-wall {
+    position: relative; width: 100%; height: 100%;
+    background: url('https://images.unsplash.com/photo-1518640467707-6811f4a6ab73?q=80&w=1000') center/cover;
     border-radius: 10px; overflow: hidden;
   }
+  .s4-wall::after { content: ''; position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.6); pointer-events: none; }
   
-  /* Tường Gạch Overlay */
-  .brick-texture {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    background: url('https://images.unsplash.com/photo-1518640467707-6811f4a6ab73?q=80&w=1000') center/cover;
-    opacity: 0.4; filter: grayscale(100%) contrast(120%); mix-blend-mode: multiply; pointer-events: none; z-index: 2;
-  }
-
-  /* Ảnh treo trên tường */
-  .s4-img-1 { width: 50%; aspect-ratio: 3/4; top: 15%; right: 15%; z-index: 3; box-shadow: 10px 10px 30px rgba(0,0,0,0.5); transform: rotate(5deg); background: #fff; padding: 10px; padding-bottom: 40px; }
-  .s4-img-2 { width: 60%; aspect-ratio: 16/9; bottom: 15%; left: 10%; z-index: 4; box-shadow: -10px 10px 30px rgba(0,0,0,0.5); transform: rotate(-3deg); background: #fff; padding: 10px; padding-bottom: 40px; }
+  .s4-img1 { width: 50%; aspect-ratio: 3/4; top: 15%; right: 15%; z-index: 2; transform: rotate(4deg); }
+  .s4-img2 { width: 55%; aspect-ratio: 1/1; bottom: 15%; left: 15%; z-index: 3; transform: rotate(-5deg); }
   
-  /* Lớp Canvas để vẽ Graffiti (Chỉ nằm gọn trong phần Visual, không lấn sang Text) */
+  /* Canvas Graffiti */
   #s4-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; }
-
-  /* UI Chọn màu */
-  .color-picker { margin-top: 2rem; display: flex; gap: 15px; }
-  .color-btn { width: 30px; height: 30px; border-radius: 50%; border: 2px solid transparent; transition: 0.3s; }
-  .color-btn.active { transform: scale(1.3); border-color: #fff; }
+  
+  .palette { display: flex; gap: 15px; margin-top: 2rem; align-items: center; }
+  .color-btn { width: 25px; height: 25px; border-radius: 50%; border: 2px solid transparent; transition: 0.3s; cursor: pointer; }
+  .color-btn.active { transform: scale(1.4); border-color: #fff; }
 
 </style>
 </head>
-<body class="theme-s1">
+<body>
 
-<div class="noise-overlay"></div>
-<div id="cursor-dot"></div>
-<div id="cursor-ring"></div>
-
-<audio id="bg-audio" loop><source src="drowninglove.mp3" type="audio/mpeg"></audio>
-
-<div class="audio-player interactable" onclick="toggleAudio()">
-  <span class="track-name" id="track-name">silence.mp3</span>
-  <div class="audio-btn" id="audio-btn"><div class="audio-indicator" id="audio-indicator"></div></div>
+<div id="left-nav">
+  <div class="nav-text">MINH THY // <span id="nav-title">Bản Ngã</span></div>
 </div>
 
-<nav class="pagination">
-  <div class="dot active"></div>
-  <div class="dot"></div>
-  <div class="dot"></div>
-  <div class="dot"></div>
-</nav>
+<audio id="bg-audio" loop><source src="drowninglove.mp3" type="audio/mpeg"></audio>
+<div id="audio-ui" onclick="toggleAudio()">
+  <span class="audio-status" id="audio-text">silence</span>
+  <div class="audio-btn"><div class="core"></div></div>
+</div>
 
-<main id="main-scroll">
+<div id="scroll-container">
 
   <section class="section" id="s1">
-    <div class="text-col">
+    <div class="text-zone">
       <h1>vỏ ốc rỗng.</h1>
-      <p>Đèn đường chao nghiêng, đổ những <span class="highlight">vệt mật ong sóng sánh</span> xuống mặt lộ.</p>
-      <p>Ngân bước đi giữa những quầng sáng neon rực rỡ, tiếng giày gõ đều như nhịp phim cũ. Nhật dừng lại, siết lấy cổ tay cô.</p>
-      <p>Ánh nhìn anh sâu thẳm, phong kín cả thời gian. Ngân bám vào anh như nhành dây leo ký sinh, ủy thác hết nhựa sống vào cái điểm tựa ngỡ là vĩnh cửu ấy. Cô chỉ sợ nếu mình chớp mắt, mọi thứ sẽ vỡ vụn.</p>
+      <p>Đèn đường chao nghiêng, đổ những <span class="highlight">vệt mật ong sóng sánh</span> xuống mặt lộ. Ngân bước đi giữa những quầng sáng neon rực rỡ, tiếng giày gõ đều như nhịp phim cũ.</p>
+      <p>Nhật dừng lại, siết lấy cổ tay cô. Ánh nhìn anh sâu thẳm, phong kín cả thời gian.</p>
+      <p>Ngân bám vào anh như nhành dây leo ký sinh, ủy thác hết nhựa sống vào cái điểm tựa ngỡ là vĩnh cửu ấy. Cô chỉ sợ nếu mình chớp mắt, mọi thứ sẽ vỡ vụn.</p>
       
-      <span class="time-stamp" style="margin-top: 2rem;">Đùng. Tiếng sấm rạch ngang trời.</span>
-      <p>Bóng tối ùa vào đặc quánh.<br>
-      <span style="font-family: var(--font-mono); font-size: 2rem; color: #fff;">00:00</span><br>
-      Ngân tỉnh giấc.</p>
+      <span class="timestamp" style="margin-top: 2rem;">Đùng. Tiếng sấm rạch ngang trời.</span>
+      <p style="font-weight: 600;">Bóng tối ùa vào đặc quánh.<br>00:00<br>Ngân tỉnh giấc.</p>
     </div>
-    
-    <div class="visual-col">
-      <canvas id="s1-canvas"></canvas> <div class="media-box s1-img-1 interactable parallax-s1" data-speed="0.05">
-        <img src="link_anh_ban_nga_1.jpg" alt="Chìm Sâu 1">
-      </div>
-      <div class="media-box s1-img-2 interactable parallax-s1" data-speed="-0.08">
-        <img src="link_anh_ban_nga_2.jpg" alt="Chìm Sâu 2">
-      </div>
+
+    <div class="visual-zone">
+      <canvas id="s1-canvas"></canvas>
+      
+      <div class="media-box s1-img1 sinking-item"><img src="link_anh_ban_nga_1.jpg" alt="Memory 1"></div>
+      <div class="media-box s1-img2 sinking-item"><img src="link_anh_ban_nga_2.jpg" alt="Memory 2"></div>
     </div>
   </section>
 
   <section class="section" id="s2">
-    <div class="visual-col" id="s2-visual">
-      <div class="s2-hint">[ Di chuột để rọi sáng sân khấu ]</div>
-      
-      <div class="spotlight-wrapper" id="s2-spotlight">
-        <div class="media-box s2-img-1 interactable"><img src="link_anh_tedx_1.jpg" alt="TEDx 1"></div>
-        <div class="media-box s2-img-2 interactable"><img src="link_anh_tedx_2.jpg" alt="TEDx 2"></div>
+    <div class="visual-zone">
+      <div class="s2-visual-wrapper" id="s2-wrapper">
+        <div class="spotlight-mask" id="s2-mask"></div>
+        
+        <div class="media-box s2-img1"><img src="link_anh_tedx_1.jpg" alt="TEDx 1"></div>
+        <div class="media-box s2-img2"><img src="link_anh_tedx_2.jpg" alt="TEDx 2"></div>
+        <div class="media-box s2-img3"><img src="link_anh_tedx_3.jpg" alt="TEDx 3"></div>
       </div>
     </div>
 
-    <div class="text-col">
-      <h1 style="font-size: 3rem;">đáy sâu mười mét.</h1>
+    <div class="text-zone">
+      <h1>đáy sâu mười mét.</h1>
       <p>21.2, tình cờ thật. 3 năm trước, trên vệ đường, ngày Nhật cẩn trọng kéo Ngân lên từ vực sâu thăm thẳm. Lần đầu, sau 25 năm, Ngân thấy mình khô ráo và ấm áp, nhờ Nhật.</p>
-      <p>Ong đầu quá. Lại một lần nữa cơn triều xanh xám dâng lên từ dưới chân, nhấn chìm căn phòng. Ga giường sũng nước, bầu không khí đặc sệt tràn vào phổi sau mỗi nhịp thở hụt. </p>
-      <p>Ngân nằm đó, thấy mình rỗng tuếch như một chiếc vỏ ốc bị sóng đánh dạt vào bờ, không còn gì bên trong ngoài sự lặng im đến rợn người. <span class="highlight">Đứng dưới bóng đêm, nhưng khao khát ánh đèn sân khấu soi sáng.</span></p>
+      <p>Ong đầu quá. Lại một lần nữa cơn triều xanh xám dâng lên từ dưới chân, nhấn chìm căn phòng. Ga giường sũng nước, bầu không khí đặc sệt tràn vào phổi sau mỗi nhịp thở hụt.</p>
+      <p>Ngân nằm đó, thấy mình rỗng tuếch như một chiếc vỏ ốc bị sóng đánh dạt vào bờ. Không còn gì bên trong ngoài sự lặng im đến rợn người. Nhưng sâu thẳm, luôn có <span class="highlight">ánh đèn sân khấu chực chờ sưởi ấm.</span></p>
     </div>
   </section>
 
   <section class="section" id="s3">
-    <div class="text-col">
-      <h1 style="color: var(--c-neon-blue); font-style: normal; text-transform: uppercase; font-family: var(--font-mono); font-size: 2.5rem; letter-spacing: -1px;">Vietnam<br>Young Lions</h1>
-      <span class="time-stamp" style="color: #fff;">Sự ngớ ngẩn và random.</span>
-      <p>Cái phao cứu sinh ba năm trước kia giờ chỉ còn là mẩu gỗ mục rệu rã giữa đại dương đen. Ngân không vùng vẫy, chỉ để mình rơi tự do xuống đáy.</p>
-      <p>Ngân nhận ra mình chẳng còn chút sức lực nào để bấu víu vào bất cứ đâu. Mọi cấu trúc bị bẻ gãy. Tính logic bị nghiền nát. Chỉ còn lại sự hỗn loạn nguyên thủy của tâm trí.</p>
-      <p class="mono-text" style="color: var(--c-neon-blue); margin-top: 2rem;">[ Di chuột qua visual để thấy sự đập nảy điên loạn ]</p>
+    <div class="text-zone">
+      <h1>Young Lions</h1>
+      <span class="timestamp" style="color: #fff;">Sự ngớ ngẩn & Random</span>
+      <p>Cái phao cứu sinh ba năm trước kia giờ chỉ còn là mẩu gỗ mục rệu rã giữa đại dương đen. Ngân không vùng vẫy, chỉ để mình rơi tự do xuống đáy sâu.</p>
+      <p>Nhận ra mình chẳng còn chút sức lực nào để bấu víu vào bất cứ đâu. Mọi cấu trúc sụp đổ. Tính logic bị phá vỡ hoàn toàn.</p>
+      <p style="color: var(--neon-chaos); font-style: italic;">[ Nắm kéo Video và Ảnh ném vào tường để thấy sự điên loạn ]</p>
     </div>
 
-    <div class="visual-col">
-      <div class="glitch-text" style="top: 10%; right: 10%;">RANDOMNESS</div>
-      <div class="glitch-text" style="bottom: 20%; left: 5%; font-size: 3rem;">CHAOS</div>
-      
-      <div class="media-box vyl-video-box interactable">
-        <video src="link_video_doc_vyl.mp4" autoplay loop muted playsinline></video>
+    <div class="visual-zone" id="s3-arena">
+      <div class="media-box draggable-item s3-vid" id="vyl-vid">
+        <video src="link_clip_younglions_doc.mp4" autoplay loop muted playsinline></video>
       </div>
       
-      <div class="media-box vyl-img-box interactable">
-        <img src="link_anh_ngang_vyl.jpg" alt="VYL Random">
+      <div class="media-box draggable-item s3-img" id="vyl-img">
+        <img src="link_anh_younglions_ngang.jpg" alt="Chaos VYL">
       </div>
     </div>
   </section>
 
   <section class="section" id="s4">
-    <div class="visual-col">
-      <div class="s4-visual-wrapper">
-        <div class="brick-texture"></div>
+    <div class="visual-zone">
+      <div class="s4-wall">
+        <div class="media-box s4-img1"><img src="link_anh_remake_1.jpg" alt="Remake 1"></div>
+        <div class="media-box s4-img2"><img src="link_anh_remake_2.jpg" alt="Remake 2"></div>
         
-        <div class="media-box s4-img-1 interactable"><img src="link_anh_remake_1.jpg" alt="Remake 1"></div>
-        <div class="media-box s4-img-2 interactable"><img src="link_anh_remake_2.jpg" alt="Remake 2"></div>
-        
-        <canvas id="s4-canvas" class="interactable"></canvas>
+        <canvas id="s4-canvas"></canvas>
       </div>
     </div>
 
-    <div class="text-col" style="padding-left: 4vw;">
-      <h1 style="color: var(--c-neon-pink); font-style: normal; font-weight: 700;">Remake.</h1>
-      <span class="time-stamp">Fluoxetine 20mg.</span>
+    <div class="text-zone">
+      <h1>Remake.</h1>
+      <span class="timestamp">Fluoxetine 20mg.</span>
       <p>Quờ quạng trên bàn. Ngân vội lấy vỉ bạc. Một viên Fluoxetine 20mg. Vị đắng buốt sắc như mảnh kim loại chạy dọc thực quản.</p>
       <p>Giữa bóng tối ướt sũng và trống hoác, viên thuốc là chiếc phao còn sót lại. Ngân biết mình phải học cách thở dưới nước.</p>
       <p>Tuyệt đối không được quên thuốc. Trở về với bản ngã hồn nhiên, quậy quọ và đầy màu sắc, để che lấp đi khoảng không đen đặc kia.</p>
-      <p style="color: #fff; font-weight: bold; border-left: 3px solid var(--c-neon-pink); padding-left: 15px;">Để không phải một lần nữa, chìm, chìm rất sâu.</p>
+      <p style="font-weight: 600; color: #fff; font-style: italic;">Để không phải một lần nữa, chìm, chìm rất sâu.</p>
       
-      <div class="color-picker">
-        <div class="color-btn active interactable" style="background: var(--c-neon-pink);" onclick="setPaintColor('#ff2a7a', this)"></div>
-        <div class="color-btn interactable" style="background: var(--c-neon-blue);" onclick="setPaintColor('#00f0ff', this)"></div>
-        <div class="color-btn interactable" style="background: var(--c-neon-yellow);" onclick="setPaintColor('#fffb00', this)"></div>
-        <div class="color-btn interactable" style="background: #000;" onclick="setPaintColor('#000000', this)"></div>
-        <span class="mono-text" style="align-self: center; margin-left: 10px;">[ Chọn màu & Xịt lên bức tường bên cạnh ]</span>
+      <div class="palette">
+        <div class="color-btn active" style="background: var(--paint-color);" onclick="setColor('#ff2a7a', this)"></div>
+        <div class="color-btn" style="background: var(--neon-chaos);" onclick="setColor('#00f0ff', this)"></div>
+        <div class="color-btn" style="background: #fffb00;" onclick="setColor('#fffb00', this)"></div>
+        <div class="color-btn" style="background: #ffffff;" onclick="setColor('#ffffff', this)"></div>
+        <div class="color-btn" style="background: #000000;" onclick="setColor('#000000', this)"></div>
       </div>
     </div>
   </section>
 
-</main>
+</div>
 
 <script>
   /* ==========================================================================
-     A. CUSTOM CURSOR & GLOBAL INTERACTIONS
-     ========================================================================== */
-  const cDot = document.getElementById('cursor-dot');
-  const cRing = document.getElementById('cursor-ring');
-  let mouseX = window.innerWidth/2;
-  let mouseY = window.innerHeight/2;
-
-  document.addEventListener('mousemove', (e) => {
-    mouseX = e.clientX; mouseY = e.clientY;
-    cDot.style.left = mouseX + 'px'; cDot.style.top = mouseY + 'px';
-    // Thêm độ trễ cho vòng ring
-    setTimeout(() => {
-      cRing.style.left = mouseX + 'px'; cRing.style.top = mouseY + 'px';
-    }, 50);
-  });
-
-  // Hiệu ứng hover
-  document.querySelectorAll('.interactable').forEach(el => {
-    el.addEventListener('mouseenter', () => { cDot.style.transform = 'translate(-50%, -50%) scale(0)'; cRing.style.transform = 'translate(-50%, -50%) scale(1.5)'; });
-    el.addEventListener('mouseleave', () => { cDot.style.transform = 'translate(-50%, -50%) scale(1)'; cRing.style.transform = 'translate(-50%, -50%) scale(1)'; });
-  });
-
-  /* ==========================================================================
-     B. AUDIO CONTROLLER
+     A. AUDIO LOGIC
      ========================================================================== */
   const audio = document.getElementById('bg-audio');
-  const audioPlayer = document.querySelector('.audio-player');
-  const trackName = document.getElementById('track-name');
+  const audioUI = document.getElementById('audio-ui');
+  const audioText = document.getElementById('audio-text');
   let isPlaying = false;
 
   function toggleAudio() {
     if (isPlaying) { 
-      audio.pause(); audioPlayer.classList.remove('playing'); trackName.innerText = 'silence.mp3';
+      audio.pause(); audioUI.classList.remove('playing'); audioText.innerText = 'silence';
     } else { 
-      audio.play(); audioPlayer.classList.add('playing'); trackName.innerText = 'drowninglove.mp3';
+      audio.play(); audioUI.classList.add('playing'); audioText.innerText = 'drowninglove';
     }
     isPlaying = !isPlaying;
   }
 
   /* ==========================================================================
-     C. CUSTOM SCROLL SNAP MANAGER (Chuyển trang mượt mà)
+     B. SCROLL SNAP & TITLE NAVIGATION
      ========================================================================== */
-  const mainScroll = document.getElementById('main-scroll');
-  const dots = document.querySelectorAll('.dot');
+  const scrollContainer = document.getElementById('scroll-container');
+  const navTitle = document.getElementById('nav-title');
+  const pageTitles = ["Bản Ngã", "Sân Khấu", "Hỗn Loạn", "Remake"];
   const totalPages = 4;
   let currentPage = 0;
   let isScrolling = false;
@@ -382,149 +295,204 @@
   });
 
   function goPage(index) {
-    isScrolling = true;
-    currentPage = index;
-    // Kéo layout main lên/xuống
-    mainScroll.style.transform = `translateY(-${currentPage * 100}vh)`;
-    
-    // Cập nhật Pagination UI
-    dots.forEach(d => d.classList.remove('active'));
-    dots[currentPage].classList.add('active');
-
-    // Đổi Theme body để thay đổi Cursor
-    document.body.className = `theme-s${currentPage + 1}`;
-
-    setTimeout(() => { isScrolling = false; }, 1000); // Khóa scroll trong 1s
+    isScrolling = true; currentPage = index;
+    // Chuyển slide
+    scrollContainer.style.transform = `translateY(-${currentPage * 100}vh)`;
+    // Đổi tiêu đề
+    navTitle.style.opacity = '0';
+    setTimeout(() => {
+      navTitle.innerText = pageTitles[currentPage];
+      navTitle.style.opacity = '1';
+    }, 500);
+    setTimeout(() => { isScrolling = false; }, 1200); // Trì hoãn khóa cuộn
   }
 
   /* ==========================================================================
-     D. PAGE 1: DEEP SINKING BUBBLES CANVAS & PARALLAX
+     FUNCTION 1: LỰC KÉO CHÌM (SINKING GRAVITY) - TRANG 1
      ========================================================================== */
-  // 1. Parallax Images
-  const p1Images = document.querySelectorAll('.parallax-s1');
-  document.addEventListener('mousemove', (e) => {
-    if (currentPage !== 0) return;
-    let dx = (window.innerWidth/2 - e.clientX) * 0.1;
-    let dy = (window.innerHeight/2 - e.clientY) * 0.1;
-    p1Images.forEach(img => {
-      let speed = img.getAttribute('data-speed');
-      img.style.transform = `translate(${dx * speed}px, ${dy * speed}px)`;
-    });
-  });
-
-  // 2. Canvas Bubbles
   const s1Canvas = document.getElementById('s1-canvas');
   const s1Ctx = s1Canvas.getContext('2d');
-  
+  const sinkingItems = document.querySelectorAll('.sinking-item');
+  let mouseY = window.innerHeight / 2;
+
   function resizeS1() {
     let rect = s1Canvas.parentElement.getBoundingClientRect();
     s1Canvas.width = rect.width; s1Canvas.height = rect.height;
   }
-  window.addEventListener('resize', resizeS1);
-  resizeS1();
+  window.addEventListener('resize', resizeS1); resizeS1();
 
   const bubbles = [];
   document.addEventListener('mousemove', (e) => {
+    mouseY = e.clientY;
     if (currentPage !== 0) return;
-    // Lấy tọa độ chuột tương đối với cột visual
     let rect = s1Canvas.parentElement.getBoundingClientRect();
-    let relX = e.clientX - rect.left;
-    let relY = e.clientY - rect.top;
+    let relX = e.clientX - rect.left; let relY = e.clientY - rect.top;
     
-    // Chỉ tạo bọt nếu chuột nằm trong khu vực Visual (tránh lan sang Text)
-    if(relX > 0 && relX < rect.width && relY > 0 && relY < rect.height) {
-      if (Math.random() > 0.5) {
-        bubbles.push({ x: relX, y: relY, radius: Math.random()*3+1, speedY: Math.random()*2+1, opacity: 1 });
-      }
+    if(relX > 0 && relX < rect.width && relY > 0 && relY < rect.height && Math.random() > 0.6) {
+      bubbles.push({ x: relX, y: relY, radius: Math.random()*2+1, speedY: Math.random()*2+1, opacity: 0.8 });
     }
   });
 
-  function drawBubbles() {
+  function animateSinking() {
     if(currentPage === 0) {
       s1Ctx.clearRect(0, 0, s1Canvas.width, s1Canvas.height);
+      // Vẽ bọt khí nổi lên
       for (let i = 0; i < bubbles.length; i++) {
         let b = bubbles[i];
         s1Ctx.beginPath(); s1Ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
         s1Ctx.fillStyle = `rgba(255, 255, 255, ${b.opacity})`; s1Ctx.fill();
-        b.y -= b.speedY; // Bọt nổi lên
-        b.opacity -= 0.01; // Mờ dần
+        b.y -= b.speedY; b.opacity -= 0.01;
         if (b.opacity <= 0) bubbles.splice(i, 1);
       }
+      // Hiệu ứng lực kéo chìm ảnh (Dựa vào vị trí chuột)
+      let dragOffset = (mouseY / window.innerHeight) * 30; // Kéo xuống tối đa 30px
+      sinkingItems.forEach(item => { item.style.transform = `translateY(${dragOffset}px)`; });
     }
-    requestAnimationFrame(drawBubbles);
+    requestAnimationFrame(animateSinking);
   }
-  drawBubbles();
+  animateSinking();
 
   /* ==========================================================================
-     E. PAGE 2: SPOTLIGHT LOGIC
+     FUNCTION 2: ÁNH SÁNG SƯỞI ẤM SÂN KHẤU - TRANG 2
      ========================================================================== */
-  const s2Visual = document.getElementById('s2-visual');
-  const s2Spotlight = document.getElementById('s2-spotlight');
+  const s2Wrapper = document.getElementById('s2-wrapper');
+  const s2Mask = document.getElementById('s2-mask');
 
   document.addEventListener('mousemove', (e) => {
     if (currentPage !== 1) return;
-    let rect = s2Visual.getBoundingClientRect();
-    let relX = e.clientX - rect.left;
-    let relY = e.clientY - rect.top;
+    let rect = s2Wrapper.getBoundingClientRect();
+    let relX = e.clientX - rect.left; let relY = e.clientY - rect.top;
     
-    // Chỉ chiếu đèn khi chuột ở trong Visual Zone của S2
     if(relX > 0 && relX < rect.width && relY > 0 && relY < rect.height) {
-      s2Spotlight.style.setProperty('--mouse-x', `${relX}px`);
-      s2Spotlight.style.setProperty('--mouse-y', `${relY}px`);
-    } else {
-      // Giấu đèn đi
-      s2Spotlight.style.setProperty('--mouse-x', `-1000px`);
-      s2Spotlight.style.setProperty('--mouse-y', `-1000px`);
+      s2Mask.style.setProperty('--mx', `${relX}px`);
+      s2Mask.style.setProperty('--my', `${relY}px`);
     }
   });
 
   /* ==========================================================================
-     F. PAGE 4: GRAFFITI (QUẬY QUỌ)
+     FUNCTION 3: ĐỘNG LỰC HỌC HỖN LOẠN (CHAOS PHYSICS) - TRANG 3
+     ========================================================================== */
+  const arena = document.getElementById('s3-arena');
+  const dragItems = document.querySelectorAll('.draggable-item');
+  let physBodies = [];
+
+  // Khởi tạo trạng thái vật lý cho Video và Image
+  dragItems.forEach(el => {
+    physBodies.push({
+      el: el,
+      x: el.offsetLeft, y: el.offsetTop,
+      vx: 0, vy: 0,
+      width: el.offsetWidth, height: el.offsetHeight,
+      isDragging: false
+    });
+  });
+
+  let activeBody = null; let startX, startY; let lastMouseX, lastMouseY;
+
+  dragItems.forEach((el, index) => {
+    el.addEventListener('mousedown', (e) => {
+      activeBody = physBodies[index];
+      activeBody.isDragging = true;
+      activeBody.vx = 0; activeBody.vy = 0;
+      startX = e.clientX - activeBody.x; startY = e.clientY - activeBody.y;
+      lastMouseX = e.clientX; lastMouseY = e.clientY;
+    });
+  });
+
+  document.addEventListener('mousemove', (e) => {
+    if (!activeBody || currentPage !== 2) return;
+    activeBody.x = e.clientX - startX;
+    activeBody.y = e.clientY - startY;
+    
+    // Tính vận tốc văng dựa vào tốc độ chuột
+    activeBody.vx = e.clientX - lastMouseX;
+    activeBody.vy = e.clientY - lastMouseY;
+    lastMouseX = e.clientX; lastMouseY = e.clientY;
+  });
+
+  document.addEventListener('mouseup', () => {
+    if(activeBody) { activeBody.isDragging = false; activeBody = null; }
+  });
+
+  // Loop Physics đập nảy vào viền
+  function runChaosPhysics() {
+    if(currentPage === 2) {
+      let rect = arena.getBoundingClientRect();
+      physBodies.forEach(b => {
+        if(!b.isDragging) {
+          b.x += b.vx; b.y += b.vy;
+          b.vx *= 0.98; b.vy *= 0.98; // Lực cản ma sát
+          
+          // Nảy vào tường (Bouncing)
+          if(b.x <= 0) { b.x = 0; b.vx *= -0.8; }
+          if(b.x + b.width >= rect.width) { b.x = rect.width - b.width; b.vx *= -0.8; }
+          if(b.y <= 0) { b.y = 0; b.vy *= -0.8; }
+          if(b.y + b.height >= rect.height) { b.y = rect.height - b.height; b.vy *= -0.8; }
+        }
+        b.el.style.left = b.x + 'px'; b.el.style.top = b.y + 'px';
+      });
+    }
+    requestAnimationFrame(runChaosPhysics);
+  }
+  setTimeout(runChaosPhysics, 500); // Trì hoãn lấy offsetHeight đúng
+
+  /* ==========================================================================
+     FUNCTION 4: CỌ SƠN GIA TỐC (VELOCITY BRUSH) - TRANG 4
      ========================================================================== */
   const s4Canvas = document.getElementById('s4-canvas');
   const s4Ctx = s4Canvas.getContext('2d');
-  let paintColor = '#ff2a7a'; // Mặc định hồng neon
+  let paintColor = '#ff2a7a';
   let isPainting = false;
+  let pLastX, pLastY;
 
   function resizeS4() {
     let rect = s4Canvas.parentElement.getBoundingClientRect();
     s4Canvas.width = rect.width; s4Canvas.height = rect.height;
   }
-  window.addEventListener('resize', resizeS4);
-  resizeS4();
+  window.addEventListener('resize', resizeS4); resizeS4();
 
-  function setPaintColor(color, btn) {
+  function setColor(color, btn) {
     paintColor = color;
     document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
   }
 
-  s4Canvas.addEventListener('mousedown', () => isPainting = true);
+  s4Canvas.addEventListener('mousedown', (e) => {
+    isPainting = true;
+    let rect = s4Canvas.getBoundingClientRect();
+    pLastX = e.clientX - rect.left; pLastY = e.clientY - rect.top;
+  });
   s4Canvas.addEventListener('mouseup', () => isPainting = false);
   s4Canvas.addEventListener('mouseleave', () => isPainting = false);
 
   s4Canvas.addEventListener('mousemove', (e) => {
     if (!isPainting || currentPage !== 3) return;
-    
     let rect = s4Canvas.getBoundingClientRect();
-    let x = e.clientX - rect.left;
-    let y = e.clientY - rect.top;
+    let currentX = e.clientX - rect.left;
+    let currentY = e.clientY - rect.top;
 
-    s4Ctx.fillStyle = paintColor;
+    // Tính tốc độ vẩy chuột để quyết định độ to/loang của nét cọ
+    let dx = currentX - pLastX; let dy = currentY - pLastY;
+    let velocity = Math.sqrt(dx*dx + dy*dy);
     
-    // Vẽ vệt sơn xịt (Spray pattern)
-    for (let i = 0; i < 40; i++) {
-      let offsetX = (Math.random() * 2 - 1) * 30;
-      let offsetY = (Math.random() * 2 - 1) * 30;
-      if (offsetX * offsetX + offsetY * offsetY <= 900) {
-        s4Ctx.fillRect(x + offsetX, y + offsetY, Math.random()*3+1, Math.random()*3+1);
+    // Vẽ càng nhanh nét càng bự (min 5, max 40)
+    let brushSize = Math.min(Math.max(velocity * 0.5, 5), 40);
+    
+    s4Ctx.fillStyle = paintColor;
+    s4Ctx.beginPath();
+    s4Ctx.arc(currentX, currentY, brushSize, 0, Math.PI*2);
+    s4Ctx.fill();
+
+    // Vẩy sơn li ti xung quanh nếu tốc độ cực nhanh
+    if(velocity > 20) {
+      for(let i=0; i<3; i++) {
+        s4Ctx.beginPath();
+        s4Ctx.arc(currentX + (Math.random()-0.5)*velocity*2, currentY + (Math.random()-0.5)*velocity*2, Math.random()*5, 0, Math.PI*2);
+        s4Ctx.fill();
       }
     }
-  });
 
-  // Fix khởi tạo layout cho an toàn
-  window.addEventListener('load', () => {
-    resizeS1(); resizeS4();
+    pLastX = currentX; pLastY = currentY;
   });
 
 </script>
