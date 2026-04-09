@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Minh Thy</title>
+<style>
+  body {
+    margin: 0;
+    background-color: #030303;
+    color: #e0e0e0;
+    font-family: 'Courier New', Courier, monospace;
+    overflow-x: hidden;
+  }
+
+  nav {
+    display: flex;
+    gap: 30px;
+    padding: 30px;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 100;
+    mix-blend-mode: difference;
+  }
+
+  nav a {
+    color: #fff;
+    text-decoration: none;
+    text-transform: lowercase;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: letter-spacing 0.4s ease, opacity 0.4s ease;
+  }
+
+  nav a:hover {
+    opacity: 0.4;
+    letter-spacing: 5px;
+  }
+
+  section {
+    display: none;
+    padding: 120px 20px 50px;
+    min-height: 100vh;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  section.active {
+    display: block;
+  }
+
+  .layer {
+    opacity: 0;
+    filter: blur(8px);
+    transform: translateY(20px);
+    transition: all 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .layer.visible {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0);
+  }
+
+  .thought-hidden {
+    display: block;
+    color: #0a0a0a;
+    cursor: crosshair;
+    margin: 20px 0;
+    transition: color 0.8s ease, text-shadow 0.8s ease;
+  }
+
+  .thought-hidden:hover {
+    color: #fff;
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+  }
+
+  .img-space {
+    width: 100%;
+    height: 450px;
+    border: 1px solid #1a1a1a;
+    margin: 50px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #333;
+    background: #050505;
+    transition: border-color 0.5s ease;
+  }
+
+  .img-space:hover {
+    border-color: #555;
+  }
+
+  h1 {
+    font-size: 2.5rem;
+    font-weight: normal;
+    margin-bottom: 50px;
+    letter-spacing: 1px;
+  }
+
+  p {
+    line-height: 2;
+    letter-spacing: 0.5px;
+    margin-bottom: 30px;
+    font-size: 0.95rem;
+  }
+
+  .cursor-glow {
+    position: fixed;
+    width: 400px;
+    height: 400px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 60%);
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor-glow" id="glow"></div>
+
+<nav>
+  <a onclick="show('overview')">bản ngã</a>
+  <a onclick="show('tedx')">tedxftu</a>
+  <a onclick="show('vyl')">young lions</a>
+  <a onclick="show('remake')">remake remac</a>
+</nav>
+
+<section id="overview" class="active">
+  <h1 class="layer">Mảnh gỗ mục rệu rã</h1>
+  <p class="layer">Đèn đường chao nghiêng. Những vệt mật ong sóng sánh đổ xuống mặt lộ.</p>
+  <span class="thought-hidden">Bầu không khí đặc sệt tràn vào phổi sau mỗi nhịp thở hụt.</span>
+  <div class="img-space layer">khoảng trống ảnh chân dung</div>
+  <p class="layer">Ngân bám vào anh như nhành dây leo ký sinh. Ủy thác hết nhựa sống vào cái điểm tựa ngỡ là vĩnh cửu.</p>
+  <span class="thought-hidden">Không còn gì bên trong ngoài sự lặng im đến rợn người.</span>
+  <div class="img-space layer">khoảng trống ảnh góc tối</div>
+</section>
+
+<section id="tedx">
+  <h1 class="layer">Sân khấu rực rỡ</h1>
+  <p class="layer">Những luồng sáng đan chéo nhau. Một không gian để nhào nặn những khối óc.</p>
+  <span class="thought-hidden">Chỉ sợ nếu mình chớp mắt mọi thứ sẽ vỡ vụn.</span>
+  <div class="img-space layer">khoảng trống ảnh sự kiện một</div>
+  <p class="layer">Sự lan tỏa mạnh mẽ dưới vỏ bọc hoàn hảo.</p>
+  <div class="img-space layer">khoảng trống ảnh sự kiện hai</div>
+</section>
+
+<section id="vyl">
+  <h1 class="layer">Tiếng giày gõ đều</h1>
+  <p class="layer">Những vệt sáng neon rực rỡ lướt qua. Trí tuệ bị ép đến giới hạn cuối cùng.</p>
+  <span class="thought-hidden">Vị đắng buốt sắc như mảnh kim loại chạy dọc thực quản.</span>
+  <div class="img-space layer">khoảng trống ảnh chiến dịch</div>
+  <span class="thought-hidden">Tuyệt đối không được quên thuốc.</span>
+</section>
+
+<section id="remake">
+  <h1 class="layer">Tái tạo hình hài</h1>
+  <p class="layer">Lần đầu tiên thấy mình khô ráo và ấm áp. Quá trình lột xác đầy đau đớn từ vực sâu thăm thẳm.</p>
+  <span class="thought-hidden">Nhưng cơn triều xanh xám vẫn chực chờ dâng lên từ dưới chân.</span>
+  <div class="img-space layer">khoảng trống ảnh dự án một</div>
+  <div class="img-space layer">khoảng trống ảnh dự án hai</div>
+</section>
+
+<script>
+  function show(id) {
+    document.querySelectorAll('section').forEach(s => {
+      s.classList.remove('active');
+      s.querySelectorAll('.layer').forEach(l => l.classList.remove('visible'));
+    });
+    
+    const activeSec = document.getElementById(id);
+    activeSec.classList.add('active');
+    
+    setTimeout(() => {
+      revealLayers(activeSec);
+    }, 50);
+  }
+
+  function revealLayers(section) {
+    const layers = section.querySelectorAll('.layer');
+    layers.forEach((layer, index) => {
+      setTimeout(() => {
+        layer.classList.add('visible');
+      }, index * 250);
+    });
+  }
+
+  document.addEventListener('mousemove', (e) => {
+    const glow = document.getElementById('glow');
+    glow.style.left = e.clientX + 'px';
+    glow.style.top = e.clientY + 'px';
+  });
+
+  revealLayers(document.getElementById('overview'));
+</script>
+
+</body>
+</html>
