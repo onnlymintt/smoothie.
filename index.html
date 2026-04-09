@@ -3,403 +3,579 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Vực Thẳm - Bản Ngã</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+<title>Silent Voice - Drowning Love</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <style>
-  /* ==========================================================================
-     GLOBAL THEME & RESET
-     ========================================================================== */
   :root {
-    --bg-color: #030303;
-    --text-color: #d1d1d1;
-    --text-muted: #555555;
-    /* Dùng 1 màu nhấn duy nhất xuyên suốt các trang để tạo tính nhất quán */
-    --accent-pink: #00coff; 
-    
-    --nav-width: 80px;
+    --bg: #010101;
+    --grid-c: #151515; /* Màu lưới ẩn */
+    --text-main: #b0b0b0;
+    --text-dim: #3a3a3a;
+    --accent: #9e0000; /* Đỏ máu thẫm */
+    --graffiti: #ff1e1e; /* Đỏ neon */
+    --border: #1a1a1a;
   }
 
-  * { box-sizing: border-box; margin: 0; padding: 0; cursor: crosshair; }
-
+  /* RESET & BASIC */
+  * { box-sizing: border-box; cursor: none !important; }
   body, html {
-    width: 100%; height: 100%;
-    background-color: var(--bg-color); color: var(--text-color);
-    font-family: 'Cormorant Garamond', serif;
-    overflow: hidden; /* Khóa cuộn trang tổng thể */
+    margin: 0; padding: 0; background-color: var(--bg);
+    color: var(--text-main); font-family: 'Space Mono', monospace;
+    overflow: hidden; width: 100vw; height: 100vh;
   }
 
-  /* LEFT NAVIGATION */
-  #left-nav {
-    position: fixed; top: 0; left: 0; width: var(--nav-width); height: 100vh;
-    border-right: 1px solid rgba(255,255,255,0.05); z-index: 10000;
-    display: flex; align-items: center; justify-content: center;
-    background: var(--bg-color);
+  /* CUSTOM CURSOR & LIGHT TRAIL */
+  #custom-cursor {
+    position: fixed; top: 0; left: 0; width: 10px; height: 10px;
+    background: #fff; border-radius: 50%; pointer-events: none;
+    transform: translate(-50%, -50%); z-index: 100000;
+    transition: width 0.2s, height 0.2s, background 0.2s;
+    mix-blend-mode: difference;
   }
-  .nav-text {
-    transform: rotate(-90deg); white-space: nowrap;
-    font-size: 1.1rem; letter-spacing: 5px; color: var(--text-muted);
-    text-transform: uppercase; font-weight: 300; transition: color 0.5s;
+  #custom-cursor.hovering { width: 35px; height: 35px; background: transparent; border: 1px solid var(--accent); mix-blend-mode: normal; }
+  #custom-cursor.spray { width: 25px; height: 25px; background: transparent; border: 2px dashed #fff; animation: spinCursor 4s linear infinite; }
+  @keyframes spinCursor { 100% { transform: translate(-50%, -50%) rotate(360deg); } }
+
+  /* OVERLAYS & CANVAS */
+  .grid-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background-image: linear-gradient(var(--grid-c) 1px, transparent 1px), linear-gradient(90deg, var(--grid-c) 1px, transparent 1px);
+    background-size: 5vw 5vh; opacity: 0.5; z-index: 2; pointer-events: none;
   }
-  .nav-text span { color: var(--accent-pink); font-weight: 600; margin-left: 15px; }
+  #ink-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; opacity: 0.6; }
+  #graffiti-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 50; pointer-events: none; }
 
-  /* Màn hình rung lắc khi có va chạm ở Trang 3 */
-  @keyframes shake {
-    0% { transform: translate(1px, 1px) rotate(0deg); }
-    10% { transform: translate(-1px, -2px) rotate(-1deg); }
-    20% { transform: translate(-3px, 0px) rotate(1deg); }
-    30% { transform: translate(3px, 2px) rotate(0deg); }
-    40% { transform: translate(1px, -1px) rotate(1deg); }
-    50% { transform: translate(-1px, 2px) rotate(-1deg); }
-    60% { transform: translate(-3px, 1px) rotate(0deg); }
-    70% { transform: translate(3px, 1px) rotate(-1deg); }
-    80% { transform: translate(-1px, -1px) rotate(1deg); }
-    90% { transform: translate(1px, 2px) rotate(0deg); }
-    100% { transform: translate(1px, -2px) rotate(-1deg); }
+  /* CINEMATIC INTRO */
+  #cinematic-intro {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: #000; z-index: 99999; display: flex; align-items: center; justify-content: center;
+    flex-direction: column; transition: opacity 1.5s ease;
   }
-  .shake-effect { animation: shake 0.3s cubic-bezier(.36,.07,.19,.97) both; }
-
-  /* ==========================================================================
-     LAYOUT CHÍNH & INNER SCROLL (CUỘN BÊN TRONG)
-     ========================================================================== */
-  #scroll-container {
-    position: absolute; top: 0; left: var(--nav-width);
-    width: calc(100% - var(--nav-width)); height: 100%;
-    transition: transform 1s cubic-bezier(0.65, 0, 0.35, 1);
+  .intro-text {
+    font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-style: italic;
+    color: transparent; opacity: 0; transition: opacity 2s, color 2s; text-align: center; line-height: 2; -webkit-text-stroke: 1px rgba(255,255,255,0.2);
   }
+  .intro-text.show { opacity: 1; color: #fff; -webkit-text-stroke: 0px; }
 
-  .section {
-    width: 100%; height: 100vh; display: grid;
-    grid-template-columns: 1fr 1fr;
-    align-items: center; justify-content: center; position: relative;
-    padding: 10vh 5vw;
-    overflow: hidden; /* Ép không cho tràn ra ngoài trang khác */
+  /* PAGE TRANSITION */
+  #transition-layer {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: #000; z-index: 99995; display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity 0.8s;
   }
+  .glitch-flash { width: 100%; height: 1px; background: var(--graffiti); transform: scaleX(0); transition: transform 0.5s; box-shadow: 0 0 10px var(--graffiti); }
 
-  /* CỘT CHỮ - Nơi thiết lập tính năng cuộn nội dung */
-  .text-zone { 
-    display: flex; flex-direction: column; justify-content: flex-start; 
-    padding: 2vw 4vw; z-index: 10;
-    max-height: 80vh; /* Chiều cao tối đa */
-    overflow-y: auto; /* Cho phép cuộn dọc nếu chữ quá dài */
+  /* MUSIC PLAYER */
+  .music-player { position: fixed; bottom: 40px; right: 40px; z-index: 99991; display: flex; align-items: center; gap: 15px; }
+  .record {
+    width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--text-dim);
+    background: repeating-radial-gradient(#111, #111 2px, #222 3px, #222 4px);
+    animation: spin 3s linear infinite paused; display: flex; align-items: center; justify-content: center;
   }
-  
-  /* Tùy chỉnh thanh cuộn cho ngầu */
-  .text-zone::-webkit-scrollbar { width: 3px; }
-  .text-zone::-webkit-scrollbar-track { background: transparent; }
-  .text-zone::-webkit-scrollbar-thumb { background: rgba(255, 42, 122, 0.3); border-radius: 10px; }
-  .text-zone:hover::-webkit-scrollbar-thumb { background: var(--accent-pink); }
+  .record::after { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+  .record.playing { animation-play-state: running; border-color: #fff; box-shadow: 0 0 10px rgba(255,255,255,0.2); }
+  @keyframes spin { 100% { transform: rotate(360deg); } }
+  .track-info { font-size: 0.65rem; letter-spacing: 4px; color: var(--text-dim); text-transform: uppercase; transition: 0.3s; }
 
-  h1 { font-size: 4.5rem; font-style: italic; font-weight: 300; line-height: 1.1; margin-bottom: 2rem; color: #fff; letter-spacing: -1px; }
-  p { font-size: 1.3rem; line-height: 2; margin-bottom: 1.5rem; color: #aaa; font-weight: 300; text-align: justify; }
-  .timestamp { font-size: 1rem; color: var(--text-muted); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 1rem; display: block; font-weight: 600; }
-  
-  /* MÀU NHẤN ĐỒNG NHẤT */
-  .highlight { color: var(--accent-pink); font-style: italic; font-weight: 600; }
-  .text-zone h1.color-sync { color: var(--accent-pink); font-weight: 700; text-shadow: 2px 2px 10px rgba(255, 42, 122, 0.3); }
+  /* NAVIGATION */
+  nav { position: fixed; top: 50vh; left: 40px; transform: translateY(-50%); display: flex; flex-direction: column; gap: 60px; z-index: 99991; }
+  nav a {
+    color: var(--text-dim); text-decoration: none; font-size: 0.75rem; letter-spacing: 6px;
+    writing-mode: vertical-rl; transform: rotate(180deg); transition: all 0.5s;
+  }
+  nav a.active { color: #fff; letter-spacing: 12px; text-shadow: 0 0 15px rgba(255,255,255,0.4); }
 
-  /* CỘT HÌNH ẢNH */
-  .visual-zone { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+  /* KHUNG MEDIA CHUNG */
   .media-box {
-    position: absolute; overflow: hidden; background: #000;
-    border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 15px 35px rgba(0,0,0,0.8);
+    background: #050505; border: 1px solid var(--border);
+    position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center;
+    color: var(--text-dim); font-size: 0.6rem; letter-spacing: 2px; text-align: center;
   }
-  .media-box img, .media-box video { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; transition: 0.5s; filter: grayscale(30%); }
-  .media-box:hover img, .media-box:hover video { opacity: 1; transform: scale(1.05); filter: grayscale(0%); }
-
-  /* ==========================================================================
-     TÙY CHỈNH TỪNG TRANG
-     ========================================================================== */
-  /* TRANG 1: CHÌM SÂU */
-  #s1 { background: linear-gradient(180deg, #050505 0%, #010a12 100%); }
-  #s1-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
-  .s1-img1 { width: 55%; aspect-ratio: 3/4; top: 10%; right: 10%; z-index: 3; transition: all 0.3s ease-out; }
-  .s1-img2 { width: 45%; aspect-ratio: 4/5; bottom: 15%; left: 10%; z-index: 2; transition: all 0.3s ease-out; }
-
-  /* TRANG 3: HỖN ĐỘN (Draggable) */
-  #s3 { background: #020202; }
-  .draggable-item { cursor: grab; position: absolute; z-index: 10; transition: border 0.2s; }
-  .draggable-item:active { cursor: grabbing; z-index: 100; border: 2px solid var(--accent-pink); box-shadow: 0 0 30px rgba(255, 42, 122, 0.5); }
-  .s3-vid { width: 50%; aspect-ratio: 9/16; top: 15%; left: 10%; } 
-  .s3-img { width: 65%; aspect-ratio: 16/9; bottom: 15%; right: 5%; }
-
-  /* TRANG 4: REMAKE (Vẽ Graffiti) */
-  #s4 { grid-template-columns: 0.8fr 1.2fr; background: #0a0a0a; }
-  .s4-wall {
-    position: relative; width: 100%; height: 100%;
-    background: url('https://images.unsplash.com/photo-1518640467707-6811f4a6ab73?q=80&w=1000') center/cover;
-    border-radius: 10px; overflow: hidden;
+  .media-box img, .media-box video {
+    width: 100%; height: 100%; object-fit: cover; opacity: 0.3;
+    transition: all 0.8s ease; filter: grayscale(100%); position: absolute; top: 0; left: 0;
   }
-  .s4-wall::after { content: ''; position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.7); pointer-events: none; }
-  .s4-img1 { width: 50%; aspect-ratio: 3/4; top: 15%; right: 15%; z-index: 2; transform: rotate(4deg); }
-  .s4-img2 { width: 55%; aspect-ratio: 1/1; bottom: 15%; left: 15%; z-index: 3; transform: rotate(-5deg); }
-  #s4-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; }
+  .media-box:hover img, .media-box:hover video { opacity: 0.8; filter: grayscale(0%); transform: scale(1.03); z-index: 2;}
+
+  /* MAIN LAYOUT */
+  main { position: relative; width: 100%; height: 100%; padding-left: 100px; z-index: 10; }
+  section { position: absolute; top: 0; left: 100px; width: calc(100% - 100px); height: 100%; opacity: 0; visibility: hidden; transition: opacity 1.5s ease; overflow: hidden; }
+  section.active { opacity: 1; visibility: visible; z-index: 10; }
+  h1, h2, h3 { font-family: 'Cormorant Garamond', serif; font-weight: normal; color: #fff; margin: 0; }
+
+  /* =========================================
+     PAGE 1: ĐÁY SÂU (BẢN NGÃ)
+     ========================================= */
+  #page-1 { display: flex; align-items: center; justify-content: center; }
+  .abyss-content { display: grid; grid-template-columns: 1fr 1fr; grid-gap: 5vw; max-width: 1200px; z-index: 5; }
+  .abyss-text-zone { padding-right: 5vw; display: flex; flex-direction: column; justify-content: center; }
+  .abyss-title { font-size: 5rem; font-style: italic; letter-spacing: -2px; margin-bottom: 40px; text-shadow: 0 0 10px rgba(0,0,0,0.8); }
+  .abyss-text { font-size: 0.95rem; line-height: 2.5; color: #888; margin-bottom: 25px; max-width: 500px; }
+  .redacted { background-color: #111; color: #111; padding: 2px 8px; transition: 0.4s;cursor: help; }
+  .redacted:hover { background-color: transparent; color: #fff; text-shadow: 0 0 5px #fff; }
+  
+  .abyss-visual-zone { position: relative; height: 70vh; width: 100%; }
+  .p1-img { position: absolute; transition: transform 0.1s linear; }
+  .p1-img-1 { width: 300px; height: 400px; top: 0; right: 0; z-index: 2; border-color: #333;}
+  .p1-img-2 { width: 200px; height: 300px; bottom: 10%; left: 0; z-index: 1; opacity: 0.5; }
+  .p1-img-3 { width: 150px; height: 150px; top: 20%; left: 20%; z-index: 3; border-radius: 50%; overflow: hidden;}
+  
+  /* =========================================
+     PAGE 2: SÂN KHẤU (TEDx & Concept)
+     ========================================= */
+  #page-2 { background: #000; mask-image: radial-gradient(circle 350px at var(--mouse-x, 50%) var(--mouse-y, 50%), black 0%, transparent 100%); -webkit-mask-image: radial-gradient(circle 350px at var(--mouse-x, 50%) var(--mouse-y, 50%), black 0%, transparent 100%); }
+  .stage-arena { width: 100%; height: 100%; position: relative; display: flex; align-items: center; justify-content: center; }
+  .stage-bg { position: absolute; width: 100%; height: 100%; object-fit: cover; opacity: 0.1; filter: grayscale(100%) contrast(180%); z-index: 1; }
+  .stage-title { position: absolute; z-index: 1; font-size: 8rem; color: transparent; -webkit-text-stroke: 1px rgba(255,255,255,0.05); letter-spacing: 30px; text-transform: uppercase; pointer-events: none; }
+  
+  /* Draggable elements rải rác nhưng gọn gàng */
+  .draggable-media { position: absolute; cursor: grab; z-index: 5; box-shadow: 5px 5px 20px rgba(0,0,0,0.8); }
+  .draggable-media:active { cursor: grabbing; z-index: 100; transform: scale(1.03); border-color: var(--graffiti); }
+  
+  .film-strip { width: 220px; background: #050505; padding: 10px; padding-bottom: 25px; border: 1px solid #222; }
+  .film-img-zone { width: 100%; height: 140px; background: #111; overflow: hidden; position: relative; }
+  .film-strip img { width: 100%; height: 100%; object-fit: cover; opacity: 0.5; filter: grayscale(100%); transition: 0.5s; }
+  .film-strip:hover img { filter: grayscale(0%); opacity: 1; }
+  .film-holes { display: flex; justify-content: space-between; margin-bottom: 8px; }
+  .hole { width: 6px; height: 6px; background: #000; border-radius: 2px; }
+
+  /* =========================================
+     PAGE 3: YOUNG LIONS (PHYSICS & VIDEO)
+     ========================================= */
+  #page-3 { background: #020202; overflow: hidden; }
+  .physics-arena { width: 100%; height: 100%; position: relative; }
+  
+  /* Khung Video Trung Tâm Siêu Lớn */
+  .video-core {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 65vw; height: auto; aspect-ratio: 16/9; border: 1px solid var(--border);
+    z-index: 2; box-shadow: 0 0 50px rgba(0,0,0,0.9);
+  }
+  .video-core video { width: 100%; height: 100%; object-fit: cover; opacity: 0.6; mix-blend-mode: luminosity; }
+  .video-glitch {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background-image: repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(0,0,0,0.3) 1px, rgba(0,0,0,0.3) 3px);
+    pointer-events: none; opacity: 0.5;
+  }
+
+  .center-core { position: absolute; top: 5%; left: 50%; transform: translateX(-50%); text-align: center; z-index: 10; }
+  .center-core h2 { font-size: 3rem; letter-spacing: 5px; text-transform: uppercase; }
+  .center-core p { color: var(--accent); letter-spacing: 10px; font-size: 0.75rem; text-transform: uppercase; }
+
+  .phys-word { position: absolute; font-family: 'Cormorant Garamond', serif; font-size: 2.2rem; color: #444; font-style: italic; white-space: nowrap; user-select: none; transition: color 0.3s, scale 0.3s; z-index: 10; }
+  .phys-word:hover { color: #fff; scale: 1.2; text-shadow: 0 0 10px rgba(255,255,255,0.3); }
+  
+  /* ẢNH TRÔI NỔI PAGE 3 */
+  .p3-float-img { position: absolute; z-index: 8; border: 1px solid #1a1a1a; filter: grayscale(100%); opacity: 0.4; transition: 0.3s;}
+  .p3-float-img img { width: 100%; height: 100%; object-fit: cover;}
+  .p3-float-img:hover { opacity: 1; filter: grayscale(0%); transform: scale(1.05); border-color: #333;}
+
+  /* =========================================
+     PAGE 4: QUẬY QUỌ (ADVANCED GRAFFITI)
+     ========================================= */
+  #page-4 { background: #030303; display: flex; position: relative; }
+  
+  /* BỨC TƯỜNG CŨ NÁT NỀN */
+  .brick-wall {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: url('https://images.unsplash.com/photo-1518640467707-6811f4a6ab73?q=80&w=2000') center/cover;
+    opacity: 0.2; filter: grayscale(100%) contrast(150%); z-index: 1; pointer-events: none;
+  }
+  
+  /* Posters dán rải rác, nằm DƯỚI canvas */
+  .poster { position: absolute; z-index: 10; background: #fff; padding: 4px; padding-bottom: 20px; box-shadow: 5px 5px 25px rgba(0,0,0,0.9); }
+  .poster img { width: 100%; height: 100%; object-fit: cover; filter: sepia(20%) grayscale(40%); }
+  .poster-1 { width: 280px; height: 380px; top: 10%; right: 10%; transform: rotate(5deg); }
+  .poster-2 { width: 320px; height: 210px; bottom: 15%; left: 40%; transform: rotate(-3deg); }
+  .poster-3 { width: 220px; height: 300px; top: 20%; left: 45%; transform: rotate(-8deg); }
+
+  .graf-ui {
+    position: relative; z-index: 60; padding: 10vh 5vw; width: 35%; height: 100%;
+    border-right: 1px solid var(--border); background: linear-gradient(90deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0) 100%); pointer-events: none;
+  }
+  .graf-ui-content { pointer-events: all; }
+  .graf-title { font-size: 5rem; margin-bottom: 20px; font-style: italic; letter-spacing: -2px;}
+  .graf-text { font-size: 0.85rem; line-height: 2.2; color: #888; margin-bottom: 50px; }
+  
+  .tools-panel { display: flex; flex-direction: column; gap: 20px; max-width: 300px;}
+  .tool-group { display: flex; align-items: center; gap: 15px; }
+  .tool-label { font-size: 0.65rem; color: #666; letter-spacing: 3px; text-transform: uppercase; width: 80px; }
+  .color-btn { width: 25px; height: 25px; border-radius: 50%; border: 2px solid transparent; transition: 0.3s;cursor: pointer; }
+  .color-btn.active { border-color: #fff; transform: scale(1.2); }
+  .size-slider { -webkit-appearance: none; width: 100%; height: 2px; background: #333; outline: none;cursor: pointer; }
+  .size-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; background: #fff; border-radius: 50%; }
+  .action-btn { background: transparent; border: 1px solid #444; color: #888; padding: 8px 15px; font-family: 'Space Mono'; font-size: 0.7rem; letter-spacing: 2px; transition: 0.3s;cursor: pointer; }
+  .action-btn:hover { border-color: #fff; color: #fff; }
 
 </style>
 </head>
 <body>
 
-<div id="left-nav">
-  <div class="nav-text">MINH THY // <span id="nav-title">Bản Ngã</span></div>
+<div id="custom-cursor"></div>
+<div class="grid-overlay"></div>
+<canvas id="ink-canvas"></canvas>
+<canvas id="graffiti-canvas"></canvas>
+<div id="transition-layer"><div class="glitch-flash" id="loader-line"></div></div>
+
+<div id="cinematic-intro">
+  <div class="intro-text" id="intro-1">i have all and then,</div>
+  <div class="intro-text" id="intro-2">most of you, some</div>
+  <div class="intro-text" id="intro-3" style="color: var(--accent); font-size: 3rem; margin-top: 20px; -webkit-text-stroke: 0px;">and now, none of you.</div>
 </div>
 
-<div id="scroll-container">
-
-  <section class="section" id="s1">
-    <div class="text-zone" id="s1-text">
-      <h1>vỏ ốc rỗng.</h1>
-      <p>Đèn đường chao nghiêng, đổ những <span class="highlight">vệt mật ong sóng sánh</span> xuống mặt lộ. Ngân bước đi giữa những quầng sáng neon rực rỡ, tiếng giày gõ đều như nhịp phim cũ.</p>
-      <p>Nhật dừng lại, siết lấy cổ tay cô. Ánh nhìn anh sâu thẳm, phong kín cả thời gian.</p>
-      <p>Ngân bám vào anh như nhành dây leo ký sinh, ủy thác hết nhựa sống vào cái điểm tựa ngỡ là vĩnh cửu ấy. Cô chỉ sợ nếu mình chớp mắt, mọi thứ sẽ vỡ vụn.</p>
-      <span class="timestamp" style="margin-top: 2rem;">Đùng. Tiếng sấm rạch ngang trời.</span>
-      <p style="font-weight: 600;">Bóng tối ùa vào đặc quánh.<br>00:00<br>Ngân tỉnh giấc.</p>
-    </div>
-    <div class="visual-zone">
-      <canvas id="s1-canvas"></canvas>
-      <div class="media-box s1-img1 sinking-item"><img src="anh1.jpg" alt="Memory 1"></div>
-      <div class="media-box s1-img2 sinking-item"><img src="anh2.jpg" alt="Memory 2"></div>
-    </div>
-  </section>
-
-  <section class="section" id="s3">
-    <div class="text-zone">
-      <h1 class="color-sync">YOUNG LIONS</h1>
-      <span class="timestamp" style="color: #fff;">Sự ngớ ngẩn & Random</span>
-      <p>Cái phao cứu sinh ba năm trước kia giờ chỉ còn là mẩu gỗ mục rệu rã giữa đại dương đen. Ngân không vùng vẫy, chỉ để mình rơi tự do xuống đáy sâu.</p>
-      <p>Nhận ra mình chẳng còn chút sức lực nào để bấu víu vào bất cứ đâu. Mọi cấu trúc sụp đổ. Tính logic bị phá vỡ hoàn toàn. Kể cả đoạn văn này có dài thêm, dài thêm nữa, thì sự ngột ngạt vẫn cứ bủa vây.</p>
-      <p class="highlight">[ Nắm kéo Video và Ảnh ném mạnh vào tường để thấy sự điên loạn ]</p>
-    </div>
-    <div class="visual-zone" id="s3-arena">
-      <div class="media-box draggable-item s3-vid">
-        <video src="clip.mp4" autoplay loop muted playsinline></video>
-      </div>
-      <div class="media-box draggable-item s3-img">
-        <img src="anh3.jpg" alt="Chaos">
-      </div>
-    </div>
-  </section>
-
-  <section class="section" id="s4">
-    <div class="visual-zone">
-      <div class="s4-wall">
-        <div class="media-box s4-img1"><img src="anh4.jpg" alt="Remake 1"></div>
-        <div class="media-box s4-img2"><img src="anh5.jpg" alt="Remake 2"></div>
-        <canvas id="s4-canvas"></canvas>
-      </div>
-    </div>
-    <div class="text-zone">
-      <h1 class="color-sync">Remake.</h1>
-      <span class="timestamp">Fluoxetine 20mg.</span>
-      <p>Quờ quạng trên bàn. Ngân vội lấy vỉ bạc. Một viên Fluoxetine 20mg. Vị đắng buốt sắc như mảnh kim loại chạy dọc thực quản.</p>
-      <p>Giữa bóng tối ướt sũng và trống hoác, viên thuốc là chiếc phao còn sót lại. Ngân biết mình phải học cách thở dưới nước.</p>
-      <p>Tuyệt đối không được quên thuốc. Trở về với bản ngã hồn nhiên, quậy quọ và đầy màu sắc, để che lấp đi khoảng không đen đặc kia.</p>
-      <p class="highlight" style="color: #fff;">Để không phải một lần nữa, chìm, chìm rất sâu.</p>
-    </div>
-  </section>
-
+<audio id="bg-audio" loop><source src="drowninglove.mp3" type="audio/mpeg"></audio>
+<div class="music-player interactable" onclick="toggleAudio()">
+  <div class="track-info" id="audio-text">silence</div>
+  <div class="record" id="record-disc"></div>
 </div>
+
+<nav>
+  <a class="interactable active" onclick="switchPage('page-1')" id="nav-1">đáy_sâu</a>
+  <a class="interactable" onclick="switchPage('page-2')" id="nav-2">sân_khấu</a>
+  <a class="interactable" onclick="switchPage('page-3')" id="nav-3">hỗn_mang</a>
+  <a class="interactable" onclick="switchPage('page-4')" id="nav-4">quậy_quọ</a>
+</nav>
+
+<main>
+  <section id="page-1" class="active">
+    <div class="abyss-content">
+      <div class="abyss-text-zone">
+        <h1 class="abyss-title">vỏ ốc rỗng.</h1>
+        <div class="abyss-text">
+          Chôn giấu mọi tiếng ồn trong cuống họng. Đèn đường chao nghiêng, tiếng giày gõ đều. <br>
+          Bám víu vào một điểm tựa ngỡ là vĩnh cửu. <span class="redacted interactable">love of my life = loss of my life.</span>
+        </div>
+        <div class="abyss-text">
+          Lại một lần nữa cơn triều xám xịt dâng lên từ dưới chân, nhấn chìm căn phòng.<br>
+          Phải học cách thở dưới nước. <span class="redacted interactable">Sự thăng hoa sinh ra từ trạng thái kiệt quệ nhất.</span>
+        </div>
+      </div>
+      
+      <div class="abyss-visual-zone" id="parallax-area">
+        <div class="media-box p1-img p1-img-1 interactable parallax-item" data-speed="20"><img src="link_anh_abyss_1.jpg" alt="Memory 1"></div>
+        <div class="media-box p1-img p1-img-2 interactable parallax-item" data-speed="-10"><img src="link_anh_abyss_2.jpg" alt="Memory 2"></div>
+        <div class="media-box p1-img p1-img-3 interactable parallax-item" data-speed="5"><img src="link_anh_abyss_3.jpg" alt="Memory 3"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="page-2">
+    <div class="stage-arena" id="stage-arena">
+      <img src="link_anh_san_khau_large.jpg" alt="" class="stage-bg">
+      <div class="stage-title">TEDxFTU</div>
+      
+      <div class="film-strip draggable-media interactable" style="top: 15%; left: 20%; transform: rotate(5deg);">
+        <div class="film-holes"><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div></div>
+        <div class="film-img-zone"><img src="link_anh_performance_1.jpg" alt="Footage 1"></div>
+        <div class="film-holes" style="margin-top: 8px;"><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div></div>
+      </div>
+
+      <div class="film-strip draggable-media interactable" style="top: 10%; right: 15%; transform: rotate(-8deg);">
+        <div class="film-holes"><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div></div>
+        <div class="film-img-zone"><img src="link_anh_performance_2.jpg" alt="Footage 2"></div>
+        <div class="film-holes" style="margin-top: 8px;"><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div></div>
+      </div>
+
+      <div class="film-strip draggable-media interactable" style="top: 55%; right: 10%; transform: rotate(10deg);">
+        <div class="film-holes"><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div></div>
+        <div class="film-img-zone"><img src="link_anh_performance_3.jpg" alt="Footage 3"></div>
+        <div class="film-holes" style="margin-top: 8px;"><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div></div>
+      </div>
+
+      <div class="draggable-media interactable media-box" style="width: 200px; height: 200px; bottom: 10%; left: 15%; border-radius: 50%;">
+        <img src="link_anh_concept_detail.jpg" alt="Concept 4">
+      </div>
+    </div>
+  </section>
+
+  <section id="page-3">
+    <div class="physics-arena" id="physics-arena">
+      <div class="center-core">
+        <h2>Vietnam Young Lions</h2>
+        <p>Sự ngớ ngẩn có mục đích</p>
+      </div>
+
+      <div class="video-core interactable">
+        <div class="video-glitch"></div>
+        <video src="link_video_concept_performance.mp4" autoplay loop muted playsinline></video>
+      </div>
+
+      <div class="p3-float-img interactable" style="width: 250px; height: 180px;"><img src="link_anh_chaos_yl_1.jpg" alt="YL 1"></div>
+      <div class="p3-float-img interactable" style="width: 150px; height: 150px; border-radius: 50%;"><img src="link_anh_chaos_yl_2.jpg" alt="YL 2"></div>
+      <div class="p3-float-img interactable" style="width: 180px; height: 250px;"><img src="link_anh_chaos_yl_3.jpg" alt="YL 3"></div>
+
+      </div>
+  </section>
+
+  <section id="page-4">
+    <div class="brick-wall"></div>
+    
+    <div class="poster poster-1"><img src="link_anh_remake_quai_1.jpg" alt="Poster 1"></div>
+    <div class="poster poster-2"><img src="link_anh_remake_quai_2.jpg" alt="Poster 2"></div>
+    <div class="poster poster-3"><img src="link_anh_remake_quai_3.jpg" alt="Poster 3"></div>
+
+    <div class="graf-ui">
+      <div class="graf-ui-content">
+        <h1 class="graf-title">Remake.</h1>
+        <div class="graf-text">
+          Một tâm hồn bay bổng, quậy quọ. Chạm tay vào những mảng tường đổ nát, biến vết sẹo thành một bức họa nặng đô. <br><br>
+          Bấm giữ chuột vẽ lên bóng tối và những bức ảnh cũ. Đừng sợ phá vỡ cấu trúc.
+        </div>
+        
+        <div class="tools-panel">
+          <div class="tool-group">
+            <div class="tool-label">Colors</div>
+            <div class="color-btn interactable active" style="background: var(--neon-red);" onclick="setColor('#ff1e1e', this)"></div>
+            <div class="color-btn interactable" style="background: #ffffff;" onclick="setColor('#ffffff', this)"></div>
+            <div class="color-btn interactable" style="background: var(--neon-cyan);" onclick="setColor('#00f0ff', this)"></div>
+            <div class="color-btn interactable" style="background: #111111;" onclick="setColor('#111111', this)"></div>
+          </div>
+          <div class="tool-group">
+            <div class="tool-label">Brush Size</div>
+            <input type="range" class="size-slider interactable" id="brush-size" min="10" max="100" value="50">
+          </div>
+          <div class="tool-group" style="margin-top: 15px;">
+            <button class="action-btn interactable" onclick="clearGraffiti()">[ Xóa Tường ]</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
 
 <script>
-  /* ==========================================================================
-     ĐIỀU HƯỚNG CÁC TRANG (SCROLL SNAP)
-     ========================================================================== */
-  const scrollContainer = document.getElementById('scroll-container');
-  const navTitle = document.getElementById('nav-title');
-  const pageTitles = ["Bản Ngã", "Sân Khấu", "Hỗn Loạn", "Remake"];
-  const totalPages = 3; // Hiện tại code demo có 3 trang
-  let currentPage = 0;
-  let isScrolling = false;
-
-  window.addEventListener('wheel', (e) => {
-    // Nếu chuột đang cuộn BÊN TRONG thẻ text-zone, không chuyển trang lớn
-    if (e.target.closest('.text-zone')) return; 
-
-    if (isScrolling) return;
-    if (e.deltaY > 0 && currentPage < totalPages - 1) { goPage(currentPage + 1); } 
-    else if (e.deltaY < 0 && currentPage > 0) { goPage(currentPage - 1); }
+  /* =========================================
+     1. CUSTOM CURSOR & LIGHT TRAIL LOGIC
+     ========================================= */
+  const cursor = document.getElementById('custom-cursor');
+  document.addEventListener('mousemove', (e) => {
+    cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px';
   });
 
-  function goPage(index) {
-    isScrolling = true; currentPage = index;
-    scrollContainer.style.transform = `translateY(-${currentPage * 100}vh)`;
-    navTitle.style.opacity = '0';
+  const inks = [];
+  document.addEventListener('mousemove', (e) => {
+    if(document.getElementById('cinematic-intro').style.display !== 'none') return;
+    inks.push({ x: e.clientX, y: e.clientY, vx: (Math.random()-0.5)*2, vy: (Math.random()-0.5)*2, life: 1, size: Math.random()*2+1 });
+  });
+
+  const inkCanvas = document.getElementById('ink-canvas');
+  const iCtx = inkCanvas.getContext('2d');
+  inkCanvas.width = window.innerWidth; inkCanvas.height = window.innerHeight;
+
+  function renderLightTrail() {
+    iCtx.clearRect(0, 0, inkCanvas.width, inkCanvas.height);
+    for (let i = 0; i < inks.length; i++) {
+      let p = inks[i];
+      iCtx.beginPath(); iCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      iCtx.fillStyle = `rgba(158, 0, 0, ${p.life*0.5})`; // Màu máu thẫm mờ
+      iCtx.fill();
+      p.x += p.vx; p.y += p.vy; p.life -= 0.01; p.size += 0.1; // Loang dần
+      if (p.life <= 0) inks.splice(i, 1);
+    }
+    requestAnimationFrame(renderLightTrail);
+  }
+  renderLightTrail();
+
+  document.querySelectorAll('.interactable').forEach(el => {
+    el.addEventListener('mouseenter', () => cursor.classList.add('hovering'));
+    el.addEventListener('mouseleave', () => cursor.classList.remove('hovering'));
+  });
+
+  /* =========================================
+     2. CINEMATIC INTRO SEQUENCE
+     ========================================= */
+  const intro = document.getElementById('cinematic-intro');
+  const t1 = document.getElementById('intro-1');
+  const t2 = document.getElementById('intro-2');
+  const t3 = document.getElementById('intro-3');
+
+  window.onload = () => {
+    setTimeout(() => t1.classList.add('show'), 500);
+    setTimeout(() => t2.classList.add('show'), 2500);
+    setTimeout(() => t3.classList.add('show'), 4500);
+    
     setTimeout(() => {
-      navTitle.innerText = pageTitles[currentPage];
-      navTitle.style.opacity = '1';
-    }, 500);
-    setTimeout(() => { isScrolling = false; }, 1200);
+      intro.style.opacity = '0';
+      setTimeout(() => { intro.style.display = 'none'; }, 1500);
+    }, 7500);
+  };
+
+  /* =========================================
+     3. AUDIO PLAYER
+     ========================================= */
+  const audio = document.getElementById('bg-audio');
+  const recordDisc = document.getElementById('record-disc');
+  const audioText = document.getElementById('audio-text');
+  let isPlaying = false;
+
+  function toggleAudio() {
+    if (isPlaying) { audio.pause(); recordDisc.classList.remove('playing'); audioText.innerText = 'silence';
+    } else { audio.play(); recordDisc.classList.add('playing'); audioText.innerText = 'drowninglove';
+    }
+    isPlaying = !isPlaying;
   }
 
-  /* ==========================================================================
-     INTERACTIVE 1: CHÌM SÂU ĐIÊN ĐẢO (TRANG 1)
-     Kéo chuột xuống -> Hình bị ép nhỏ, chữ mờ đi, bọt khí nổi lên.
-     ========================================================================== */
-  const s1Canvas = document.getElementById('s1-canvas');
-  const s1Ctx = s1Canvas.getContext('2d');
-  const sinkingItems = document.querySelectorAll('.sinking-item');
-  const textS1 = document.getElementById('s1-text');
-  let mouseY = window.innerHeight / 2;
+  /* =========================================
+     4. PAGE TRANSITION & TRAIL VISIBILITY
+     ========================================= */
+  const loader = document.getElementById('transition-layer');
+  const loaderLine = document.getElementById('loader-line');
+  const grafCanvas = document.getElementById('graffiti-canvas');
 
-  function resizeS1() {
-    let rect = s1Canvas.parentElement.getBoundingClientRect();
-    s1Canvas.width = rect.width; s1Canvas.height = rect.height;
-  }
-  window.addEventListener('resize', resizeS1); resizeS1();
-
-  const bubbles = [];
-  document.addEventListener('mousemove', (e) => {
-    mouseY = e.clientY;
-    if (currentPage !== 0) return;
-    let rect = s1Canvas.parentElement.getBoundingClientRect();
-    let relX = e.clientX - rect.left; let relY = e.clientY - rect.top;
+  function switchPage(pageId) {
+    loader.style.pointerEvents = 'all'; loader.style.opacity = '1'; loaderLine.style.transform = 'scaleX(1)';
     
-    // Tạo bọt khí xanh xám lạnh lẽo
-    if(relX > 0 && relX < rect.width && relY > 0 && relY < rect.height && Math.random() > 0.6) {
-      bubbles.push({ x: relX, y: relY, radius: Math.random()*2+1, speedY: Math.random()*1.5+0.5, opacity: 0.6 });
-    }
-  });
+    // Graffiti mode on Page 4
+    if(pageId === 'page-4') { grafCanvas.style.pointerEvents = 'all'; cursor.classList.add('spray'); } 
+    else { grafCanvas.style.pointerEvents = 'none'; cursor.classList.remove('spray'); }
 
-  function animateSinking() {
-    if(currentPage === 0) {
-      s1Ctx.clearRect(0, 0, s1Canvas.width, s1Canvas.height);
-      for (let i = 0; i < bubbles.length; i++) {
-        let b = bubbles[i];
-        s1Ctx.beginPath(); s1Ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
-        s1Ctx.fillStyle = `rgba(180, 200, 220, ${b.opacity})`; s1Ctx.fill();
-        b.y -= b.speedY; b.opacity -= 0.005;
-        if (b.opacity <= 0) bubbles.splice(i, 1);
-      }
-      
-      // Tính lực ép dựa vào tọa độ Y của chuột (càng kéo xuống dưới càng chìm)
-      let depth = (mouseY / window.innerHeight); 
-      let pullDown = depth * 150; // Kéo tuột hình xuống
-      let scaleDown = 1 - (depth * 0.1); // Hình teo nhỏ dần do áp suất
-      
-      sinkingItems.forEach(item => {
-        item.style.transform = `translateY(${pullDown}px) scale(${scaleDown})`;
-      });
-
-      // Text cũng mờ dần khi chìm sâu
-      textS1.style.opacity = 1 - (depth * 0.5);
-      textS1.style.transform = `translateY(${depth * 20}px)`;
-    }
-    requestAnimationFrame(animateSinking);
+    setTimeout(() => {
+      document.querySelectorAll('section').forEach(sec => sec.classList.remove('active'));
+      document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+      document.getElementById(pageId).classList.add('active');
+      document.getElementById('nav-' + pageId.split('-')[1]).classList.add('active');
+      setTimeout(() => { loader.style.opacity = '0'; loader.style.pointerEvents = 'none'; loaderLine.style.transform = 'scaleX(0)'; }, 600);
+    }, 800);
   }
-  animateSinking();
 
-  /* ==========================================================================
-     INTERACTIVE 2: CHAOS PHYSICS & SCREEN SHAKE (TRANG 3)
-     Ném đồ đập vào tường làm rung lắc màn hình.
-     ========================================================================== */
-  const arena = document.getElementById('s3-arena');
-  const dragItems = document.querySelectorAll('.draggable-item');
-  let physBodies = [];
-
-  dragItems.forEach(el => {
-    physBodies.push({
-      el: el, x: el.offsetLeft, y: el.offsetTop, vx: 0, vy: 0,
-      width: el.offsetWidth, height: el.offsetHeight, isDragging: false
-    });
-  });
-
-  let activeBody = null; let startX, startY; let lastMouseX, lastMouseY;
-
-  dragItems.forEach((el, index) => {
-    el.addEventListener('mousedown', (e) => {
-      activeBody = physBodies[index];
-      activeBody.isDragging = true; activeBody.vx = 0; activeBody.vy = 0;
-      startX = e.clientX - activeBody.x; startY = e.clientY - activeBody.y;
-      lastMouseX = e.clientX; lastMouseY = e.clientY;
-    });
-  });
-
+  /* =========================================
+     5. PAGE 1: PARALLAX (utilize tốt hơn, gọn hơn)
+     ========================================= */
+  const pItems = document.querySelectorAll('.parallax-item');
   document.addEventListener('mousemove', (e) => {
-    if (!activeBody || currentPage !== 1) return; // Trang 3 đang là index 1 trong demo này
-    activeBody.x = e.clientX - startX; activeBody.y = e.clientY - startY;
-    activeBody.vx = e.clientX - lastMouseX; activeBody.vy = e.clientY - lastMouseY;
-    lastMouseX = e.clientX; lastMouseY = e.clientY;
+    if (!document.getElementById('page-1').classList.contains('active')) return;
+    let x = (window.innerWidth - e.pageX * 2) / 100; let y = (window.innerHeight - e.pageY * 2) / 100;
+    pItems.forEach(item => {
+      let speed = item.getAttribute('data-speed');
+      item.style.transform = `translate3d(${x * speed}px, ${y * speed}px, 0)`;
+    });
   });
 
-  document.addEventListener('mouseup', () => {
-    if(activeBody) { activeBody.isDragging = false; activeBody = null; }
+  /* =========================================
+     6. PAGE 2: DRAGGABLE & MOUSE SPOTLIGHT
+     ========================================= */
+  const page2 = document.getElementById('page-2');
+  document.addEventListener('mousemove', (e) => {
+    if (!page2.classList.contains('active')) return;
+    let x = (e.clientX / window.innerWidth) * 100; let y = (e.clientY / window.innerHeight) * 100;
+    page2.style.setProperty('--mouse-x', `${x}%`); page2.style.setProperty('--mouse-y', `${y}%`);
   });
 
-  // Hàm tạo rung lắc màn hình khi có va chạm mạnh
-  function triggerShake() {
-    document.body.classList.remove('shake-effect');
-    void document.body.offsetWidth; // Trigger reflow
-    document.body.classList.add('shake-effect');
-  }
+  const draggables = document.querySelectorAll('.draggable-media');
+  let activeDrag = null, oX = 0, oY = 0;
+  draggables.forEach(item => {
+    item.addEventListener('mousedown', (e) => {
+      activeDrag = item; oX = e.clientX - item.getBoundingClientRect().left; oY = e.clientY - item.getBoundingClientRect().top;
+      draggables.forEach(d => d.style.zIndex = '5'); activeDrag.style.zIndex = '100';
+    });
+  });
+  document.addEventListener('mousemove', (e) => {
+    if (!activeDrag) return;
+    activeDrag.style.left = `${e.clientX - oX}px`; activeDrag.style.top = `${e.clientY - oY}px`;
+  });
+  document.addEventListener('mouseup', () => { activeDrag = null; });
 
-  function runChaosPhysics() {
-    if(currentPage === 1) { // Trang 3 (index 1 do bị bỏ bớt S2 trong html mẫu)
-      let rect = arena.getBoundingClientRect();
-      physBodies.forEach(b => {
-        if(!b.isDragging) {
-          b.x += b.vx; b.y += b.vy;
-          b.vx *= 0.98; b.vy *= 0.98; // Ma sát
-          
-          let impact = false;
-          // Đập vào viền
-          if(b.x <= 0) { b.x = 0; b.vx *= -0.8; impact = true; }
-          if(b.x + b.width >= rect.width) { b.x = rect.width - b.width; b.vx *= -0.8; impact = true; }
-          if(b.y <= 0) { b.y = 0; b.vy *= -0.8; impact = true; }
-          if(b.y + b.height >= rect.height) { b.y = rect.height - b.height; b.vy *= -0.8; impact = true; }
-          
-          // Nếu lực đập (vận tốc) đủ lớn, rung màn hình
-          if (impact && (Math.abs(b.vx) > 10 || Math.abs(b.vy) > 10)) {
-            triggerShake();
-          }
+  /* =========================================
+     7. PAGE 3: PHYSICAL CHAOS (Words + Float Imgs)
+     ========================================= */
+  const arena = document.getElementById('physics-arena');
+  const wordList = [
+    "scrambled eggs", "dumb down", "timing", "algorithm", "xé toạc", "multiverse", 
+    "achilles", "watpad", "One-shot", "implicit", "thighs", "bình cũ rượu mới"
+  ];
+  let physObjects = [];
+
+  wordList.forEach(text => {
+    let el = document.createElement('div');
+    el.className = 'phys-word interactable'; el.innerText = text;
+    arena.appendChild(el);
+    physObjects.push({
+      el: el, x: Math.random() * (window.innerWidth-400)+100, y: Math.random() * (window.innerHeight-200)+100,
+      vx: (Math.random()-0.5)*3, vy: (Math.random()-0.5)*3, width: el.offsetWidth, height: el.offsetHeight, type: 'text'
+    });
+  });
+  // Thêm ảnh trôi nổi vào physics
+  document.querySelectorAll('.p3-float-img').forEach(el => {
+    physObjects.push({
+      el: el, x: Math.random() * (window.innerWidth-400)+100, y: Math.random() * (window.innerHeight-200)+100,
+      vx: (Math.random()-0.5)*1.5, vy: (Math.random()-0.5)*1.5, width: el.offsetWidth, height: el.offsetHeight, type: 'img'
+    });
+  });
+
+  let mX = 0, mY = 0;
+  document.addEventListener('mousemove', e => { mX = e.clientX; mY = e.clientY; });
+
+  function runChaos() {
+    if(document.getElementById('page-3').classList.contains('active')) {
+      physObjects.forEach(obj => {
+        obj.x += obj.vx; obj.y += obj.vy;
+        if(obj.x <= 0 || obj.x + obj.width >= window.innerWidth) obj.vx *= -1;
+        if(obj.y <= 0 || obj.y + obj.height >= window.innerHeight) obj.vy *= -1;
+        
+        let dx = obj.x + obj.width/2 - mX; let dy = obj.y + obj.height/2 - mY;
+        let dist = Math.sqrt(dx*dx + dy*dy);
+        if(dist < 150) { 
+          let repel = obj.type === 'text' ? 0.005 : 0.002;
+          obj.vx += dx * repel; obj.vy += dy * repel; 
         }
-        b.el.style.left = b.x + 'px'; b.el.style.top = b.y + 'px';
+        
+        obj.vx *= 0.995; obj.vy *= 0.995; // Friction
+        if(Math.abs(obj.vx) < 0.2 && obj.type === 'text') obj.vx = obj.vx > 0 ? 0.2 : -0.2;
+        if(Math.abs(obj.vy) < 0.2 && obj.type === 'text') obj.vy = obj.vy > 0 ? 0.2 : -0.2;
+
+        obj.el.style.transform = `translate(${obj.x}px, ${obj.y}px)`;
       });
     }
-    requestAnimationFrame(runChaosPhysics);
+    requestAnimationFrame(runChaos);
   }
-  setTimeout(runChaosPhysics, 500);
+  runChaos();
 
-  /* ==========================================================================
-     INTERACTIVE 3: GRAFFITI SƠN CHẢY (TRANG 4)
-     Nét vẽ tự động nhỏ giọt xuống.
-     ========================================================================== */
-  const s4Canvas = document.getElementById('s4-canvas');
-  const s4Ctx = s4Canvas.getContext('2d');
-  // Ép chết màu hồng đồng nhất cho bút vẽ
-  let paintColor = '#ff2a7a'; 
-  let isPainting = false; let pLastX, pLastY;
+  /* =========================================
+     8. PAGE 4: GRAFFITI ON DUST
+     ========================================= */
+  const gCtx = grafCanvas.getContext('2d');
+  grafCanvas.width = window.innerWidth; grafCanvas.height = window.innerHeight;
+  let isDrawing = false, paintColor = '#ff1e1e';
+  let bSizeInput = document.getElementById('brush-size');
 
-  function resizeS4() {
-    let rect = s4Canvas.parentElement.getBoundingClientRect();
-    s4Canvas.width = rect.width; s4Canvas.height = rect.height;
+  function setColor(color, btn) {
+    paintColor = color;
+    document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
   }
-  window.addEventListener('resize', resizeS4); resizeS4();
 
-  s4Canvas.addEventListener('mousedown', (e) => {
-    isPainting = true;
-    let rect = s4Canvas.getBoundingClientRect();
-    pLastX = e.clientX - rect.left; pLastY = e.clientY - rect.top;
-  });
-  window.addEventListener('mouseup', () => isPainting = false);
+  function clearGraffiti() { gCtx.clearRect(0, 0, grafCanvas.width, grafCanvas.height); }
 
-  s4Canvas.addEventListener('mousemove', (e) => {
-    if (!isPainting || currentPage !== 2) return; // Trang 4 là index 2
-    let rect = s4Canvas.getBoundingClientRect();
-    let currentX = e.clientX - rect.left; let currentY = e.clientY - rect.top;
-
-    let dx = currentX - pLastX; let dy = currentY - pLastY;
-    let velocity = Math.sqrt(dx*dx + dy*dy);
-    let brushSize = Math.min(Math.max(velocity * 0.5, 5), 30);
+  grafCanvas.addEventListener('mousedown', () => isDrawing = true);
+  grafCanvas.addEventListener('mouseup', () => isDrawing = false);
+  grafCanvas.addEventListener('mouseleave', () => isDrawing = false);
+  
+  grafCanvas.addEventListener('mousemove', (e) => {
+    if (!isDrawing) return;
     
-    s4Ctx.fillStyle = paintColor;
-    s4Ctx.beginPath();
-    s4Ctx.arc(currentX, currentY, brushSize, 0, Math.PI*2);
-    s4Ctx.fill();
+    let radius = parseInt(bSizeInput.value);
+    let density = radius * 2.5;
+    gCtx.fillStyle = paintColor;
 
-    // Hiệu ứng giọt sơn chảy rỉ xuống (Paint Drip)
-    if(Math.random() > 0.85) {
-      s4Ctx.fillRect(currentX - brushSize/2, currentY, Math.random()*4 + 1, Math.random()*100 + 20);
+    for (let i = 0; i < density; i++) {
+      let oX = (Math.random()*2-1) * radius;
+      let oY = (Math.random()*2-1) * radius;
+      if (oX*oX + oY*oY <= radius*radius) {
+        let size = Math.random() * 3;
+        gCtx.fillRect(e.clientX + oX, e.clientY + oY, size, size);
+      }
     }
+    
+    // Drip effect
+    if(Math.random() > 0.8 && radius > 30) {
+      gCtx.fillRect(e.clientX, e.clientY, 2, Math.random()*80+20);
+    }
+  });
 
-    pLastX = currentX; pLastY = currentY;
+  window.addEventListener('resize', () => { 
+    inkCanvas.width = window.innerWidth; inkCanvas.height = window.innerHeight; 
+    grafCanvas.width = window.innerWidth; grafCanvas.height = window.innerHeight; 
   });
 
 </script>
