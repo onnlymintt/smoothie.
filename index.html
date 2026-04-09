@@ -16,6 +16,7 @@
     --border: #1a1a1a;
   }
 
+  /* RESET */
   * { box-sizing: border-box; cursor: none !important; }
   body, html {
     margin: 0; padding: 0; background-color: var(--bg);
@@ -37,7 +38,7 @@
 
   /* OVERLAYS & CANVAS */
   .grid-overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
     background-image: linear-gradient(var(--grid-c) 1px, transparent 1px), linear-gradient(90deg, var(--grid-c) 1px, transparent 1px);
     background-size: 5vw 5vh; opacity: 0.5; z-index: 2; pointer-events: none;
   }
@@ -45,7 +46,7 @@
 
   /* CINEMATIC INTRO */
   #cinematic-intro {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
     background: #000; z-index: 99999; display: flex; align-items: center; justify-content: center;
     flex-direction: column; transition: opacity 1.5s ease;
   }
@@ -54,14 +55,6 @@
     color: transparent; opacity: 0; transition: opacity 2s, color 2s; text-align: center; line-height: 2; -webkit-text-stroke: 1px rgba(255,255,255,0.2);
   }
   .intro-text.show { opacity: 1; color: #fff; -webkit-text-stroke: 0px; }
-
-  /* PAGE TRANSITION */
-  #transition-layer {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: #000; z-index: 99995; display: flex; align-items: center; justify-content: center;
-    opacity: 0; pointer-events: none; transition: opacity 0.8s;
-  }
-  .glitch-flash { width: 100%; height: 1px; background: var(--graffiti); transform: scaleX(0); transition: transform 0.5s; box-shadow: 0 0 10px var(--graffiti); }
 
   /* MUSIC PLAYER */
   .music-player { position: fixed; bottom: 40px; right: 40px; z-index: 99991; display: flex; align-items: center; gap: 15px; }
@@ -78,11 +71,11 @@
   nav { position: fixed; top: 50vh; left: 40px; transform: translateY(-50%); display: flex; flex-direction: column; gap: 60px; z-index: 99991; }
   nav a {
     color: var(--text-dim); text-decoration: none; font-size: 0.75rem; letter-spacing: 6px;
-    writing-mode: vertical-rl; transform: rotate(180deg); transition: all 0.5s;
+    writing-mode: vertical-rl; transform: rotate(180deg); transition: all 0.5s; cursor: pointer;
   }
   nav a.active { color: #fff; letter-spacing: 12px; text-shadow: 0 0 15px rgba(255,255,255,0.4); }
 
-  /* MEDIA BOXES (No Circles) */
+  /* MEDIA BOXES (Ảnh Vuông/Chữ Nhật) */
   .media-box {
     background: #050505; border: 1px solid var(--border);
     position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center;
@@ -95,25 +88,36 @@
   .media-box:hover img, .media-box:hover video { opacity: 0.8; filter: grayscale(0%); transform: scale(1.03); z-index: 2;}
   .inverted { filter: invert(1) hue-rotate(180deg) !important; border-color: #fff !important; }
 
-  /* MAIN LAYOUT */
-  main { position: relative; width: 100%; height: 100%; padding-left: 100px; z-index: 10; }
-  section { position: absolute; top: 0; left: 100px; width: calc(100% - 100px); height: 100%; opacity: 0; visibility: hidden; transition: opacity 1.5s ease; overflow: hidden; }
-  section.active { opacity: 1; visibility: visible; z-index: 10; }
+  /* =========================================
+     MAIN LAYOUT (CUỘN DỌC LIỀN MẠCH)
+     ========================================= */
+  main { 
+    position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; 
+    padding-left: 100px; z-index: 10; 
+    overflow-y: scroll; overflow-x: hidden; 
+    scroll-behavior: smooth; scroll-snap-type: y mandatory; 
+  }
+  main::-webkit-scrollbar { display: none; } /* Ẩn thanh cuộn cho nghệ */
+  
+  section { 
+    width: 100%; height: 100vh; position: relative; 
+    scroll-snap-align: start; /* Khóa màn hình khi cuộn tới */
+    overflow: hidden; display: flex; flex-direction: column; justify-content: center;
+  }
   h1, h2, h3 { font-family: 'Cormorant Garamond', serif; font-weight: normal; color: #fff; margin: 0; }
 
   /* =========================================
      PAGE 1: ĐÁY SÂU (BẢN NGÃ)
      ========================================= */
-  #page-1 { display: flex; align-items: center; justify-content: center; }
-  .abyss-content { display: grid; grid-template-columns: 1fr 1fr; grid-gap: 5vw; max-width: 1200px; z-index: 5; }
+  #page-1 { align-items: center; justify-content: center; flex-direction: row;}
+  .abyss-content { display: grid; grid-template-columns: 1fr 1fr; grid-gap: 5vw; max-width: 1200px; z-index: 5; width: 100%;}
   .abyss-text-zone { padding-right: 5vw; display: flex; flex-direction: column; justify-content: center; }
   .abyss-title { font-size: 5rem; font-style: italic; letter-spacing: -2px; margin-bottom: 40px; text-shadow: 0 0 10px rgba(0,0,0,0.8); }
   .abyss-text { font-size: 0.95rem; line-height: 2.5; color: #888; margin-bottom: 25px; max-width: 500px; }
   
-  /* Redacted Glitch Effect */
-  .redacted { background-color: #111; color: #111; padding: 2px 8px; transition: 0.1s; position: relative; display: inline-block;}
-  .redacted:hover { background-color: transparent; color: #fff; text-shadow: 2px 0 var(--graffiti), -2px 0 var(--accent); animation: textGlitch 0.2s linear infinite; }
-  @keyframes textGlitch { 0% { transform: translate(0) } 20% { transform: translate(-2px, 1px) } 40% { transform: translate(2px, -1px) } 60% { transform: translate(-1px, 2px) } 80% { transform: translate(1px, -2px) } 100% { transform: translate(0) } }
+  /* Redacted mượt mà, không glitch */
+  .redacted { background-color: #111; color: #111; padding: 2px 8px; transition: 0.8s ease; display: inline-block;}
+  .redacted:hover { background-color: transparent; color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.6); }
 
   @keyframes sinkDeep {
     0% { transform: translateY(0px) scale(1); opacity: 1; filter: blur(0px); }
@@ -122,16 +126,15 @@
   }
   .abyss-visual-zone { position: relative; height: 70vh; width: 100%; animation: sinkDeep 12s ease-in-out infinite; }
   .p1-img { position: absolute; transition: transform 0.1s linear; }
-  .p1-img-1 { width: 300px; height: 400px; top: 0; right: 0; z-index: 2; border-color: #333;}
-  .p1-img-2 { width: 220px; height: 220px; bottom: 10%; left: 0; z-index: 1; opacity: 0.5; }
-  .p1-img-3 { width: 180px; height: 250px; top: 20%; left: 20%; z-index: 3;}
+  .p1-img-1 { width: 30vh; height: 40vh; top: 0; right: 0; z-index: 2; border-color: #333;}
+  .p1-img-2 { width: 22vh; height: 22vh; bottom: 10%; left: 0; z-index: 1; opacity: 0.5; }
+  .p1-img-3 { width: 18vh; height: 25vh; top: 20%; left: 20%; z-index: 3;}
   
   /* =========================================
-     PAGE 2: SÂN KHẤU (TEDx & Concept)
+     PAGE 2: SÂN KHẤU
      ========================================= */
-  #page-2 { background: #020202; } 
-  .stage-arena { width: 100%; height: 100%; position: relative; display: flex; align-items: center; justify-content: center; }
-  .stage-bg { position: absolute; width: 100%; height: 100%; object-fit: cover; opacity: 0.15; filter: grayscale(100%) contrast(150%); z-index: 1; pointer-events: none;}
+  #page-2 { background: #020202; align-items: center;} 
+  .stage-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.15; filter: grayscale(100%) contrast(150%); z-index: 1; pointer-events: none;}
   .stage-title { position: absolute; top: 10%; z-index: 1; font-size: 8rem; color: transparent; -webkit-text-stroke: 1px rgba(255,255,255,0.05); letter-spacing: 30px; text-transform: uppercase; pointer-events: none; }
   
   .reflection-box {
@@ -141,77 +144,58 @@
   .reflection-box:focus-within { border-color: var(--graffiti); box-shadow: 0 0 20px rgba(0, 102, 204, 0.2); }
   .reflection-box h3 { font-style: italic; font-size: 1.8rem; margin-bottom: 15px; color: #fff; }
   .reflection-box p { color: #888; font-size: 0.85rem; line-height: 1.8; margin: 0; outline: none; min-height: 50px;}
-
   .stage-reflect { bottom: 15%; right: 10%; width: 350px; }
 
-  /* Draggable Media (Thêm hiệu ứng nghiêng khi kéo trong JS) */
   .draggable-media { position: absolute; cursor: grab; z-index: 5; box-shadow: 5px 5px 20px rgba(0,0,0,0.8); transition: filter 0.3s, transform 0.1s ease-out; }
   .draggable-media:active { cursor: grabbing; z-index: 100; border-color: var(--graffiti); }
   
   .film-strip { width: 220px; background: #050505; padding: 10px; padding-bottom: 25px; border: 1px solid #222; }
   .film-img-zone { width: 100%; height: 140px; background: #000; overflow: hidden; position: relative; }
-  
-  .film-img-zone img, .spotlight-media img { 
-    width: 100%; height: 100%; object-fit: cover; opacity: 0.2; filter: grayscale(100%); 
-    transition: opacity 0.5s, filter 0.5s; 
-  }
-  
+  .film-img-zone img, .spotlight-media img { width: 100%; height: 100%; object-fit: cover; opacity: 0.2; filter: grayscale(100%); transition: opacity 0.5s, filter 0.5s; }
   .draggable-media:hover .film-img-zone img, .draggable-media:hover.spotlight-media img { 
     opacity: 1; filter: grayscale(0%);
     mask-image: radial-gradient(circle 120px at var(--lx, 50%) var(--ly, 50%), black 0%, rgba(0,0,0,0.05) 100%);
     -webkit-mask-image: radial-gradient(circle 120px at var(--lx, 50%) var(--ly, 50%), black 0%, rgba(0,0,0,0.05) 100%);
   }
-
   .film-holes { display: flex; justify-content: space-between; margin-bottom: 8px; }
   .hole { width: 6px; height: 6px; background: #000; border-radius: 2px; }
 
   /* =========================================
      PAGE 3: YOUNG LIONS 
      ========================================= */
-  #page-3 { background: #020202; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  #page-3 { background: #020202; align-items: center;}
   
-  .yl-header { text-align: center; z-index: 10; margin-bottom: 40px; }
-  .yl-header h2 { font-size: 3rem; letter-spacing: 5px; text-transform: uppercase; }
+  .yl-header { text-align: center; z-index: 10; margin-bottom: 4vh; }
+  .yl-header h2 { font-size: clamp(2rem, 4vw, 3rem); letter-spacing: 5px; text-transform: uppercase; margin: 0;}
   .yl-header p { color: var(--accent); letter-spacing: 10px; font-size: 0.75rem; text-transform: uppercase; margin-top: 10px;}
 
-  .yl-media-grid { display: flex; gap: 50px; align-items: center; justify-content: center; z-index: 10; }
+  .yl-media-grid { display: flex; gap: 4vw; align-items: center; justify-content: center; z-index: 10; max-height: 50vh; }
   
-  .yl-video-vert {
-    width: 250px; aspect-ratio: 9/16; border: 1px solid var(--border);
-    position: relative; box-shadow: 0 0 30px rgba(0,0,0,0.8); overflow: hidden;
-  }
+  .yl-video-vert { height: 45vh; aspect-ratio: 9/16; border: 1px solid var(--border); position: relative; box-shadow: 0 0 30px rgba(0,0,0,0.8); overflow: hidden; }
   .yl-video-vert video { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; transition: 0.5s;}
   .yl-video-vert:hover video { opacity: 1; }
 
-  .yl-img-horiz {
-    width: 450px; aspect-ratio: 16/9; border: 1px solid var(--border);
-    position: relative; box-shadow: 0 0 30px rgba(0,0,0,0.8); overflow: hidden;
-  }
+  .yl-img-horiz { height: 35vh; aspect-ratio: 16/9; border: 1px solid var(--border); position: relative; box-shadow: 0 0 30px rgba(0,0,0,0.8); overflow: hidden; }
   .yl-img-horiz img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(100%); opacity: 0.6; transition: 0.5s; }
   .yl-img-horiz:hover img { filter: grayscale(0%); opacity: 1; transform: scale(1.02); }
 
-  /* Kéo Thoughts sát vào cho đỡ trống */
-  .yl-reflect { position: relative; margin-top: 40px; width: 600px; border-left: none; border-top: 2px solid var(--accent); text-align: center;}
-  .yl-reflect p { text-align: left; }
+  .yl-reflect { position: relative; margin-top: 5vh; width: 60vw; max-width: 600px; border-left: none; border-top: 2px solid var(--accent); text-align: center; padding-top: 20px;}
+  .yl-reflect p { text-align: left; font-size: 0.85rem;}
 
   /* =========================================
      PAGE 4: QUẬY QUỌ (ADVANCED GRAFFITI)
      ========================================= */
-  #page-4 { background: #030303; display: flex; position: relative; }
+  #page-4 { background: #030303; flex-direction: row;}
   
-  #graffiti-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 20; pointer-events: none;}
+  #graffiti-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 20; pointer-events: auto;}
   
-  .brick-wall {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    background: url('https://images.unsplash.com/photo-1518640467707-6811f4a6ab73?q=80&w=2000') center/cover;
-    opacity: 0.2; filter: grayscale(100%) contrast(150%); z-index: 1; pointer-events: none;
-  }
+  .brick-wall { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('https://images.unsplash.com/photo-1518640467707-6811f4a6ab73?q=80&w=2000') center/cover; opacity: 0.2; filter: grayscale(100%) contrast(150%); z-index: 1; pointer-events: none; }
   
   .poster { position: absolute; z-index: 10; background: #fff; padding: 4px; padding-bottom: 20px; box-shadow: 5px 5px 25px rgba(0,0,0,0.9); transition: 0.2s;}
   .poster img { width: 100%; height: 100%; object-fit: cover; filter: sepia(20%) grayscale(40%); }
-  .poster-1 { width: 280px; height: 380px; top: 10%; right: 10%; transform: rotate(5deg); }
-  .poster-2 { width: 320px; height: 210px; bottom: 15%; left: 40%; transform: rotate(-3deg); }
-  .poster-3 { width: 220px; height: 300px; top: 20%; left: 45%; transform: rotate(-8deg); }
+  .poster-1 { width: 28vh; height: 38vh; top: 10%; right: 10%; transform: rotate(5deg); }
+  .poster-2 { width: 32vh; height: 21vh; bottom: 15%; left: 40%; transform: rotate(-3deg); }
+  .poster-3 { width: 22vh; height: 30vh; top: 20%; left: 45%; transform: rotate(-8deg); }
 
   .graf-ui {
     position: relative; z-index: 60; padding: 10vh 5vw; width: 35%; height: 100%;
@@ -242,7 +226,6 @@
 <div id="custom-cursor"></div>
 <div class="grid-overlay"></div>
 <canvas id="ink-canvas"></canvas>
-<div id="transition-layer"><div class="glitch-flash" id="loader-line"></div></div>
 
 <div id="cinematic-intro">
   <div class="intro-text" id="intro-1">i have all and then,</div>
@@ -256,15 +239,16 @@
   <div class="record" id="record-disc"></div>
 </div>
 
-<nav>
-  <a class="interactable active" onclick="switchPage('page-1')" id="nav-1">đáy_sâu</a>
-  <a class="interactable" onclick="switchPage('page-2')" id="nav-2">sân_khấu</a>
-  <a class="interactable" onclick="switchPage('page-3')" id="nav-3">hỗn_mang</a>
-  <a class="interactable" onclick="switchPage('page-4')" id="nav-4">quậy_quọ</a>
+<nav id="navbar">
+  <a class="interactable active" onclick="scrollToPage('page-1')" id="nav-page-1">đáy_sâu</a>
+  <a class="interactable" onclick="scrollToPage('page-2')" id="nav-page-2">sân_khấu</a>
+  <a class="interactable" onclick="scrollToPage('page-3')" id="nav-page-3">hỗn_mang</a>
+  <a class="interactable" onclick="scrollToPage('page-4')" id="nav-page-4">quậy_quọ</a>
 </nav>
 
-<main>
-  <section id="page-1" class="active">
+<main id="main-scroll">
+  
+  <section id="page-1" class="page-section">
     <div class="abyss-content">
       <div class="abyss-text-zone">
         <h1 class="abyss-title">vỏ ốc rỗng.</h1>
@@ -286,45 +270,43 @@
     </div>
   </section>
 
-  <section id="page-2">
-    <div class="stage-arena" id="stage-arena">
-      <img src="link_anh_san_khau_large.jpg" alt="" class="stage-bg">
-      <div class="stage-title">TEDxFTU</div>
+  <section id="page-2" class="page-section">
+    <img src="link_anh_san_khau_large.jpg" alt="" class="stage-bg">
+    <div class="stage-title">TEDxFTU</div>
 
-      <div class="reflection-box stage-reflect interactable">
-        <h3>Reflection.</h3>
-        <p contenteditable="true">Những góc nhìn ẩn giấu sau ánh đèn sân khấu. Vỡ vụn và ghép lại...</p>
-      </div>
-      
-      <div class="film-strip draggable-media interactable" style="top: 15%; left: 20%; transform: rotate(5deg);">
-        <div class="film-holes"><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div></div>
-        <div class="film-img-zone"><img src="link_anh_performance_1.jpg" alt="Footage 1"></div>
-        <div class="film-holes" style="margin-top: 8px;"><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div></div>
-      </div>
+    <div class="reflection-box stage-reflect interactable">
+      <h3>Reflection.</h3>
+      <p contenteditable="true">Những góc nhìn ẩn giấu sau ánh đèn sân khấu. Vỡ vụn và ghép lại...</p>
+    </div>
+    
+    <div class="film-strip draggable-media interactable" style="top: 15%; left: 10%; transform: rotate(5deg);">
+      <div class="film-holes"><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div></div>
+      <div class="film-img-zone"><img src="link_anh_performance_1.jpg" alt="Footage 1"></div>
+      <div class="film-holes" style="margin-top: 8px;"><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div></div>
+    </div>
 
-      <div class="film-strip draggable-media interactable" style="top: 10%; right: 35%; transform: rotate(-8deg);">
-        <div class="film-holes"><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div></div>
-        <div class="film-img-zone"><img src="link_anh_performance_2.jpg" alt="Footage 2"></div>
-        <div class="film-holes" style="margin-top: 8px;"><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div></div>
-      </div>
+    <div class="film-strip draggable-media interactable" style="top: 10%; right: 35%; transform: rotate(-8deg);">
+      <div class="film-holes"><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div></div>
+      <div class="film-img-zone"><img src="link_anh_performance_2.jpg" alt="Footage 2"></div>
+      <div class="film-holes" style="margin-top: 8px;"><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div></div>
+    </div>
 
-      <div class="draggable-media interactable media-box spotlight-media" style="width: 250px; height: 180px; bottom: 10%; left: 15%;">
-        <img src="link_anh_concept_detail.jpg" alt="Concept 4">
-      </div>
+    <div class="draggable-media interactable media-box spotlight-media" style="width: 250px; height: 180px; bottom: 10%; left: 5%;">
+      <img src="link_anh_concept_detail.jpg" alt="Concept 4">
     </div>
   </section>
 
-  <section id="page-3">
+  <section id="page-3" class="page-section">
     <div class="yl-header">
       <h2>Vietnam Young Lions</h2>
       <p>Sự ngớ ngẩn có mục đích</p>
     </div>
 
     <div class="yl-media-grid">
-      <div class="yl-video-vert interactable double-clickable">
+      <div class="yl-video-vert interactable double-clickable double-click-msg">
         <video src="link_video_doc_o_day.mp4" autoplay loop muted playsinline></video>
       </div>
-      <div class="yl-img-horiz interactable double-clickable">
+      <div class="yl-img-horiz interactable double-clickable double-click-msg">
         <img src="link_anh_ngang_o_day.jpg" alt="Young Lions Display">
       </div>
     </div>
@@ -335,8 +317,9 @@
     </div>
   </section>
 
-  <section id="page-4">
-    <canvas id="graffiti-canvas"></canvas> <div class="brick-wall"></div>
+  <section id="page-4" class="page-section">
+    <canvas id="graffiti-canvas"></canvas> 
+    <div class="brick-wall"></div>
     
     <div class="poster poster-1 double-clickable interactable"><img src="link_anh_remake_quai_1.jpg" alt="Poster 1"></div>
     <div class="poster poster-2 double-clickable interactable"><img src="link_anh_remake_quai_2.jpg" alt="Poster 2"></div>
@@ -347,7 +330,7 @@
         <h1 class="graf-title">Remake.</h1>
         <div class="graf-text">
           Một tâm hồn bay bổng, quậy quọ. Chạm tay vào những mảng tường đổ nát, biến vết sẹo thành một bức họa nặng đô. <br><br>
-          Bấm giữ chuột nguyên 1 chỗ để thấy sơn đọng lại và chảy thành dòng. Click đúp (2 lần) vào poster để xé toạc màu sắc của nó.
+          Bấm giữ chuột nguyên 1 chỗ để thấy sơn đọng lại và chảy thành dòng. Click đúp (2 lần) vào poster để xé toạc màu sắc.
         </div>
         
         <div class="tools-panel">
@@ -393,10 +376,13 @@
   function resizeCanvases() {
     inkCanvas.width = window.innerWidth; inkCanvas.height = window.innerHeight;
     const grafCanvas = document.getElementById('graffiti-canvas');
-    if(grafCanvas) { grafCanvas.width = window.innerWidth; grafCanvas.height = window.innerHeight; }
+    if(grafCanvas) { 
+        // Resize canvas cho vừa với thẻ section page-4
+        grafCanvas.width = document.getElementById('page-4').offsetWidth; 
+        grafCanvas.height = document.getElementById('page-4').offsetHeight; 
+    }
   }
   window.addEventListener('resize', resizeCanvases);
-  resizeCanvases();
 
   function renderLightTrail() {
     iCtx.clearRect(0, 0, inkCanvas.width, inkCanvas.height);
@@ -417,7 +403,7 @@
     el.addEventListener('mouseleave', () => cursor.classList.remove('hovering'));
   });
 
-  /* Thêm Invert chức năng khi Double Click */
+  /* Invert chức năng khi Double Click */
   document.querySelectorAll('.double-clickable, .draggable-media').forEach(el => {
     el.addEventListener('dblclick', function() {
       this.classList.toggle('inverted');
@@ -425,27 +411,49 @@
   });
 
   /* =========================================
-     2. CINEMATIC INTRO SEQUENCE
+     2. SCROLL NAVIGATION (LIÊN KẾT 4 TRANG)
+     ========================================= */
+  const mainScroll = document.getElementById('main-scroll');
+  const sections = document.querySelectorAll('.page-section');
+  const navLinks = document.querySelectorAll('nav a');
+
+  function scrollToPage(pageId) {
+    document.getElementById(pageId).scrollIntoView({ behavior: 'smooth' });
+  }
+
+  // Tự động highlight chữ ở menu bên trái khi lăn tới phần đó
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(link => link.classList.remove('active'));
+        let activeLink = document.getElementById('nav-' + entry.target.id);
+        if(activeLink) activeLink.classList.add('active');
+        
+        // Đổi con trỏ thành chai xịt nếu đến trang 4
+        if(entry.target.id === 'page-4') cursor.classList.add('spray');
+        else cursor.classList.remove('spray');
+      }
+    });
+  }, { threshold: 0.5 }); // Khi 50% section xuất hiện sẽ trigger
+
+  sections.forEach(sec => observer.observe(sec));
+
+
+  /* =========================================
+     3. AUDIO & INTRO
      ========================================= */
   const intro = document.getElementById('cinematic-intro');
-  const t1 = document.getElementById('intro-1');
-  const t2 = document.getElementById('intro-2');
-  const t3 = document.getElementById('intro-3');
-
   window.onload = () => {
-    setTimeout(() => t1.classList.add('show'), 500);
-    setTimeout(() => t2.classList.add('show'), 2500);
-    setTimeout(() => t3.classList.add('show'), 4500);
-    
+    resizeCanvases();
+    setTimeout(() => document.getElementById('intro-1').classList.add('show'), 500);
+    setTimeout(() => document.getElementById('intro-2').classList.add('show'), 2500);
+    setTimeout(() => document.getElementById('intro-3').classList.add('show'), 4500);
     setTimeout(() => {
       intro.style.opacity = '0';
       setTimeout(() => { intro.style.display = 'none'; }, 1500);
     }, 7500);
   };
 
-  /* =========================================
-     3. AUDIO PLAYER
-     ========================================= */
   const audio = document.getElementById('bg-audio');
   const recordDisc = document.getElementById('record-disc');
   const audioText = document.getElementById('audio-text');
@@ -453,46 +461,16 @@
 
   function toggleAudio() {
     if (isPlaying) { audio.pause(); recordDisc.classList.remove('playing'); audioText.innerText = 'silence';
-    } else { audio.play(); recordDisc.classList.add('playing'); audioText.innerText = 'drowninglove';
-    }
+    } else { audio.play(); recordDisc.classList.add('playing'); audioText.innerText = 'drowninglove'; }
     isPlaying = !isPlaying;
   }
 
   /* =========================================
-     4. PAGE TRANSITION & TRAIL VISIBILITY
-     ========================================= */
-  const loader = document.getElementById('transition-layer');
-  const loaderLine = document.getElementById('loader-line');
-  const grafCanvas = document.getElementById('graffiti-canvas');
-
-  function switchPage(pageId) {
-    loader.style.pointerEvents = 'all'; loader.style.opacity = '1'; loaderLine.style.transform = 'scaleX(1)';
-    
-    // Chỉ bật tương tác canvas tường ở Page 4
-    if(pageId === 'page-4') { 
-      grafCanvas.style.pointerEvents = 'auto'; 
-      cursor.classList.add('spray'); 
-    } else { 
-      grafCanvas.style.pointerEvents = 'none'; 
-      cursor.classList.remove('spray'); 
-    }
-
-    setTimeout(() => {
-      document.querySelectorAll('section').forEach(sec => sec.classList.remove('active'));
-      document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
-      document.getElementById(pageId).classList.add('active');
-      document.getElementById('nav-' + pageId.split('-')[1]).classList.add('active');
-      setTimeout(() => { loader.style.opacity = '0'; loader.style.pointerEvents = 'none'; loaderLine.style.transform = 'scaleX(0)'; }, 600);
-    }, 800);
-  }
-
-  /* =========================================
-     5. PAGE 1: PARALLAX 
+     4. PAGE 1: PARALLAX 
      ========================================= */
   const pItems = document.querySelectorAll('.parallax-item');
-  document.addEventListener('mousemove', (e) => {
-    if (!document.getElementById('page-1').classList.contains('active')) return;
-    let x = (window.innerWidth - e.pageX * 2) / 100; let y = (window.innerHeight - e.pageY * 2) / 100;
+  mainScroll.addEventListener('mousemove', (e) => {
+    let x = (window.innerWidth - e.clientX * 2) / 100; let y = (window.innerHeight - e.clientY * 2) / 100;
     pItems.forEach(item => {
       let speed = item.getAttribute('data-speed');
       item.style.transform = `translate3d(${x * speed}px, ${y * speed}px, 0)`;
@@ -500,7 +478,7 @@
   });
 
   /* =========================================
-     6. PAGE 2: DRAGGABLE (Thêm xoay theo vận tốc)
+     5. PAGE 2: DRAGGABLE (Thêm xoay theo vận tốc)
      ========================================= */
   const draggables = document.querySelectorAll('.draggable-media');
   let activeDrag = null, oX = 0, oY = 0;
@@ -516,7 +494,6 @@
       activeDrag.style.zIndex = '100';
     });
     
-    // Spotlight
     item.addEventListener('mousemove', (e) => {
       let rect = item.getBoundingClientRect();
       let localX = e.clientX - rect.left;
@@ -526,25 +503,26 @@
     });
   });
 
-  document.addEventListener('mousemove', (e) => {
+  mainScroll.addEventListener('mousemove', (e) => {
     if (!activeDrag) return;
     activeDrag.style.left = `${e.clientX - oX}px`; 
-    activeDrag.style.top = `${e.clientY - oY}px`;
+    // Vì đang ở trong môi trường cuộn dọc, tính bù khoảng cuộn Y
+    activeDrag.style.top = `${e.clientY - oY + mainScroll.scrollTop}px`;
 
-    // Tính vận tốc kéo để nghiêng ảnh
     let velocity = e.clientX - lastMouseX;
     let rotation = Math.max(-15, Math.min(15, velocity * 0.5));
     activeDrag.style.transform = `scale(1.05) rotate(${rotation}deg)`;
     lastMouseX = e.clientX;
   });
-  document.addEventListener('mouseup', () => { 
+  mainScroll.addEventListener('mouseup', () => { 
     if(activeDrag) activeDrag.style.transform = `scale(1) rotate(0deg)`;
     activeDrag = null; 
   });
 
   /* =========================================
-     7. PAGE 4: CỌ XỊT GRAFFITI THỰC SỰ
+     6. PAGE 4: CỌ XỊT GRAFFITI THỰC SỰ
      ========================================= */
+  const grafCanvas = document.getElementById('graffiti-canvas');
   const gCtx = grafCanvas.getContext('2d', { willReadFrequently: true });
   
   let isDrawing = false;
@@ -568,18 +546,16 @@
     gCtx.clearRect(0, 0, grafCanvas.width, grafCanvas.height); 
   };
 
-  // Hàm tạo nét xịt liên tục
   function continuousSpray() {
     if(!isDrawing) return;
     
     let radius = parseInt(bSizeInput.value);
-    let density = radius * 2; // Xịt dồn dập
+    let density = radius * 2; 
     gCtx.fillStyle = paintColor;
 
     for (let i = 0; i < density; i++) {
       let angle = Math.random() * Math.PI * 2;
       let r = Math.random() * radius;
-      // Phân bổ hạt sơn: ở giữa đặc, rìa mỏng
       let oX = Math.cos(angle) * r * Math.random();
       let oY = Math.sin(angle) * r * Math.random();
       
@@ -589,7 +565,6 @@
       gCtx.fill();
     }
     
-    // Hiệu ứng chảy dọc (Drip) nếu xịt một chỗ quá lâu
     if(Math.random() > 0.95 && radius > 30) {
       gCtx.fillRect(sprayMouseX + (Math.random()-0.5)*radius, sprayMouseY, 2, Math.random()*100+20);
     }
@@ -599,14 +574,16 @@
 
   grafCanvas.addEventListener('mousedown', (e) => {
     isDrawing = true;
-    sprayMouseX = e.clientX;
-    sprayMouseY = e.clientY;
-    continuousSpray(); // Bắt đầu xịt
+    let rect = grafCanvas.getBoundingClientRect();
+    sprayMouseX = e.clientX - rect.left;
+    sprayMouseY = e.clientY - rect.top;
+    continuousSpray(); 
   });
   
   grafCanvas.addEventListener('mousemove', (e) => {
-    sprayMouseX = e.clientX;
-    sprayMouseY = e.clientY;
+    let rect = grafCanvas.getBoundingClientRect();
+    sprayMouseX = e.clientX - rect.left;
+    sprayMouseY = e.clientY - rect.top;
   });
 
   window.addEventListener('mouseup', () => { 
