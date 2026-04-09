@@ -3,21 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Vực Thẳm - Minh Thy</title>
+<title>Vực Thẳm - Bản Ngã</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
 <style>
   /* ==========================================================================
      GLOBAL THEME & RESET
-     Đồng nhất duy nhất 1 font: Cormorant Garamond
      ========================================================================== */
   :root {
     --bg-color: #030303;
     --text-color: #d1d1d1;
     --text-muted: #555555;
-    --accent-red: #8a0303;
-    --warm-light: #dcb871;
-    --neon-chaos: #00f0ff;
-    --paint-color: #ff2a7a;
+    /* Dùng 1 màu nhấn duy nhất xuyên suốt các trang để tạo tính nhất quán */
+    --accent-pink: #00coff; 
     
     --nav-width: 80px;
   }
@@ -27,13 +24,11 @@
   body, html {
     width: 100%; height: 100%;
     background-color: var(--bg-color); color: var(--text-color);
-    font-family: 'Cormorant Garamond', serif; /* ĐỒNG NHẤT FONT */
-    overflow: hidden;
+    font-family: 'Cormorant Garamond', serif;
+    overflow: hidden; /* Khóa cuộn trang tổng thể */
   }
 
-  /* ==========================================================================
-     LEFT NAVIGATION (TITLE BÊN TRÁI)
-     ========================================================================== */
+  /* LEFT NAVIGATION */
   #left-nav {
     position: fixed; top: 0; left: 0; width: var(--nav-width); height: 100vh;
     border-right: 1px solid rgba(255,255,255,0.05); z-index: 10000;
@@ -45,26 +40,26 @@
     font-size: 1.1rem; letter-spacing: 5px; color: var(--text-muted);
     text-transform: uppercase; font-weight: 300; transition: color 0.5s;
   }
-  .nav-text span { color: #fff; font-weight: 600; margin-left: 15px; }
+  .nav-text span { color: var(--accent-pink); font-weight: 600; margin-left: 15px; }
 
-  /* ==========================================================================
-     AUDIO PLAYER (GÓC DƯỚI PHẢI)
-     ========================================================================== */
-  #audio-ui {
-    position: fixed; bottom: 30px; right: 30px; z-index: 10000;
-    display: flex; align-items: center; gap: 15px; cursor: pointer;
+  /* Màn hình rung lắc khi có va chạm ở Trang 3 */
+  @keyframes shake {
+    0% { transform: translate(1px, 1px) rotate(0deg); }
+    10% { transform: translate(-1px, -2px) rotate(-1deg); }
+    20% { transform: translate(-3px, 0px) rotate(1deg); }
+    30% { transform: translate(3px, 2px) rotate(0deg); }
+    40% { transform: translate(1px, -1px) rotate(1deg); }
+    50% { transform: translate(-1px, 2px) rotate(-1deg); }
+    60% { transform: translate(-3px, 1px) rotate(0deg); }
+    70% { transform: translate(3px, 1px) rotate(-1deg); }
+    80% { transform: translate(-1px, -1px) rotate(1deg); }
+    90% { transform: translate(1px, 2px) rotate(0deg); }
+    100% { transform: translate(1px, -2px) rotate(-1deg); }
   }
-  .audio-status { font-size: 0.9rem; letter-spacing: 2px; color: var(--text-muted); font-style: italic; transition: 0.3s; }
-  .audio-btn { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--text-muted); display: flex; align-items: center; justify-content: center; transition: 0.3s; }
-  .audio-btn .core { width: 6px; height: 6px; border-radius: 50%; background: var(--text-muted); transition: 0.3s; }
-  #audio-ui.playing .audio-btn { border-color: var(--warm-light); animation: pulse 2s infinite; }
-  #audio-ui.playing .core { background: var(--warm-light); }
-  #audio-ui.playing .audio-status { color: var(--warm-light); }
-
-  @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(220,184,113,0.4); } 70% { box-shadow: 0 0 0 15px rgba(220,184,113,0); } 100% { box-shadow: 0 0 0 0 rgba(220,184,113,0); } }
+  .shake-effect { animation: shake 0.3s cubic-bezier(.36,.07,.19,.97) both; }
 
   /* ==========================================================================
-     LAYOUT CHÍNH: KHÔNG BAO GIỜ ĐÈ NHAU
+     LAYOUT CHÍNH & INNER SCROLL (CUỘN BÊN TRONG)
      ========================================================================== */
   #scroll-container {
     position: absolute; top: 0; left: var(--nav-width);
@@ -74,87 +69,70 @@
 
   .section {
     width: 100%; height: 100vh; display: grid;
-    /* Grid cứng chia tỷ lệ 50-50 hoặc 60-40 tùy trang để giữ an toàn cho ảnh */
     grid-template-columns: 1fr 1fr;
     align-items: center; justify-content: center; position: relative;
     padding: 10vh 5vw;
+    overflow: hidden; /* Ép không cho tràn ra ngoài trang khác */
   }
 
-  /* Cột chứa Chữ */
-  .text-zone { display: flex; flex-direction: column; justify-content: center; padding: 0 4vw; z-index: 10; }
+  /* CỘT CHỮ - Nơi thiết lập tính năng cuộn nội dung */
+  .text-zone { 
+    display: flex; flex-direction: column; justify-content: flex-start; 
+    padding: 2vw 4vw; z-index: 10;
+    max-height: 80vh; /* Chiều cao tối đa */
+    overflow-y: auto; /* Cho phép cuộn dọc nếu chữ quá dài */
+  }
+  
+  /* Tùy chỉnh thanh cuộn cho ngầu */
+  .text-zone::-webkit-scrollbar { width: 3px; }
+  .text-zone::-webkit-scrollbar-track { background: transparent; }
+  .text-zone::-webkit-scrollbar-thumb { background: rgba(255, 42, 122, 0.3); border-radius: 10px; }
+  .text-zone:hover::-webkit-scrollbar-thumb { background: var(--accent-pink); }
+
   h1 { font-size: 4.5rem; font-style: italic; font-weight: 300; line-height: 1.1; margin-bottom: 2rem; color: #fff; letter-spacing: -1px; }
   p { font-size: 1.3rem; line-height: 2; margin-bottom: 1.5rem; color: #aaa; font-weight: 300; text-align: justify; }
   .timestamp { font-size: 1rem; color: var(--text-muted); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 1rem; display: block; font-weight: 600; }
-  .highlight { color: var(--warm-light); font-style: italic; }
-
-  /* Cột chứa Hình/Video */
-  .visual-zone { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
   
-  /* Khung media chuẩn */
+  /* MÀU NHẤN ĐỒNG NHẤT */
+  .highlight { color: var(--accent-pink); font-style: italic; font-weight: 600; }
+  .text-zone h1.color-sync { color: var(--accent-pink); font-weight: 700; text-shadow: 2px 2px 10px rgba(255, 42, 122, 0.3); }
+
+  /* CỘT HÌNH ẢNH */
+  .visual-zone { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
   .media-box {
     position: absolute; overflow: hidden; background: #000;
     border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 15px 35px rgba(0,0,0,0.8);
   }
-  .media-box img, .media-box video { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; transition: 0.5s; }
-  .media-box:hover img, .media-box:hover video { opacity: 1; transform: scale(1.05); }
+  .media-box img, .media-box video { width: 100%; height: 100%; object-fit: cover; opacity: 0.7; transition: 0.5s; filter: grayscale(30%); }
+  .media-box:hover img, .media-box:hover video { opacity: 1; transform: scale(1.05); filter: grayscale(0%); }
 
   /* ==========================================================================
-     TÙY CHỈNH TỪNG TRANG & INTERACTIVE
+     TÙY CHỈNH TỪNG TRANG
      ========================================================================== */
-
   /* TRANG 1: CHÌM SÂU */
   #s1 { background: linear-gradient(180deg, #050505 0%, #010a12 100%); }
-  #s1-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; opacity: 0.7; }
-  .s1-img1 { width: 55%; aspect-ratio: 3/4; top: 10%; right: 10%; z-index: 3; transition: transform 0.2s ease-out; }
-  .s1-img2 { width: 45%; aspect-ratio: 4/5; bottom: 15%; left: 10%; z-index: 2; transition: transform 0.2s ease-out; }
+  #s1-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+  .s1-img1 { width: 55%; aspect-ratio: 3/4; top: 10%; right: 10%; z-index: 3; transition: all 0.3s ease-out; }
+  .s1-img2 { width: 45%; aspect-ratio: 4/5; bottom: 15%; left: 10%; z-index: 2; transition: all 0.3s ease-out; }
 
-  /* TRANG 2: TEDxFTU (ÁNH SÁNG) */
-  #s2 { grid-template-columns: 1.2fr 0.8fr; background: #000; }
-  /* Lớp phủ đen kịt, ánh sáng xuyên qua mask */
-  .spotlight-mask {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5;
-    background: #000; transition: opacity 0.3s;
-    /* Ánh sáng sưởi ấm từ chuột */
-    mask-image: radial-gradient(circle 300px at var(--mx, 50%) var(--my, 50%), transparent 0%, black 100%);
-    -webkit-mask-image: radial-gradient(circle 300px at var(--mx, 50%) var(--my, 50%), transparent 0%, black 100%);
-  }
-  .s2-visual-wrapper { position: relative; width: 100%; height: 100%; }
-  /* Ảnh bên dưới lớp mask */
-  .s2-img1 { width: 65%; aspect-ratio: 16/9; top: 20%; left: 5%; z-index: 1; }
-  .s2-img2 { width: 45%; aspect-ratio: 1/1; bottom: 20%; right: 5%; z-index: 2; }
-  .s2-img3 { width: 35%; aspect-ratio: 3/4; top: 40%; left: 35%; z-index: 3; }
-
-  /* TRANG 3: YOUNG LIONS (HỖN ĐỘN) */
+  /* TRANG 3: HỖN ĐỘN (Draggable) */
   #s3 { background: #020202; }
-  #s3 .text-zone h1 { text-transform: uppercase; letter-spacing: 5px; font-weight: 700; color: #fff; text-shadow: 2px 2px 0px var(--neon-chaos); }
-  
-  /* Draggable elements */
-  .draggable-item { cursor: grab; position: absolute; z-index: 10; }
-  .draggable-item:active { cursor: grabbing; z-index: 100; border: 1px solid var(--neon-chaos); box-shadow: 0 0 20px rgba(0,240,255,0.4); }
-  
-  .s3-vid { width: 50%; aspect-ratio: 9/16; top: 15%; left: 10%; } /* Video Dọc */
-  .s3-img { width: 65%; aspect-ratio: 16/9; bottom: 15%; right: 5%; } /* Ảnh Ngang */
+  .draggable-item { cursor: grab; position: absolute; z-index: 10; transition: border 0.2s; }
+  .draggable-item:active { cursor: grabbing; z-index: 100; border: 2px solid var(--accent-pink); box-shadow: 0 0 30px rgba(255, 42, 122, 0.5); }
+  .s3-vid { width: 50%; aspect-ratio: 9/16; top: 15%; left: 10%; } 
+  .s3-img { width: 65%; aspect-ratio: 16/9; bottom: 15%; right: 5%; }
 
-  /* TRANG 4: REMAKE (QUẬY QUỌ) */
+  /* TRANG 4: REMAKE (Vẽ Graffiti) */
   #s4 { grid-template-columns: 0.8fr 1.2fr; background: #0a0a0a; }
-  #s4 .text-zone h1 { color: var(--paint-color); font-weight: 700; }
-  
   .s4-wall {
     position: relative; width: 100%; height: 100%;
     background: url('https://images.unsplash.com/photo-1518640467707-6811f4a6ab73?q=80&w=1000') center/cover;
     border-radius: 10px; overflow: hidden;
   }
-  .s4-wall::after { content: ''; position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.6); pointer-events: none; }
-  
+  .s4-wall::after { content: ''; position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.7); pointer-events: none; }
   .s4-img1 { width: 50%; aspect-ratio: 3/4; top: 15%; right: 15%; z-index: 2; transform: rotate(4deg); }
   .s4-img2 { width: 55%; aspect-ratio: 1/1; bottom: 15%; left: 15%; z-index: 3; transform: rotate(-5deg); }
-  
-  /* Canvas Graffiti */
   #s4-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; }
-  
-  .palette { display: flex; gap: 15px; margin-top: 2rem; align-items: center; }
-  .color-btn { width: 25px; height: 25px; border-radius: 50%; border: 2px solid transparent; transition: 0.3s; cursor: pointer; }
-  .color-btn.active { transform: scale(1.4); border-color: #fff; }
 
 </style>
 </head>
@@ -164,68 +142,38 @@
   <div class="nav-text">MINH THY // <span id="nav-title">Bản Ngã</span></div>
 </div>
 
-<audio id="bg-audio" loop><source src="drowninglove.mp3" type="audio/mpeg"></audio>
-<div id="audio-ui" onclick="toggleAudio()">
-  <span class="audio-status" id="audio-text">silence</span>
-  <div class="audio-btn"><div class="core"></div></div>
-</div>
-
 <div id="scroll-container">
 
   <section class="section" id="s1">
-    <div class="text-zone">
+    <div class="text-zone" id="s1-text">
       <h1>vỏ ốc rỗng.</h1>
       <p>Đèn đường chao nghiêng, đổ những <span class="highlight">vệt mật ong sóng sánh</span> xuống mặt lộ. Ngân bước đi giữa những quầng sáng neon rực rỡ, tiếng giày gõ đều như nhịp phim cũ.</p>
       <p>Nhật dừng lại, siết lấy cổ tay cô. Ánh nhìn anh sâu thẳm, phong kín cả thời gian.</p>
       <p>Ngân bám vào anh như nhành dây leo ký sinh, ủy thác hết nhựa sống vào cái điểm tựa ngỡ là vĩnh cửu ấy. Cô chỉ sợ nếu mình chớp mắt, mọi thứ sẽ vỡ vụn.</p>
-      
       <span class="timestamp" style="margin-top: 2rem;">Đùng. Tiếng sấm rạch ngang trời.</span>
       <p style="font-weight: 600;">Bóng tối ùa vào đặc quánh.<br>00:00<br>Ngân tỉnh giấc.</p>
     </div>
-
     <div class="visual-zone">
       <canvas id="s1-canvas"></canvas>
-      
-      <div class="media-box s1-img1 sinking-item"><img src="link_anh_ban_nga_1.jpg" alt="Memory 1"></div>
-      <div class="media-box s1-img2 sinking-item"><img src="link_anh_ban_nga_2.jpg" alt="Memory 2"></div>
-    </div>
-  </section>
-
-  <section class="section" id="s2">
-    <div class="visual-zone">
-      <div class="s2-visual-wrapper" id="s2-wrapper">
-        <div class="spotlight-mask" id="s2-mask"></div>
-        
-        <div class="media-box s2-img1"><img src="link_anh_tedx_1.jpg" alt="TEDx 1"></div>
-        <div class="media-box s2-img2"><img src="link_anh_tedx_2.jpg" alt="TEDx 2"></div>
-        <div class="media-box s2-img3"><img src="link_anh_tedx_3.jpg" alt="TEDx 3"></div>
-      </div>
-    </div>
-
-    <div class="text-zone">
-      <h1>đáy sâu mười mét.</h1>
-      <p>21.2, tình cờ thật. 3 năm trước, trên vệ đường, ngày Nhật cẩn trọng kéo Ngân lên từ vực sâu thăm thẳm. Lần đầu, sau 25 năm, Ngân thấy mình khô ráo và ấm áp, nhờ Nhật.</p>
-      <p>Ong đầu quá. Lại một lần nữa cơn triều xanh xám dâng lên từ dưới chân, nhấn chìm căn phòng. Ga giường sũng nước, bầu không khí đặc sệt tràn vào phổi sau mỗi nhịp thở hụt.</p>
-      <p>Ngân nằm đó, thấy mình rỗng tuếch như một chiếc vỏ ốc bị sóng đánh dạt vào bờ. Không còn gì bên trong ngoài sự lặng im đến rợn người. Nhưng sâu thẳm, luôn có <span class="highlight">ánh đèn sân khấu chực chờ sưởi ấm.</span></p>
+      <div class="media-box s1-img1 sinking-item"><img src="anh1.jpg" alt="Memory 1"></div>
+      <div class="media-box s1-img2 sinking-item"><img src="anh2.jpg" alt="Memory 2"></div>
     </div>
   </section>
 
   <section class="section" id="s3">
     <div class="text-zone">
-      <h1>Young Lions</h1>
+      <h1 class="color-sync">YOUNG LIONS</h1>
       <span class="timestamp" style="color: #fff;">Sự ngớ ngẩn & Random</span>
       <p>Cái phao cứu sinh ba năm trước kia giờ chỉ còn là mẩu gỗ mục rệu rã giữa đại dương đen. Ngân không vùng vẫy, chỉ để mình rơi tự do xuống đáy sâu.</p>
-      <p>Nhận ra mình chẳng còn chút sức lực nào để bấu víu vào bất cứ đâu. Mọi cấu trúc sụp đổ. Tính logic bị phá vỡ hoàn toàn.</p>
-      <p style="color: var(--neon-chaos); font-style: italic;">[ Nắm kéo Video và Ảnh ném vào tường để thấy sự điên loạn ]</p>
+      <p>Nhận ra mình chẳng còn chút sức lực nào để bấu víu vào bất cứ đâu. Mọi cấu trúc sụp đổ. Tính logic bị phá vỡ hoàn toàn. Kể cả đoạn văn này có dài thêm, dài thêm nữa, thì sự ngột ngạt vẫn cứ bủa vây.</p>
+      <p class="highlight">[ Nắm kéo Video và Ảnh ném mạnh vào tường để thấy sự điên loạn ]</p>
     </div>
-
     <div class="visual-zone" id="s3-arena">
-      <div class="media-box draggable-item s3-vid" id="vyl-vid">
-        <video src="link_clip_younglions_doc.mp4" autoplay loop muted playsinline></video>
+      <div class="media-box draggable-item s3-vid">
+        <video src="clip.mp4" autoplay loop muted playsinline></video>
       </div>
-      
-      <div class="media-box draggable-item s3-img" id="vyl-img">
-        <img src="link_anh_younglions_ngang.jpg" alt="Chaos VYL">
+      <div class="media-box draggable-item s3-img">
+        <img src="anh3.jpg" alt="Chaos">
       </div>
     </div>
   </section>
@@ -233,28 +181,18 @@
   <section class="section" id="s4">
     <div class="visual-zone">
       <div class="s4-wall">
-        <div class="media-box s4-img1"><img src="link_anh_remake_1.jpg" alt="Remake 1"></div>
-        <div class="media-box s4-img2"><img src="link_anh_remake_2.jpg" alt="Remake 2"></div>
-        
+        <div class="media-box s4-img1"><img src="anh4.jpg" alt="Remake 1"></div>
+        <div class="media-box s4-img2"><img src="anh5.jpg" alt="Remake 2"></div>
         <canvas id="s4-canvas"></canvas>
       </div>
     </div>
-
     <div class="text-zone">
-      <h1>Remake.</h1>
+      <h1 class="color-sync">Remake.</h1>
       <span class="timestamp">Fluoxetine 20mg.</span>
       <p>Quờ quạng trên bàn. Ngân vội lấy vỉ bạc. Một viên Fluoxetine 20mg. Vị đắng buốt sắc như mảnh kim loại chạy dọc thực quản.</p>
       <p>Giữa bóng tối ướt sũng và trống hoác, viên thuốc là chiếc phao còn sót lại. Ngân biết mình phải học cách thở dưới nước.</p>
       <p>Tuyệt đối không được quên thuốc. Trở về với bản ngã hồn nhiên, quậy quọ và đầy màu sắc, để che lấp đi khoảng không đen đặc kia.</p>
-      <p style="font-weight: 600; color: #fff; font-style: italic;">Để không phải một lần nữa, chìm, chìm rất sâu.</p>
-      
-      <div class="palette">
-        <div class="color-btn active" style="background: var(--paint-color);" onclick="setColor('#ff2a7a', this)"></div>
-        <div class="color-btn" style="background: var(--neon-chaos);" onclick="setColor('#00f0ff', this)"></div>
-        <div class="color-btn" style="background: #fffb00;" onclick="setColor('#fffb00', this)"></div>
-        <div class="color-btn" style="background: #ffffff;" onclick="setColor('#ffffff', this)"></div>
-        <div class="color-btn" style="background: #000000;" onclick="setColor('#000000', this)"></div>
-      </div>
+      <p class="highlight" style="color: #fff;">Để không phải một lần nữa, chìm, chìm rất sâu.</p>
     </div>
   </section>
 
@@ -262,33 +200,19 @@
 
 <script>
   /* ==========================================================================
-     A. AUDIO LOGIC
-     ========================================================================== */
-  const audio = document.getElementById('bg-audio');
-  const audioUI = document.getElementById('audio-ui');
-  const audioText = document.getElementById('audio-text');
-  let isPlaying = false;
-
-  function toggleAudio() {
-    if (isPlaying) { 
-      audio.pause(); audioUI.classList.remove('playing'); audioText.innerText = 'silence';
-    } else { 
-      audio.play(); audioUI.classList.add('playing'); audioText.innerText = 'drowninglove';
-    }
-    isPlaying = !isPlaying;
-  }
-
-  /* ==========================================================================
-     B. SCROLL SNAP & TITLE NAVIGATION
+     ĐIỀU HƯỚNG CÁC TRANG (SCROLL SNAP)
      ========================================================================== */
   const scrollContainer = document.getElementById('scroll-container');
   const navTitle = document.getElementById('nav-title');
   const pageTitles = ["Bản Ngã", "Sân Khấu", "Hỗn Loạn", "Remake"];
-  const totalPages = 4;
+  const totalPages = 3; // Hiện tại code demo có 3 trang
   let currentPage = 0;
   let isScrolling = false;
 
   window.addEventListener('wheel', (e) => {
+    // Nếu chuột đang cuộn BÊN TRONG thẻ text-zone, không chuyển trang lớn
+    if (e.target.closest('.text-zone')) return; 
+
     if (isScrolling) return;
     if (e.deltaY > 0 && currentPage < totalPages - 1) { goPage(currentPage + 1); } 
     else if (e.deltaY < 0 && currentPage > 0) { goPage(currentPage - 1); }
@@ -296,23 +220,23 @@
 
   function goPage(index) {
     isScrolling = true; currentPage = index;
-    // Chuyển slide
     scrollContainer.style.transform = `translateY(-${currentPage * 100}vh)`;
-    // Đổi tiêu đề
     navTitle.style.opacity = '0';
     setTimeout(() => {
       navTitle.innerText = pageTitles[currentPage];
       navTitle.style.opacity = '1';
     }, 500);
-    setTimeout(() => { isScrolling = false; }, 1200); // Trì hoãn khóa cuộn
+    setTimeout(() => { isScrolling = false; }, 1200);
   }
 
   /* ==========================================================================
-     FUNCTION 1: LỰC KÉO CHÌM (SINKING GRAVITY) - TRANG 1
+     INTERACTIVE 1: CHÌM SÂU ĐIÊN ĐẢO (TRANG 1)
+     Kéo chuột xuống -> Hình bị ép nhỏ, chữ mờ đi, bọt khí nổi lên.
      ========================================================================== */
   const s1Canvas = document.getElementById('s1-canvas');
   const s1Ctx = s1Canvas.getContext('2d');
   const sinkingItems = document.querySelectorAll('.sinking-item');
+  const textS1 = document.getElementById('s1-text');
   let mouseY = window.innerHeight / 2;
 
   function resizeS1() {
@@ -328,83 +252,52 @@
     let rect = s1Canvas.parentElement.getBoundingClientRect();
     let relX = e.clientX - rect.left; let relY = e.clientY - rect.top;
     
+    // Tạo bọt khí xanh xám lạnh lẽo
     if(relX > 0 && relX < rect.width && relY > 0 && relY < rect.height && Math.random() > 0.6) {
-      bubbles.push({ x: relX, y: relY, radius: Math.random()*2+1, speedY: Math.random()*2+1, opacity: 0.8 });
+      bubbles.push({ x: relX, y: relY, radius: Math.random()*2+1, speedY: Math.random()*1.5+0.5, opacity: 0.6 });
     }
   });
 
-function animateSinking() {
+  function animateSinking() {
     if(currentPage === 0) {
       s1Ctx.clearRect(0, 0, s1Canvas.width, s1Canvas.height);
-      
-      // 1. Bọt khí chậm và đặc hơn -> cảm giác dưới nước sâu
       for (let i = 0; i < bubbles.length; i++) {
         let b = bubbles[i];
         s1Ctx.beginPath(); s1Ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
-        // Bọt khí đổi sang màu xanh xám lạnh lẽo
-        s1Ctx.fillStyle = `rgba(180, 200, 220, ${b.opacity})`; 
-        s1Ctx.fill();
-        b.y -= b.speedY * 0.4; // Nổi lên rất chậm, ngột ngạt
-        b.opacity -= 0.003;
+        s1Ctx.fillStyle = `rgba(180, 200, 220, ${b.opacity})`; s1Ctx.fill();
+        b.y -= b.speedY; b.opacity -= 0.005;
         if (b.opacity <= 0) bubbles.splice(i, 1);
       }
-
-      // 2. Hiệu ứng kéo chìm cực mạnh (Heavy-duty Sinking)
-      // Tỷ lệ độ sâu dựa trên chuột (từ 0 đến 1)
-      let depthRatio = mouseY / window.innerHeight; 
       
-      let dragOffset = depthRatio * 150; // Bị kéo rịt xuống 150px
-      let scaleDown = 1 - (depthRatio * 0.15); // Teo nhỏ lại do áp suất
-      let blurEffect = depthRatio * 5; // Nhòe đi khi chìm sâu
-      let darkness = 1 - (depthRatio * 0.6); // Tối sầm lại
-
-      sinkingItems.forEach((item, index) => {
-        // Ảnh 1 và Ảnh 2 chìm với tốc độ khác nhau tạo cảm giác lơ lửng 3D (Parallax)
-        let weight = index === 0 ? 1 : 1.3; 
-        
-        item.style.transform = `translateY(${dragOffset * weight}px) scale(${scaleDown})`;
-        item.style.filter = `blur(${blurEffect}px) brightness(${darkness})`;
+      // Tính lực ép dựa vào tọa độ Y của chuột (càng kéo xuống dưới càng chìm)
+      let depth = (mouseY / window.innerHeight); 
+      let pullDown = depth * 150; // Kéo tuột hình xuống
+      let scaleDown = 1 - (depth * 0.1); // Hình teo nhỏ dần do áp suất
+      
+      sinkingItems.forEach(item => {
+        item.style.transform = `translateY(${pullDown}px) scale(${scaleDown})`;
       });
 
-      // 3. Background đặc quánh lại khi chuột kéo xuống
-      document.getElementById('s1').style.background = `linear-gradient(180deg, #020202 0%, rgba(1, 10, 18, ${0.5 + depthRatio}) 100%)`;
+      // Text cũng mờ dần khi chìm sâu
+      textS1.style.opacity = 1 - (depth * 0.5);
+      textS1.style.transform = `translateY(${depth * 20}px)`;
     }
     requestAnimationFrame(animateSinking);
   }
   animateSinking();
 
   /* ==========================================================================
-     FUNCTION 2: ÁNH SÁNG SƯỞI ẤM SÂN KHẤU - TRANG 2
-     ========================================================================== */
-  const s2Wrapper = document.getElementById('s2-wrapper');
-  const s2Mask = document.getElementById('s2-mask');
-
-  document.addEventListener('mousemove', (e) => {
-    if (currentPage !== 1) return;
-    let rect = s2Wrapper.getBoundingClientRect();
-    let relX = e.clientX - rect.left; let relY = e.clientY - rect.top;
-    
-    if(relX > 0 && relX < rect.width && relY > 0 && relY < rect.height) {
-      s2Mask.style.setProperty('--mx', `${relX}px`);
-      s2Mask.style.setProperty('--my', `${relY}px`);
-    }
-  });
-
-  /* ==========================================================================
-     FUNCTION 3: ĐỘNG LỰC HỌC HỖN LOẠN (CHAOS PHYSICS) - TRANG 3
+     INTERACTIVE 2: CHAOS PHYSICS & SCREEN SHAKE (TRANG 3)
+     Ném đồ đập vào tường làm rung lắc màn hình.
      ========================================================================== */
   const arena = document.getElementById('s3-arena');
   const dragItems = document.querySelectorAll('.draggable-item');
   let physBodies = [];
 
-  // Khởi tạo trạng thái vật lý cho Video và Image
   dragItems.forEach(el => {
     physBodies.push({
-      el: el,
-      x: el.offsetLeft, y: el.offsetTop,
-      vx: 0, vy: 0,
-      width: el.offsetWidth, height: el.offsetHeight,
-      isDragging: false
+      el: el, x: el.offsetLeft, y: el.offsetTop, vx: 0, vy: 0,
+      width: el.offsetWidth, height: el.offsetHeight, isDragging: false
     });
   });
 
@@ -413,21 +306,16 @@ function animateSinking() {
   dragItems.forEach((el, index) => {
     el.addEventListener('mousedown', (e) => {
       activeBody = physBodies[index];
-      activeBody.isDragging = true;
-      activeBody.vx = 0; activeBody.vy = 0;
+      activeBody.isDragging = true; activeBody.vx = 0; activeBody.vy = 0;
       startX = e.clientX - activeBody.x; startY = e.clientY - activeBody.y;
       lastMouseX = e.clientX; lastMouseY = e.clientY;
     });
   });
 
   document.addEventListener('mousemove', (e) => {
-    if (!activeBody || currentPage !== 2) return;
-    activeBody.x = e.clientX - startX;
-    activeBody.y = e.clientY - startY;
-    
-    // Tính vận tốc văng dựa vào tốc độ chuột
-    activeBody.vx = e.clientX - lastMouseX;
-    activeBody.vy = e.clientY - lastMouseY;
+    if (!activeBody || currentPage !== 1) return; // Trang 3 đang là index 1 trong demo này
+    activeBody.x = e.clientX - startX; activeBody.y = e.clientY - startY;
+    activeBody.vx = e.clientX - lastMouseX; activeBody.vy = e.clientY - lastMouseY;
     lastMouseX = e.clientX; lastMouseY = e.clientY;
   });
 
@@ -435,36 +323,49 @@ function animateSinking() {
     if(activeBody) { activeBody.isDragging = false; activeBody = null; }
   });
 
-  // Loop Physics đập nảy vào viền
+  // Hàm tạo rung lắc màn hình khi có va chạm mạnh
+  function triggerShake() {
+    document.body.classList.remove('shake-effect');
+    void document.body.offsetWidth; // Trigger reflow
+    document.body.classList.add('shake-effect');
+  }
+
   function runChaosPhysics() {
-    if(currentPage === 2) {
+    if(currentPage === 1) { // Trang 3 (index 1 do bị bỏ bớt S2 trong html mẫu)
       let rect = arena.getBoundingClientRect();
       physBodies.forEach(b => {
         if(!b.isDragging) {
           b.x += b.vx; b.y += b.vy;
-          b.vx *= 0.98; b.vy *= 0.98; // Lực cản ma sát
+          b.vx *= 0.98; b.vy *= 0.98; // Ma sát
           
-          // Nảy vào tường (Bouncing)
-          if(b.x <= 0) { b.x = 0; b.vx *= -0.8; }
-          if(b.x + b.width >= rect.width) { b.x = rect.width - b.width; b.vx *= -0.8; }
-          if(b.y <= 0) { b.y = 0; b.vy *= -0.8; }
-          if(b.y + b.height >= rect.height) { b.y = rect.height - b.height; b.vy *= -0.8; }
+          let impact = false;
+          // Đập vào viền
+          if(b.x <= 0) { b.x = 0; b.vx *= -0.8; impact = true; }
+          if(b.x + b.width >= rect.width) { b.x = rect.width - b.width; b.vx *= -0.8; impact = true; }
+          if(b.y <= 0) { b.y = 0; b.vy *= -0.8; impact = true; }
+          if(b.y + b.height >= rect.height) { b.y = rect.height - b.height; b.vy *= -0.8; impact = true; }
+          
+          // Nếu lực đập (vận tốc) đủ lớn, rung màn hình
+          if (impact && (Math.abs(b.vx) > 10 || Math.abs(b.vy) > 10)) {
+            triggerShake();
+          }
         }
         b.el.style.left = b.x + 'px'; b.el.style.top = b.y + 'px';
       });
     }
     requestAnimationFrame(runChaosPhysics);
   }
-  setTimeout(runChaosPhysics, 500); // Trì hoãn lấy offsetHeight đúng
+  setTimeout(runChaosPhysics, 500);
 
   /* ==========================================================================
-     FUNCTION 4: CỌ SƠN GIA TỐC (VELOCITY BRUSH) - TRANG 4
+     INTERACTIVE 3: GRAFFITI SƠN CHẢY (TRANG 4)
+     Nét vẽ tự động nhỏ giọt xuống.
      ========================================================================== */
   const s4Canvas = document.getElementById('s4-canvas');
   const s4Ctx = s4Canvas.getContext('2d');
-  let paintColor = '#ff2a7a';
-  let isPainting = false;
-  let pLastX, pLastY;
+  // Ép chết màu hồng đồng nhất cho bút vẽ
+  let paintColor = '#ff2a7a'; 
+  let isPainting = false; let pLastX, pLastY;
 
   function resizeS4() {
     let rect = s4Canvas.parentElement.getBoundingClientRect();
@@ -472,45 +373,30 @@ function animateSinking() {
   }
   window.addEventListener('resize', resizeS4); resizeS4();
 
-  function setColor(color, btn) {
-    paintColor = color;
-    document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-  }
-
   s4Canvas.addEventListener('mousedown', (e) => {
     isPainting = true;
     let rect = s4Canvas.getBoundingClientRect();
     pLastX = e.clientX - rect.left; pLastY = e.clientY - rect.top;
   });
-  s4Canvas.addEventListener('mouseup', () => isPainting = false);
-  s4Canvas.addEventListener('mouseleave', () => isPainting = false);
+  window.addEventListener('mouseup', () => isPainting = false);
 
   s4Canvas.addEventListener('mousemove', (e) => {
-    if (!isPainting || currentPage !== 3) return;
+    if (!isPainting || currentPage !== 2) return; // Trang 4 là index 2
     let rect = s4Canvas.getBoundingClientRect();
-    let currentX = e.clientX - rect.left;
-    let currentY = e.clientY - rect.top;
+    let currentX = e.clientX - rect.left; let currentY = e.clientY - rect.top;
 
-    // Tính tốc độ vẩy chuột để quyết định độ to/loang của nét cọ
     let dx = currentX - pLastX; let dy = currentY - pLastY;
     let velocity = Math.sqrt(dx*dx + dy*dy);
-    
-    // Vẽ càng nhanh nét càng bự (min 5, max 40)
-    let brushSize = Math.min(Math.max(velocity * 0.5, 5), 40);
+    let brushSize = Math.min(Math.max(velocity * 0.5, 5), 30);
     
     s4Ctx.fillStyle = paintColor;
     s4Ctx.beginPath();
     s4Ctx.arc(currentX, currentY, brushSize, 0, Math.PI*2);
     s4Ctx.fill();
 
-    // Vẩy sơn li ti xung quanh nếu tốc độ cực nhanh
-    if(velocity > 20) {
-      for(let i=0; i<3; i++) {
-        s4Ctx.beginPath();
-        s4Ctx.arc(currentX + (Math.random()-0.5)*velocity*2, currentY + (Math.random()-0.5)*velocity*2, Math.random()*5, 0, Math.PI*2);
-        s4Ctx.fill();
-      }
+    // Hiệu ứng giọt sơn chảy rỉ xuống (Paint Drip)
+    if(Math.random() > 0.85) {
+      s4Ctx.fillRect(currentX - brushSize/2, currentY, Math.random()*4 + 1, Math.random()*100 + 20);
     }
 
     pLastX = currentX; pLastY = currentY;
