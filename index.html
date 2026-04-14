@@ -7,12 +7,12 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400;1,600&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg-surface: #0a192f; /* Xanh nước biển có ánh sáng mặt trời */
+    --bg-surface: #040f1f; /* Xanh biển sâu thẳm hắt sáng nhẹ */
     --text-main: #cbd5e1;
     --text-dim: #64748b;
-    --accent: #ffffff;     /* Trắng chói lòa */
-    --ink: #e2e8f0;        /* Mực ánh kim */
-    --blood: #8b0000;      /* Điểm xuyết rất nhỏ sự bạo liệt */
+    --accent: #ffffff;     /* Trắng chói lòa ngọc trai */
+    --ink: #e2e8f0;        
+    --blood: #8b0000;      
   }
 
   * { box-sizing: border-box; cursor: none !important; }
@@ -33,24 +33,24 @@
     mix-blend-mode: difference;
     box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
   }
-  #custom-cursor.hovering { width: 50px; height: 50px; background: transparent; border: 1px solid var(--accent); mix-blend-mode: normal; box-shadow: none;}
+  #custom-cursor.hovering { width: 50px; height: 50px; background: transparent; border: 1px solid rgba(255,255,255,0.5); mix-blend-mode: normal; box-shadow: none;}
   #custom-cursor.brushing { width: 10px; height: 10px; background: rgba(255,255,255,1); box-shadow: 0 0 40px var(--ink); border: none; mix-blend-mode: normal;}
 
   /* OVERLAYS & CANVAS */
   #abyss-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1; pointer-events: none; mix-blend-mode: screen; opacity: 0.7;}
   
-  /* Hiệu ứng chói nắng từ trên mặt nước */
+  /* Ánh chớp mặt trời (Sun Glare) */
   .sun-glare {
-    position: fixed; top: -20vh; left: 50%; transform: translateX(-50%);
-    width: 150vw; height: 80vh; z-index: 0; pointer-events: none;
-    background: radial-gradient(ellipse at top, rgba(255,255,255,0.15) 0%, transparent 70%);
-    transition: opacity 1s ease-out;
+    position: fixed; top: -30vh; left: 50%; transform: translateX(-50%);
+    width: 150vw; height: 90vh; z-index: 0; pointer-events: none;
+    background: radial-gradient(ellipse at top, rgba(255,255,255,0.12) 0%, transparent 60%);
+    transition: opacity 1.5s ease-out;
   }
 
   .vignette {
     position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 2; pointer-events: none;
     background: radial-gradient(circle at center, transparent 30%, #000000 130%);
-    transition: background 1s ease-out;
+    transition: background 1.5s ease-out;
   }
 
   /* CINEMATIC INTRO */
@@ -86,11 +86,11 @@
   }
   .marker-line { width: 15px; height: 1px; background: rgba(255,255,255,0.2); transition: 0.4s; }
   .marker-text { 
-    font-size: 0.6rem; letter-spacing: 4px; color: var(--text-dim); transition: 0.4s; text-transform: uppercase;
+    font-size: 0.55rem; letter-spacing: 5px; color: var(--text-dim); transition: 0.4s; text-transform: uppercase;
     writing-mode: vertical-rl; transform: rotate(180deg); opacity: 0.5; 
   }
   .marker:hover .marker-line, .marker.active .marker-line { width: 40px; background: var(--accent); box-shadow: 0 0 15px var(--accent);}
-  .marker:hover .marker-text, .marker.active .marker-text { color: #fff; text-shadow: 0 0 15px var(--accent); letter-spacing: 6px; opacity: 1;}
+  .marker:hover .marker-text, .marker.active .marker-text { color: #fff; text-shadow: 0 0 15px var(--accent); letter-spacing: 7px; opacity: 1;}
 
   /* MUSIC PLAYER */
   .music-player { position: fixed; bottom: 40px; right: 50px; z-index: 99991; display: flex; align-items: center; gap: 15px; }
@@ -102,15 +102,15 @@
   .music-player.playing .bar:nth-child(3) { animation-delay: 0.2s; }
   .music-player.playing .bar:nth-child(4) { animation-delay: 0.5s; }
   @keyframes equalize { 0% { height: 2px; } 100% { height: 15px; } }
-  .track-info { font-size: 0.6rem; letter-spacing: 5px; color: var(--text-dim); text-transform: uppercase; transition: 0.4s; }
+  .track-info { font-size: 0.55rem; letter-spacing: 5px; color: var(--text-dim); text-transform: uppercase; transition: 0.4s; }
 
   /* WATER DISTORTION EFFECT */
-  .water-distort { transition: filter 0.8s ease, box-shadow 0.8s ease, transform 0.8s ease; position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,0.05); background: #000;}
+  .water-distort { transition: filter 0.8s ease, box-shadow 0.8s ease, transform 0.8s ease; position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,0.03); background: #000;}
   .water-distort img, .water-distort video {
-    width: 100%; height: 100%; object-fit: cover; filter: grayscale(70%) brightness(0.6);
+    width: 100%; height: 100%; object-fit: cover; filter: grayscale(80%) brightness(0.5);
     transition: all 1.5s cubic-bezier(0.19, 1, 0.22, 1); transform: scale(1.05); pointer-events: none;
   }
-  .water-distort:hover { z-index: 50 !important; border-color: rgba(255, 255, 255, 0.8); box-shadow: 0 20px 50px rgba(0,0,0,0.9); transform: translateY(-5px) scale(1.02); }
+  .water-distort:hover { z-index: 50 !important; border-color: rgba(255, 255, 255, 0.6); box-shadow: 0 20px 50px rgba(0,0,0,0.9); transform: translateY(-5px) scale(1.02); }
   .water-distort:hover img, .water-distort:hover video {
     filter: url(#water-ripple) grayscale(0%) brightness(1.1);
     transform: scale(1.1);
@@ -132,9 +132,30 @@
   }
   h1, h2, h3 { font-family: 'Cormorant Garamond', serif; font-weight: 400; color: #fff; margin: 0; }
 
-  /* TEXT UTILS */
-  .poetic-text { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.2rem; color: #fff; opacity: 0.9; letter-spacing: 1px;}
-  .mono-text { font-family: 'Space Mono', monospace; font-size: 0.8rem; color: #94a3b8; line-height: 2.2; font-weight: 300;}
+  /* TEXT UTILS & ĐIỆU NGHỆ VIBE */
+  .poetic-text { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.3rem; color: #fff; opacity: 0.9; letter-spacing: 1px;}
+  .mono-text { font-family: 'Space Mono', monospace; font-size: 0.8rem; color: #a1b2c7; line-height: 2.4; font-weight: 300;}
+  
+  /* SỰ THAY THẾ CHO "REDACTED" THÔ KỆCH -> KÍNH ƯỚT & ÁNH SÁNG CHÓI */
+  .wet-highlight {
+    position: relative;
+    display: inline-block;
+    padding: 0 6px;
+    color: #e2e8f0;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(2px);
+    transition: all 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+  }
+  .wet-highlight:hover {
+    background: rgba(255, 255, 255, 0.95);
+    color: #000;
+    box-shadow: 0 0 25px rgba(255, 255, 255, 0.8);
+    letter-spacing: 1px;
+    border-color: #fff;
+    transform: scale(1.02);
+  }
 
   /* =========================================
      PAGE 1: CHÓI LÒA (BẢN NGÃ)
@@ -143,19 +164,29 @@
   .abyss-content { display: flex; align-items: center; justify-content: space-between; gap: 4vw; max-width: 1400px; width: 100%; padding-right: 5vw; z-index: 5;}
   
   .abyss-text-zone { flex: 1; display: flex; flex-direction: column; justify-content: center; }
-  .abyss-title { font-size: 6.5rem; font-style: italic; letter-spacing: -2px; margin-bottom: 20px; text-shadow: 0 5px 30px rgba(255,255,255,0.4);}
-  .abyss-text { max-width: 550px; margin-bottom: 20px; }
+  .abyss-title { font-size: 7rem; font-style: italic; letter-spacing: -3px; margin-bottom: 25px; text-shadow: 0 5px 30px rgba(255,255,255,0.3);}
+  .abyss-text { max-width: 580px; margin-bottom: 25px; opacity: 0.85;}
+
+  /* KHỐI ABOUT ME: CHUYỂN THÀNH CÁC BỌT KHÍ NƯỚC */
+  .flow-group { margin-top: 30px; display: flex; flex-direction: column; gap: 25px; padding-left: 10px; }
+  .flow-item { position: relative; padding-left: 30px; transition: 0.5s ease; opacity: 0.7;}
+  .flow-item:hover { opacity: 1; transform: translateX(10px); }
   
-  .redacted { background-color: #ffffff; color: #000; padding: 2px 10px; transition: 0.8s ease; display: inline-block; font-weight: bold;}
-  .redacted:hover { background-color: transparent; color: #fff; text-shadow: 0 0 20px var(--accent); letter-spacing: 1px;}
+  .bubble-bullet {
+    position: absolute; left: 0; top: 10px;
+    width: 8px; height: 8px; border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.4);
+    box-shadow: inset 0 0 4px rgba(255,255,255,0.2);
+    transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+  }
+  .flow-item:hover .bubble-bullet {
+    background: #fff;
+    box-shadow: 0 0 15px #fff, inset 0 0 5px #fff;
+    border-color: #fff;
+    transform: scale(1.5);
+  }
 
-  .flow-group { margin-top: 40px; display: flex; flex-direction: column; gap: 20px; border-left: 1px solid rgba(255,255,255,0.3); padding-left: 25px; }
-  .flow-item { transition: 0.4s ease; display: flex; align-items: center; gap: 15px; }
-  .flow-item:hover { color: #fff; transform: translateX(10px); }
-  .flow-dot { width: 6px; height: 6px; background: #fff; border-radius: 50%; opacity: 0.5; transition: 0.4s; }
-  .flow-item:hover .flow-dot { opacity: 1; background: var(--accent); box-shadow: 0 0 15px var(--accent); transform: scale(1.5);}
-
-  .abyss-visual-zone { flex: 1; position: relative; height: 80vh; }
+  .abyss-visual-zone { flex: 1; position: relative; height: 85vh; }
   .p1-img { position: absolute; }
   .p1-img-1 { width: 35vh; height: 50vh; top: 5%; right: 5%; z-index: 2; }
   .p1-img-2 { width: 28vh; height: 28vh; bottom: 10%; left: 0%; z-index: 1; }
@@ -165,27 +196,27 @@
      PAGE 2: LẶN NGỤP (TEDx)
      ========================================= */
   #page-2 { align-items: center;} 
-  .stage-title { position: absolute; top: 10%; z-index: 1; font-size: 11rem; color: transparent; -webkit-text-stroke: 1px rgba(255,255,255,0.04); letter-spacing: 50px; text-transform: uppercase; pointer-events: none; white-space: nowrap;}
+  .stage-title { position: absolute; top: 10%; z-index: 1; font-size: 12rem; color: transparent; -webkit-text-stroke: 1px rgba(255,255,255,0.03); letter-spacing: 50px; text-transform: uppercase; pointer-events: none; white-space: nowrap;}
   
   .reflection-box {
-    position: absolute; z-index: 10; border-left: 2px solid var(--accent); 
-    padding: 30px; background: rgba(4, 9, 20, 0.6); backdrop-filter: blur(12px); transition: 0.4s ease; box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+    position: absolute; z-index: 10; border-left: 2px solid rgba(255,255,255,0.8); 
+    padding: 35px; background: rgba(2, 6, 15, 0.5); backdrop-filter: blur(15px); transition: 0.5s ease; box-shadow: 0 20px 50px rgba(0,0,0,0.8);
   }
-  .reflection-box h3 { font-size: 2.2rem; margin-bottom: 15px; }
-  .reflection-box p { margin: 0; outline: none; min-width: 350px; max-width: 450px;}
+  .reflection-box h3 { font-size: 2.5rem; margin-bottom: 20px; }
+  .reflection-box p { margin: 0; outline: none; min-width: 350px; max-width: 480px;}
   .stage-reflect { bottom: 15%; left: 8%; } 
 
   .draggable-media { position: absolute; cursor: grab; z-index: 5; }
   .draggable-media:active { cursor: grabbing; z-index: 100; }
   
-  .film-strip { width: 400px; background: #050505; padding: 12px; padding-bottom: 40px; border: 1px solid rgba(255,255,255,0.05); }
-  .film-img-zone { width: 100%; height: 260px; background: #000; overflow: hidden; position: relative; }
+  .film-strip { width: 420px; background: #050505; padding: 12px; padding-bottom: 40px; border: 1px solid rgba(255,255,255,0.04); }
+  .film-img-zone { width: 100%; height: 280px; background: #000; overflow: hidden; position: relative; }
   .film-holes { display: flex; justify-content: space-between; margin-bottom: 12px; }
   .hole { width: 6px; height: 6px; background: #000; border-radius: 2px; }
 
   .film-1 { top: 20%; left: 20%; transform: rotate(-3deg); }
-  .film-2 { top: 28%; right: 12%; transform: rotate(5deg); }
-  .spotlight-media { width: 480px; height: 340px; bottom: 15%; right: 30%; transform: rotate(-2deg);}
+  .film-2 { top: 28%; right: 10%; transform: rotate(5deg); }
+  .spotlight-media { width: 500px; height: 350px; bottom: 15%; right: 30%; transform: rotate(-2deg);}
 
   /* =========================================
      PAGE 3: BẠO LIỆT (YOUNG LIONS)
@@ -200,7 +231,7 @@
   .yl-video-vert { height: 50vh; aspect-ratio: 9/16; background: #000;}
   .yl-img-horiz { height: 40vh; aspect-ratio: 16/9; background: #000;}
 
-  .reflection-chaos { position: relative; margin-top: 8vh; width: 65vw; max-width: 700px; border-left: 2px solid var(--blood); padding: 25px; background: rgba(0, 0, 0, 0.5);}
+  .reflection-chaos { position: relative; margin-top: 8vh; width: 65vw; max-width: 700px; border-left: 2px solid var(--blood); padding: 25px; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(5px);}
 
   /* =========================================
      PAGE 4: TẾ THẦN (REMAKE GALLERY)
@@ -214,9 +245,9 @@
     position: relative; z-index: 60; width: 40%; height: 100%;
     display: flex; flex-direction: column; justify-content: center; padding: 0 4vw;
   }
-  .graf-title { font-size: 6rem; margin-bottom: 20px; font-style: italic; letter-spacing: -2px;}
-  .graf-text { margin-bottom: 40px; max-width: 450px; }
-  .highlight-text { color: #fff; font-weight: bold; background: rgba(255,255,255,0.1); padding: 2px 5px;}
+  .graf-title { font-size: 6.5rem; margin-bottom: 25px; font-style: italic; letter-spacing: -2px;}
+  .graf-text { margin-bottom: 40px; max-width: 480px; }
+  .highlight-text { color: #fff; font-weight: bold; background: rgba(255,255,255,0.05); padding: 2px 8px; border-radius: 2px;}
   
   .poster-gallery { 
     position: relative; z-index: 10; width: 60%; height: 80vh; 
@@ -226,10 +257,10 @@
   .poster-container { position: relative; flex: 1; max-width: 32%; aspect-ratio: 2/3; }
   .poster { 
     background: #020408; padding: 8px; padding-bottom: 35px; width: 100%; height: 100%; 
-    border: 1px solid rgba(255,255,255,0.05); transition: 0.5s ease;
+    border: 1px solid rgba(255,255,255,0.03); transition: 0.6s cubic-bezier(0.19, 1, 0.22, 1);
   }
-  .poster:hover { border-color: rgba(255, 255, 255, 0.8); box-shadow: 0 20px 50px rgba(0,0,0,0.9); transform: scale(1.05);}
-  .poster img { width: 100%; height: 100%; object-fit: cover; filter: sepia(20%) grayscale(60%) brightness(0.5); pointer-events: none; transition: 0.8s ease;}
+  .poster:hover { border-color: rgba(255, 255, 255, 0.8); box-shadow: 0 20px 50px rgba(0,0,0,0.9); transform: scale(1.05) translateY(-10px);}
+  .poster img { width: 100%; height: 100%; object-fit: cover; filter: sepia(20%) grayscale(70%) brightness(0.5); pointer-events: none; transition: 0.8s ease;}
   .poster:hover img { filter: sepia(0%) grayscale(0%) brightness(1.1); }
   
   .p-wrap-1 { transform: translateY(-8%) rotate(2deg); }
@@ -251,7 +282,7 @@
     position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 10;
     text-align: center; pointer-events: none; transition: opacity 1s ease;
   }
-  .canvas-hint h2 { font-size: 3rem; margin-bottom: 15px; opacity: 0.2; letter-spacing: 10px; text-transform: uppercase;}
+  .canvas-hint h2 { font-size: 3.5rem; margin-bottom: 20px; opacity: 0.15; letter-spacing: 12px; text-transform: uppercase;}
   
   .tools-panel { display: flex; flex-direction: row; gap: 40px; align-items: center; pointer-events: auto;}
   .tool-group { display: flex; align-items: center; gap: 15px; }
@@ -260,10 +291,10 @@
   .color-btn.active { transform: scale(1.6); opacity: 1; box-shadow: 0 0 20px currentColor; border-color: #fff;}
   
   .action-btn { 
-    background: transparent; border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 12px 25px; 
+    background: transparent; border: 1px solid rgba(255,255,255,0.15); color: #fff; padding: 12px 25px; 
     font-family: 'Space Mono'; font-size: 0.7rem; letter-spacing: 4px; transition: 0.4s ease; cursor: pointer; text-transform: uppercase;
   }
-  .action-btn:hover { background: #fff; color: #000; box-shadow: 0 0 20px rgba(255,255,255,0.6); letter-spacing: 6px;}
+  .action-btn:hover { background: #fff; color: #000; box-shadow: 0 0 25px rgba(255,255,255,0.6); letter-spacing: 6px;}
 
 </style>
 </head>
@@ -318,14 +349,23 @@
           Những điểm tựa ngỡ là vĩnh cửu hóa ra chỉ là ảo ảnh khúc xạ trên mặt biển. Ánh sáng chói lòa tàn nhẫn gõ nhịp trên mí mắt.
         </div>
         <div class="abyss-text mono-text">
-          Chìm xuống. Không phải để trốn tránh, mà để trốn khỏi sự phán xét của mặt trời. 
-          <br><br><span class="redacted interactable">Sự thăng hoa sinh ra từ trạng thái kiệt quệ nhất.</span>
+          Chìm xuống. Không phải để trốn tránh, mà để thoát khỏi sự phán xét của mặt trời. 
+          <br><br><span class="wet-highlight interactable">Sự thăng hoa sinh ra từ trạng thái kiệt quệ nhất.</span>
         </div>
         
         <div class="flow-group">
-          <div class="flow-item interactable"><span class="flow-dot"></span> <span class="mono-text">Tọa độ: SV FTU2 (dị ứng với những con số vô hồn)</span></div>
-          <div class="flow-item interactable"><span class="flow-dot"></span> <span class="mono-text">Tôn giáo: Kẻ lang thang thờ phụng Tchaikovsky & BTS</span></div>
-          <div class="flow-item interactable"><span class="flow-dot"></span> <span class="mono-text">Nghi thức: Xách vali mòn gót qua <span class="redacted interactable">100 quốc gia</span></span></div>
+          <div class="flow-item interactable">
+            <div class="bubble-bullet"></div>
+            <span class="mono-text">Tọa độ: SV FTU2 (dị ứng với những con số vô hồn)</span>
+          </div>
+          <div class="flow-item interactable">
+            <div class="bubble-bullet"></div>
+            <span class="mono-text">Tôn giáo: Kẻ lang thang thờ phụng Tchaikovsky x BTS</span>
+          </div>
+          <div class="flow-item interactable">
+            <div class="bubble-bullet"></div>
+            <span class="mono-text">Nghi thức: Xách vali mòn gót qua <span class="wet-highlight interactable">100 quốc gia</span></span>
+          </div>
         </div>
       </div>
       
@@ -341,7 +381,7 @@
     <div class="stage-title">TEDxFTU</div>
 
     <div class="reflection-box stage-reflect interactable">
-      <h3 class="poetic-text" style="font-size:2.5rem; letter-spacing:0;">Nín thở.</h3>
+      <h3 class="poetic-text" style="font-size:2.8rem; letter-spacing:0;">Nín thở.</h3>
       <p class="mono-text" contenteditable="true">Duy trì một vỏ bọc hoàn hảo dưới áp lực nước. Phổi gào thét nhưng khuôn mặt vẫn phải tĩnh lặng. Gõ lời thú tội vào bọt biển...</p>
     </div>
     
@@ -364,7 +404,7 @@
 
   <section id="page-3" class="page-section">
     <div class="yl-header">
-      <h2 class="poetic-text" style="font-size: 4rem;">Vietnam Young Lions</h2>
+      <h2 class="poetic-text" style="font-size: 4.5rem;">Vietnam Young Lions</h2>
       <p class="mono-text">Chạy thục mạng đến rách cả phổi</p>
     </div>
 
@@ -389,7 +429,7 @@
         <div class="graf-text mono-text">
           <span class="poetic-text">"Mày là vị thần của tao. Tàn nhẫn nhưng rực rỡ."</span><br><br>
           Kéo tuột mọi định kiến xuống đáy sâu. Những mảng tường, những bức ảnh giờ đây chỉ là vật hiến tế cho cái đẹp bạo liệt. 
-          <br><br>Góc nhìn bị đảo lộn. Không còn đúng sai.
+          <br><br>Góc nhìn bị đảo lộn. <span class="wet-highlight">Không còn đúng sai.</span>
         </div>
       </div>
     </div>
@@ -471,7 +511,6 @@
     aCtx.clearRect(0, 0, abyssCanvas.width, abyssCanvas.height);
     for(let p of snowParticles) {
       p.y += p.vy;
-      // Trôi ngang nhẹ
       p.x += Math.sin(p.y * 0.01) * 0.5;
       if(p.y < -10) { p.y = abyssCanvas.height + 10; p.x = Math.random() * abyssCanvas.width; }
       aCtx.beginPath(); aCtx.arc(p.x, p.y, p.r, 0, Math.PI*2);
@@ -503,7 +542,7 @@
     depthFill.style.height = `${scrollPercent * 100}%`;
 
     // Màu biển tối dần (Từ #0a192f về đen tuyệt đối)
-    let lightness = 10 - (scrollPercent * 10); 
+    let lightness = 12 - (scrollPercent * 12); 
     document.body.style.backgroundColor = `hsl(215, 65%, ${Math.max(0, lightness)}%)`;
     
     // Tắt ánh sáng mặt trời khi qua trang 1
@@ -608,10 +647,8 @@
     let rect = grafCanvas.getBoundingClientRect(); let currX = e.clientX - rect.left; let currY = e.clientY - rect.top;
     let dx = currX - lastX; let dy = currY - lastY; let distance = Math.sqrt(dx*dx + dy*dy);
     
-    // Nét lụa nước bồng bềnh
     let lineWidth = Math.max(2, 20 - distance * 0.4); 
     gCtx.beginPath(); gCtx.moveTo(lastX, lastY); 
-    // Đường cong quadratic cho cảm giác uốn lượn dưới nước
     gCtx.quadraticCurveTo(lastX + dx/2, lastY + dy/2, currX, currY);
     gCtx.lineCap = 'round'; gCtx.lineJoin = 'round'; gCtx.lineWidth = lineWidth;
     
@@ -623,7 +660,7 @@
   });
   window.addEventListener('mouseup', () => { isDrawing = false; });
 
-  // PHÁO HOA NỔ TRONG NƯỚC (Double Click)
+  // PHÁO HOA NỔ TRONG NƯỚC
   grafCanvas.addEventListener('dblclick', (e) => {
     let rect = grafCanvas.getBoundingClientRect();
     createExplosion(e.clientX - rect.left, e.clientY - rect.top);
@@ -642,7 +679,6 @@
   }
 
   function renderFireworks() {
-    // Tích hợp phai nhòe để nét vẽ không tồn tại vĩnh viễn (bay hơi dưới nước)
     gCtx.globalCompositeOperation = 'source-over';
     gCtx.fillStyle = 'rgba(0, 0, 0, 0.005)'; 
     gCtx.fillRect(0, 0, grafCanvas.width, grafCanvas.height);
@@ -650,7 +686,6 @@
 
     for(let i=0; i<fireworksParticles.length; i++) {
       let p = fireworksParticles[i];
-      // Lực cản của nước (giảm tốc)
       p.vx *= 0.95; p.vy *= 0.95;
       p.x += p.vx; p.y += p.vy;
       p.life -= 0.015; p.size *= 0.96;
