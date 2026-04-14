@@ -3,485 +3,599 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Silent Voice - The Abyss</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Inter:wght@200;300;400&display=swap" rel="stylesheet">
+<title>Silent Voice - The Deep</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg-surface: #0a111a;
-    --bg-abyss: #010204;
-    --text-primary: #e0e0e0;
-    --text-muted: #555566;
-    --accent: #4a7ab5;
-    --bloom: #8bc3ff;
+    --bg-surface: #02060d; /* Xanh biển cực thẫm */
+    --bg-abyss: #000000;   /* Đen tuyệt đối */
+    --text-main: #b0b0b0;
+    --text-dim: #555566;
+    --accent: #00e5ff;     /* Xanh cyan phát sáng nhẹ */
+    --ink: #00e5ff;
   }
 
   * { box-sizing: border-box; cursor: none !important; }
   body, html {
     margin: 0; padding: 0; 
     background-color: var(--bg-surface);
-    color: var(--text-primary); 
-    font-family: 'Inter', sans-serif;
+    color: var(--text-main); font-family: 'Space Mono', monospace;
     overflow: hidden; width: 100vw; height: 100vh;
-    transition: background-color 1.5s ease-out;
+    transition: background-color 1s ease-out;
   }
 
-  /* CUSTOM CURSOR - MINIMAL */
+  /* CUSTOM CURSOR */
   #custom-cursor {
-    position: fixed; top: 0; left: 0; width: 4px; height: 4px;
+    position: fixed; top: 0; left: 0; width: 6px; height: 6px;
     background: #fff; border-radius: 50%; pointer-events: none;
     transform: translate(-50%, -50%); z-index: 100000;
-    transition: width 0.3s ease, height 0.3s ease, background 0.3s, opacity 0.5s;
+    transition: width 0.3s ease, height 0.3s ease, background 0.3s;
     mix-blend-mode: difference;
-    box-shadow: 0 0 10px rgba(255,255,255,0.5);
+    box-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
   }
-  #custom-cursor.hovering { width: 40px; height: 40px; background: transparent; border: 1px solid rgba(255,255,255,0.2); box-shadow: none; }
-  #custom-cursor.hidden { opacity: 0; }
+  #custom-cursor.hovering { width: 45px; height: 45px; background: transparent; border: 1px solid var(--accent); mix-blend-mode: normal; box-shadow: none;}
+  #custom-cursor.brushing { width: 15px; height: 15px; background: rgba(255,255,255,0.9); box-shadow: 0 0 30px var(--ink); border: none; mix-blend-mode: normal;}
 
-  /* OVERLAYS */
-  .darkness-veil {
+  /* OVERLAYS & CANVAS */
+  #abyss-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1; pointer-events: none; mix-blend-mode: screen; opacity: 0.8;}
+  
+  .vignette {
     position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 2; pointer-events: none;
-    background: radial-gradient(circle at center, transparent 0%, #000 150%);
-    transition: background 1s ease-out;
-  }
-  .noise-overlay {
-    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 99990; pointer-events: none;
-    background-image: url('data:image/svg+xml,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)"/%3E%3C/svg%3E');
-    opacity: 0.03; mix-blend-mode: overlay;
+    background: radial-gradient(circle at center, transparent 30%, #000000 120%);
+    transition: background 0.5s ease-out;
   }
 
-  /* INTRO */
+  /* CINEMATIC INTRO */
   #cinematic-intro {
     position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
     background: #000; z-index: 99999; display: flex; align-items: center; justify-content: center;
-    flex-direction: column; transition: opacity 4s ease;
+    flex-direction: column; transition: opacity 3s ease;
   }
   .intro-text {
-    font-family: 'Cormorant Garamond', serif; font-size: 2vw; font-style: italic; font-weight: 300;
-    color: #fff; opacity: 0; transition: opacity 4s ease, filter 4s ease, transform 4s ease; 
-    text-align: center; letter-spacing: 0.2em; filter: blur(10px); transform: translateY(20px);
+    font-family: 'Cormorant Garamond', serif; font-size: 2.5rem; font-style: italic;
+    color: transparent; opacity: 0; transition: opacity 3s, color 3s, filter 3s; text-align: center; line-height: 2; 
+    -webkit-text-stroke: 1px rgba(255,255,255,0.1); filter: blur(15px); letter-spacing: 2px;
   }
-  .intro-text.show { opacity: 0.8; filter: blur(0px); transform: translateY(0); }
+  .intro-text.show { opacity: 1; color: #fff; -webkit-text-stroke: 0px; filter: blur(0px); text-shadow: 0 0 20px rgba(0, 229, 255, 0.3);}
 
-  /* THE DEPTH THREAD (TRỤC SÂU MỎNG MANH) */
-  .depth-thread {
-    position: fixed; top: 0; left: 50px; width: 1px; height: 100vh; z-index: 99991;
-    background: rgba(255,255,255,0.05); pointer-events: none;
+  /* TRỤC LIÊN KẾT (THE DEPTH LINE) */
+  .depth-container {
+    position: fixed; top: 0; left: 50px; width: 100px; height: 100vh; z-index: 99991;
+    display: flex; flex-direction: column; align-items: flex-start; pointer-events: none;
   }
-  .depth-progress {
-    width: 100%; background: var(--accent); height: 0%;
-    box-shadow: 0 0 10px var(--accent); transition: height 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+  .depth-track {
+    position: absolute; top: 15vh; bottom: 15vh; left: 20px; width: 1px; background: rgba(255,255,255,0.05);
   }
-  .depth-indicator {
-    position: fixed; top: 50vh; left: 70px; transform: translateY(-50%);
-    font-family: 'Space Mono', monospace; font-size: 0.6rem; letter-spacing: 0.4em; color: var(--text-muted);
-    writing-mode: vertical-rl; transform: rotate(180deg) translateY(50%); transition: color 0.5s;
-    pointer-events: none; z-index: 99991; text-transform: uppercase;
+  .depth-fill {
+    position: absolute; top: 0; left: -1px; width: 3px; background: var(--accent);
+    box-shadow: 0 0 20px var(--accent); height: 0%; transition: height 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+  .depth-markers {
+    position: absolute; top: 15vh; bottom: 15vh; left: 20px; width: 100%; display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .marker {
+    display: flex; align-items: center; justify-content: flex-start; gap: 15px; cursor: pointer; pointer-events: auto; transform: translateX(-15px);
+  }
+  .marker-line { width: 15px; height: 1px; background: rgba(255,255,255,0.2); transition: 0.4s; }
+  .marker-text { 
+    font-size: 0.6rem; letter-spacing: 4px; color: var(--text-dim); transition: 0.4s; text-transform: uppercase;
+    writing-mode: vertical-rl; transform: rotate(180deg);
+  }
+  .marker:hover .marker-line, .marker.active .marker-line { width: 30px; background: var(--accent); box-shadow: 0 0 10px var(--accent);}
+  .marker:hover .marker-text, .marker.active .marker-text { color: #fff; text-shadow: 0 0 10px var(--accent); letter-spacing: 6px;}
+
+  /* MUSIC PLAYER */
+  .music-player { position: fixed; bottom: 40px; right: 50px; z-index: 99991; display: flex; align-items: center; gap: 15px; }
+  .music-bars { display: flex; gap: 3px; align-items: flex-end; height: 15px; }
+  .bar { width: 2px; background: var(--text-dim); transition: 0.2s; }
+  .music-player.playing .bar { background: var(--accent); box-shadow: 0 0 8px var(--accent); animation: equalize 1s infinite alternate; }
+  .music-player.playing .bar:nth-child(1) { animation-delay: 0.1s; }
+  .music-player.playing .bar:nth-child(2) { animation-delay: 0.4s; }
+  .music-player.playing .bar:nth-child(3) { animation-delay: 0.2s; }
+  .music-player.playing .bar:nth-child(4) { animation-delay: 0.5s; }
+  @keyframes equalize { 0% { height: 2px; } 100% { height: 15px; } }
+  .track-info { font-size: 0.6rem; letter-spacing: 4px; color: var(--text-dim); text-transform: uppercase; transition: 0.4s; }
+
+  /* WATER DISTORTION EFFECT */
+  .water-distort { transition: filter 0.8s ease, box-shadow 0.8s ease, transform 0.8s ease; position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,0.05); background: #000;}
+  .water-distort img, .water-distort video {
+    width: 100%; height: 100%; object-fit: cover; filter: grayscale(100%) brightness(0.4);
+    transition: all 1.5s cubic-bezier(0.19, 1, 0.22, 1); transform: scale(1.05); pointer-events: none;
+  }
+  .water-distort:hover { z-index: 50 !important; border-color: rgba(0, 229, 255, 0.3); box-shadow: 0 20px 50px rgba(0,0,0,0.9); transform: translateY(-5px); }
+  .water-distort:hover img, .water-distort:hover video {
+    filter: url(#water-ripple) grayscale(20%) brightness(1);
+    transform: scale(1.1);
   }
 
   /* MAIN LAYOUT */
   main { 
     position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; 
-    z-index: 10; overflow-y: scroll; overflow-x: hidden; 
+    padding-left: 120px; z-index: 10; 
+    overflow-y: scroll; overflow-x: hidden; 
     scroll-behavior: smooth; scroll-snap-type: y mandatory; 
   }
   main::-webkit-scrollbar { display: none; } 
+  
   section { 
-    width: 100%; height: 100vh; position: relative; scroll-snap-align: start; 
-    display: flex; align-items: center; justify-content: center;
+    width: 100%; height: 100vh; position: relative; 
+    scroll-snap-align: start; 
+    overflow: hidden; display: flex; flex-direction: column; justify-content: center;
   }
-  h1, h2, h3 { font-family: 'Cormorant Garamond', serif; font-weight: 300; margin: 0; }
+  h1, h2, h3 { font-family: 'Cormorant Garamond', serif; font-weight: 300; color: #fff; margin: 0; }
 
   /* =========================================
-     PAGE 1: SỰ CHÌM XUỐNG (BẢN NGÃ)
+     PAGE 1: ĐÁY SÂU (BẢN NGÃ) - BỐ CỤC GỌN GÀNG
      ========================================= */
-  .p1-container {
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    width: 100%; max-width: 800px; padding: 0 20px;
+  #page-1 { align-items: center; justify-content: center;}
+  .abyss-content { display: flex; align-items: center; justify-content: space-between; gap: 6vw; max-width: 1300px; width: 100%; padding-right: 5vw; z-index: 5;}
+  
+  .abyss-text-zone { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+  .abyss-title { font-size: 6rem; font-style: italic; letter-spacing: -2px; margin-bottom: 30px; text-shadow: 0 5px 20px rgba(0,0,0,0.8);}
+  .abyss-text { font-size: 0.9rem; line-height: 2.2; color: #888; margin-bottom: 25px; max-width: 500px; font-weight: 300;}
+  
+  .redacted { background-color: #0d141f; color: #0d141f; padding: 2px 8px; transition: 0.8s ease; display: inline-block;}
+  .redacted:hover { background-color: transparent; color: #fff; text-shadow: 0 0 15px var(--accent); letter-spacing: 1px;}
+
+  .flow-group { margin-top: 30px; display: flex; flex-direction: column; gap: 15px; border-left: 1px solid rgba(0,229,255,0.2); padding-left: 20px; }
+  .flow-item { font-size: 0.8rem; color: #777; transition: 0.4s ease; display: flex; align-items: center; gap: 12px; }
+  .flow-item:hover { color: #fff; transform: translateX(8px); }
+  .flow-dot { width: 5px; height: 5px; background: #fff; border-radius: 50%; opacity: 0.3; transition: 0.4s; }
+  .flow-item:hover .flow-dot { opacity: 1; background: var(--accent); box-shadow: 0 0 10px var(--accent); transform: scale(1.5);}
+
+  .abyss-visual-zone { flex: 1; position: relative; height: 75vh; }
+  .p1-img { position: absolute; }
+  .p1-img-1 { width: 32vh; height: 45vh; top: 10%; right: 5%; z-index: 2; }
+  .p1-img-2 { width: 25vh; height: 25vh; bottom: 10%; left: 5%; z-index: 1; }
+  .p1-img-3 { width: 20vh; height: 28vh; top: 30%; left: 30%; z-index: 3;}
+  
+  /* =========================================
+     PAGE 2: SÂN KHẤU
+     ========================================= */
+  #page-2 { align-items: center;} 
+  .stage-title { position: absolute; top: 15%; z-index: 1; font-size: 9rem; color: transparent; -webkit-text-stroke: 1px rgba(255,255,255,0.03); letter-spacing: 40px; text-transform: uppercase; pointer-events: none; }
+  
+  .reflection-box {
+    position: absolute; z-index: 10; border-left: 2px solid var(--accent); 
+    padding: 25px; background: rgba(5,10,15,0.8); backdrop-filter: blur(10px); transition: 0.4s ease; box-shadow: 0 15px 30px rgba(0,0,0,0.8);
   }
-  .p1-title { font-size: 4vw; font-style: italic; letter-spacing: -0.02em; color: #fff; opacity: 0.9; margin-bottom: 2vh; text-align: center;}
-  .p1-subtitle { font-family: 'Space Mono', monospace; font-size: 0.7rem; letter-spacing: 0.3em; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8vh; }
+  .reflection-box h3 { font-style: italic; font-size: 2rem; margin-bottom: 15px; color: #fff; opacity: 0.9;}
+  .reflection-box p { color: #888; font-size: 0.85rem; line-height: 1.8; margin: 0; outline: none; min-width: 300px; max-width: 400px;}
+  .stage-reflect { bottom: 15%; left: 10%; } 
+
+  .draggable-media { position: absolute; cursor: grab; z-index: 5; }
+  .draggable-media:active { cursor: grabbing; z-index: 100; }
   
-  .memory-fragments { display: flex; justify-content: center; gap: 4vw; width: 100%; flex-wrap: wrap;}
-  
-  /* Khối Ký Ức (Facts về Thy) */
-  .fragment {
-    position: relative; width: 200px; height: 300px; 
-    border: 1px solid rgba(255,255,255,0.03); background: rgba(0,0,0,0.4);
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    padding: 30px; text-align: center; transition: all 1s cubic-bezier(0.19, 1, 0.22, 1);
-    backdrop-filter: blur(5px);
-  }
-  .fragment:hover { border-color: rgba(255,255,255,0.1); background: rgba(0,0,0,0.8); transform: translateY(-10px); }
-  
-  .frag-number { position: absolute; top: 15px; left: 15px; font-family: 'Space Mono'; font-size: 0.6rem; color: var(--text-muted); }
-  .frag-title { font-size: 1.5rem; font-style: italic; color: #fff; margin-bottom: 15px; opacity: 0.8;}
-  .frag-text { font-size: 0.75rem; line-height: 1.8; color: #777; font-weight: 200; transition: color 0.5s;}
-  .fragment:hover .frag-text { color: #ccc; }
-  
-  .glitch-text { position: relative; display: inline-block; }
-  .fragment:hover .glitch-text { animation: subtleGlitch 2s infinite; color: #fff;}
-  @keyframes subtleGlitch {
-    0%, 100% { opacity: 1; transform: translate(0); }
-    33% { opacity: 0.8; transform: translate(-1px, 1px); }
-    66% { opacity: 0.9; transform: translate(1px, -1px); }
-  }
+  .film-strip { width: 380px; background: #050505; padding: 12px; padding-bottom: 35px; border: 1px solid rgba(255,255,255,0.05); }
+  .film-img-zone { width: 100%; height: 240px; background: #000; overflow: hidden; position: relative; }
+  .film-holes { display: flex; justify-content: space-between; margin-bottom: 10px; }
+  .hole { width: 6px; height: 6px; background: #000; border-radius: 2px; }
+
+  .film-1 { top: 20%; left: 20%; transform: rotate(-3deg); }
+  .film-2 { top: 30%; right: 15%; transform: rotate(4deg); }
+  .spotlight-media { width: 450px; height: 320px; bottom: 15%; right: 30%; transform: rotate(-1deg);}
 
   /* =========================================
-     PAGE 2: SỰ MÉO MÓ (SÂN KHẤU)
+     PAGE 3: YOUNG LIONS 
      ========================================= */
-  .p2-container { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
-  .stage-bg-text { 
-    position: absolute; font-family: 'Space Mono'; font-size: 12vw; font-weight: 700; color: transparent; 
-    -webkit-text-stroke: 1px rgba(255,255,255,0.02); z-index: 0; pointer-events: none; opacity: 0.5;
-  }
+  #page-3 { align-items: center;}
+  .yl-header { text-align: center; z-index: 10; margin-bottom: 6vh; }
+  .yl-header h2 { font-size: clamp(2.5rem, 5vw, 4rem); letter-spacing: 10px; text-transform: uppercase; margin: 0; text-shadow: 0 5px 15px rgba(0,0,0,0.8);}
+  .yl-header p { color: var(--accent); letter-spacing: 12px; font-size: 0.75rem; text-transform: uppercase; margin-top: 15px;}
 
-  .media-monolith {
-    position: absolute; background: #000; overflow: hidden; filter: grayscale(100%) brightness(0.3);
-    transition: all 1.5s cubic-bezier(0.19, 1, 0.22, 1); cursor: none;
-  }
-  .media-monolith img, .media-monolith video { width: 100%; height: 100%; object-fit: cover; opacity: 0.5; transition: opacity 1.5s, transform 3s; pointer-events: none; }
+  .yl-media-grid { display: flex; gap: 5vw; align-items: center; justify-content: center; z-index: 10; max-height: 55vh; }
   
-  /* Ánh sáng khi rọi chuột (Spotlight) */
-  .media-monolith:hover { filter: grayscale(0%) brightness(1); z-index: 10; box-shadow: 0 0 50px rgba(0,0,0,0.8); }
-  .media-monolith:hover img, .media-monolith:hover video { opacity: 1; transform: scale(1.05); }
+  .yl-video-vert { height: 50vh; aspect-ratio: 9/16; background: #000;}
+  .yl-img-horiz { height: 40vh; aspect-ratio: 16/9; background: #000;}
 
-  .m1 { width: 25vw; height: 35vw; max-width: 300px; max-height: 420px; left: 15%; top: 20%; }
-  .m2 { width: 30vw; height: 20vw; max-width: 400px; max-height: 260px; right: 15%; top: 15%; }
-  .m3 { width: 20vw; height: 20vw; max-width: 250px; max-height: 250px; right: 25%; bottom: 15%; }
-  .m4 { width: 35vw; height: 15vw; max-width: 450px; max-height: 200px; left: 20%; bottom: 10%; }
-
-  .reflection-note {
-    position: absolute; z-index: 5; max-width: 300px; text-align: center;
-    top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none;
-  }
-  .reflection-note p { font-size: 0.8rem; color: var(--text-muted); line-height: 2; font-style: italic;}
+  .reflection-chaos { position: relative; margin-top: 5vh; width: 60vw; max-width: 600px; border-left: 2px solid var(--accent); padding: 20px; background: rgba(5,10,15,0.6);}
+  .reflection-chaos p { font-size: 0.85rem; color: #888; line-height: 1.8; margin: 0; outline: none;}
 
   /* =========================================
-     PAGE 3: ÁP LỰC ĐÁY TỐI (YOUNG LIONS & REMAKE)
+     PAGE 4: TÁI SINH (MỰC LỤA + PHÁO HOA)
      ========================================= */
-  .p3-container { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column; }
-  .pressure-text { font-family: 'Space Mono'; font-size: 0.6rem; color: #333; letter-spacing: 0.5em; text-transform: uppercase; position: absolute; top: 10%; }
+  #page-4 { flex-direction: row; align-items: center;}
+  #graffiti-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 20; pointer-events: auto; mix-blend-mode: screen;}
   
-  .dark-gallery { display: flex; gap: 2vw; align-items: center; z-index: 5; }
-  
-  .dark-canvas {
-    width: 22vw; aspect-ratio: 3/4; max-width: 280px; background: #020202; position: relative; overflow: hidden;
-    border: 1px solid rgba(255,255,255,0.02); transition: all 1s ease;
+  .graf-ui {
+    position: relative; z-index: 60; width: 35%; height: 100%;
+    display: flex; flex-direction: column; justify-content: center; padding: 0 4vw;
+    background: linear-gradient(90deg, rgba(0,0,0,0.9) 0%, transparent 100%); pointer-events: none;
   }
-  .dark-canvas img, .dark-canvas video { width: 100%; height: 100%; object-fit: cover; opacity: 0.1; transition: opacity 1s; filter: grayscale(100%); pointer-events: none;}
-  .dark-canvas:hover { border-color: rgba(255,255,255,0.1); transform: translateY(-5px); z-index: 10; }
-  .dark-canvas:hover img, .dark-canvas:hover video { opacity: 0.8; filter: grayscale(50%); }
+  .graf-ui-content { pointer-events: all; }
+  .graf-title { font-size: 6rem; margin-bottom: 25px; font-style: italic; letter-spacing: -2px; color: #fff;}
+  .graf-text { font-size: 0.85rem; line-height: 2.2; color: #888; margin-bottom: 40px; font-weight: 300; max-width: 400px; }
+  .highlight-text { color: var(--accent); font-weight: bold; }
   
-  .dc-label { position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%); font-family: 'Space Mono'; font-size: 0.55rem; color: #444; letter-spacing: 0.2em; opacity: 0; transition: 0.5s; white-space: nowrap;}
-  .dark-canvas:hover .dc-label { bottom: 15px; opacity: 1; }
+  .poster-gallery { position: absolute; top: 0; right: 0; width: 65%; height: 100%; z-index: 10; pointer-events: none; }
+  .poster-container { position: absolute; pointer-events: auto; }
+  .poster { background: #0a0a0a; padding: 6px; padding-bottom: 30px; width: 100%; height: 100%; border: 1px solid rgba(255,255,255,0.03); transition: 0.5s ease;}
+  .poster:hover { border-color: rgba(0, 229, 255, 0.3); box-shadow: 0 20px 40px rgba(0,0,0,0.8);}
+  .poster img { width: 100%; height: 100%; object-fit: cover; filter: sepia(20%) grayscale(80%) brightness(0.5); pointer-events: none; transition: 0.8s ease;}
+  .poster:hover img { filter: sepia(0%) grayscale(0%) brightness(1); }
+  
+  .p-wrap-1 { top: 12%; right: 15%; width: 28vh; height: 38vh; transform: rotate(3deg); }
+  .p-wrap-2 { top: 48%; right: 40%; width: 32vh; height: 22vh; transform: rotate(-4deg); }
+  .p-wrap-3 { bottom: 12%; right: 20%; width: 24vh; height: 32vh; transform: rotate(5deg); }
 
-  .quote-box { margin-top: 10vh; max-width: 400px; text-align: center; }
-  .quote-box p { font-size: 0.8rem; color: #555; line-height: 1.8; font-style: italic; }
-
-  /* =========================================
-     PAGE 4: SỰ BUNG NỞ (BIOLUMINESCENCE)
-     ========================================= */
-  #page-4 { background: #000; cursor: none;}
-  #bloom-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 20; mix-blend-mode: screen; pointer-events: auto;}
+  .tools-panel { display: flex; flex-direction: column; gap: 25px;}
+  .tool-group { display: flex; align-items: center; gap: 15px; }
+  .tool-label { font-size: 0.65rem; color: #666; letter-spacing: 3px; text-transform: uppercase; width: 80px; }
+  .color-btn { width: 20px; height: 20px; border-radius: 50%; transition: 0.3s ease; cursor: pointer; opacity: 0.4; border: 1px solid rgba(255,255,255,0.2);}
+  .color-btn.active { transform: scale(1.4); opacity: 1; box-shadow: 0 0 15px currentColor; border-color: #fff;}
   
-  .abyss-core-text {
-    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 10;
-    text-align: center; width: 100%; pointer-events: none; transition: opacity 2s ease;
+  .action-btn { 
+    background: transparent; border: 1px solid rgba(255,255,255,0.1); color: #888; padding: 10px 20px; 
+    font-family: 'Space Mono'; font-size: 0.7rem; letter-spacing: 3px; transition: 0.4s ease; cursor: pointer; text-transform: uppercase;
   }
-  .abyss-core-text h2 { font-size: 2vw; font-style: italic; color: #333; letter-spacing: 0.1em; margin-bottom: 10px; transition: color 1s; }
-  .abyss-core-text p { font-family: 'Space Mono'; font-size: 0.6rem; color: #222; letter-spacing: 0.3em; text-transform: uppercase; }
-  
-  .pulse-hint {
-    position: absolute; bottom: 10%; left: 50%; transform: translateX(-50%);
-    width: 4px; height: 4px; background: #333; border-radius: 50%;
-    animation: slowPulse 3s infinite; pointer-events: none;
-  }
-  @keyframes slowPulse {
-    0% { box-shadow: 0 0 0 0 rgba(255,255,255,0.1); }
-    70% { box-shadow: 0 0 0 20px rgba(255,255,255,0); }
-    100% { box-shadow: 0 0 0 0 rgba(255,255,255,0); }
-  }
-
-  /* AUDIO CONTROLS MINIMAL */
-  .audio-toggle {
-    position: fixed; bottom: 40px; right: 50px; z-index: 99991;
-    font-family: 'Space Mono'; font-size: 0.55rem; letter-spacing: 0.4em; color: var(--text-muted);
-    text-transform: uppercase; cursor: none; transition: color 0.3s;
-  }
-  .audio-toggle:hover { color: #fff; }
-  .audio-toggle.playing { color: var(--accent); }
+  .action-btn:hover { border-color: #fff; color: #fff; background: rgba(255,255,255,0.05); letter-spacing: 5px; box-shadow: 0 0 15px rgba(255,255,255,0.1);}
 
 </style>
 </head>
 <body>
 
-<div class="noise-overlay"></div>
-<div class="darkness-veil" id="darkness-veil"></div>
+<svg style="width:0; height:0; position:absolute;">
+  <filter id="water-ripple">
+    <feTurbulence type="fractalNoise" baseFrequency="0.012" numOctaves="3" result="noise">
+      <animate attributeName="baseFrequency" values="0.012;0.018;0.012" dur="5s" repeatCount="indefinite" />
+    </feTurbulence>
+    <feDisplacementMap in="SourceGraphic" in2="noise" scale="20" xChannelSelector="R" yChannelSelector="G" />
+  </filter>
+</svg>
 
 <div id="custom-cursor"></div>
+<canvas id="abyss-canvas"></canvas>
+<div class="vignette" id="vignette-layer"></div>
 
-<div class="depth-thread"><div class="depth-progress" id="depth-progress"></div></div>
-<div class="depth-indicator" id="depth-indicator">00.M</div>
+<div class="depth-container">
+  <div class="depth-track"><div class="depth-fill" id="depth-fill"></div></div>
+  <div class="depth-markers">
+    <div class="marker interactable active" onclick="scrollToPage('page-1')"><div class="marker-line"></div><div class="marker-text">0m</div></div>
+    <div class="marker interactable" onclick="scrollToPage('page-2')"><div class="marker-line"></div><div class="marker-text">-100m</div></div>
+    <div class="marker interactable" onclick="scrollToPage('page-3')"><div class="marker-line"></div><div class="marker-text">-500m</div></div>
+    <div class="marker interactable" onclick="scrollToPage('page-4')"><div class="marker-line"></div><div class="marker-text">vô_tận</div></div>
+  </div>
+</div>
 
 <div id="cinematic-intro">
-  <div class="intro-text" id="intro-1">không còn điểm tựa.</div>
-  <div class="intro-text" id="intro-2" style="font-family: 'Space Mono'; font-size: 0.8rem; letter-spacing: 0.5em; text-transform: uppercase; color: #555; margin-top: 30px;">hãy để bản thân chìm xuống.</div>
+  <div class="intro-text" id="intro-1">không còn điểm tựa,</div>
+  <div class="intro-text" id="intro-2">hãy để bản thân chìm xuống.</div>
 </div>
 
 <audio id="bg-audio" loop><source src="drowninglove.mp3" type="audio/mpeg"></audio>
-<div class="audio-toggle interactable" id="audio-toggle" onclick="toggleAudio()">[ SILENCE ]</div>
+<div class="music-player interactable" onclick="toggleAudio()" id="music-player">
+  <div class="track-info" id="audio-text">silence</div>
+  <div class="music-bars">
+    <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+  </div>
+</div>
 
 <main id="main-scroll">
   
   <section id="page-1" class="page-section">
-    <div class="p1-container">
-      <h1 class="p1-title">vỏ ốc rỗng.</h1>
-      <div class="p1-subtitle">Phân mảnh thực tại</div>
+    <div class="abyss-content">
+      <div class="abyss-text-zone">
+        <h1 class="abyss-title">vỏ ốc rỗng.</h1>
+        <div class="abyss-text">
+          Chìm xuống. Không phải để trốn tránh, mà để đối diện với đáy sâu của chính mình. 
+          Áp lực nước càng lớn, tiếng ồn của thế giới ngoài kia càng bị bóp nghẹt. 
+        </div>
+        <div class="abyss-text">
+          Nhìn lại mặt nước đang mờ dần. Những điểm tựa ngỡ là vĩnh cửu hóa ra chỉ là ảo ảnh khúc xạ.
+          <br><br><span class="redacted interactable">Sự thăng hoa chỉ sinh ra từ trạng thái kiệt quệ nhất.</span>
+        </div>
+        
+        <div class="flow-group">
+          <div class="flow-item interactable"><span class="flow-dot"></span> Tọa độ: Sinh viên FTU2 (nhưng không khoái nhồi nhét data)</div>
+          <div class="flow-item interactable"><span class="flow-dot"></span> Nhịp thở: Kẻ lang thang nghe Tchaikovsky x BTS</div>
+          <div class="flow-item interactable"><span class="flow-dot"></span> Khát vọng: Kéo vali đi mòn gót qua <span class="redacted interactable">100 quốc gia</span></div>
+        </div>
+      </div>
       
-      <div class="memory-fragments">
-        <div class="fragment interactable">
-          <div class="frag-number">01</div>
-          <div class="frag-title">Kinh Tế</div>
-          <div class="frag-text">Kẻ mộng mơ kẹt giữa những dòng dữ liệu vô hồn ở FTU2. Không thích những con số, chỉ thích câu chuyện đằng sau chúng.</div>
-        </div>
-        <div class="fragment interactable">
-          <div class="frag-number">02</div>
-          <div class="frag-title">Âm Thanh</div>
-          <div class="frag-text">Nơi Tchaikovsky tĩnh lặng va chạm với sự cuồng nhiệt của BTS. <span class="glitch-text">Sự hỗn loạn có vần điệu.</span></div>
-        </div>
-        <div class="fragment interactable">
-          <div class="frag-number">03</div>
-          <div class="frag-title">Khát Vọng</div>
-          <div class="frag-text">Không phải là đích đến. Kéo vali mòn gót qua <span class="glitch-text">100 quốc gia</span> chỉ để tìm kiếm một cảm giác không tên.</div>
-        </div>
+      <div class="abyss-visual-zone" id="parallax-area">
+        <div class="water-distort p1-img p1-img-1 interactable parallax-item" data-speed="15"><img src="link_anh_abyss_1.jpg" alt="Memory 1"></div>
+        <div class="water-distort p1-img p1-img-2 interactable parallax-item" data-speed="-8"><img src="link_anh_abyss_2.jpg" alt="Memory 2"></div>
+        <div class="water-distort p1-img p1-img-3 interactable parallax-item" data-speed="5"><img src="link_anh_abyss_3.jpg" alt="Memory 3"></div>
       </div>
     </div>
   </section>
 
   <section id="page-2" class="page-section">
-    <div class="p2-container">
-      <div class="stage-bg-text">TEDxFTU</div>
-      
-      <div class="reflection-note">
-        <p>Những ánh hào quang méo mó.<br>Càng cố nắm giữ, càng trượt khỏi kẽ tay.</p>
-      </div>
+    <div class="stage-title">TEDxFTU</div>
 
-      <div class="media-monolith m1 interactable"><img src="link_anh_performance_1.jpg" alt="Memory"></div>
-      <div class="media-monolith m2 interactable"><img src="link_anh_san_khau_large.jpg" alt="Memory"></div>
-      <div class="media-monolith m3 interactable"><img src="link_anh_concept_detail.jpg" alt="Memory"></div>
-      <div class="media-monolith m4 interactable"><img src="link_anh_performance_2.jpg" alt="Memory"></div>
+    <div class="reflection-box stage-reflect interactable">
+      <h3>Vùng Chạng Vạng.</h3>
+      <p contenteditable="true">Những góc nhìn méo mó ẩn giấu sau rạn san hô ký ức. Lời chưa nói sẽ tan vào bọt nước...</p>
+    </div>
+    
+    <div class="film-strip water-distort draggable-media interactable film-1">
+      <div class="film-holes"><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div></div>
+      <div class="film-img-zone"><img src="link_anh_performance_1.jpg" alt="Footage 1"></div>
+      <div class="film-holes" style="margin-top: 10px;"><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div></div>
+    </div>
+
+    <div class="film-strip water-distort draggable-media interactable film-2">
+      <div class="film-holes"><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div></div>
+      <div class="film-img-zone"><img src="link_anh_performance_2.jpg" alt="Footage 2"></div>
+      <div class="film-holes" style="margin-top: 10px;"><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div></div>
+    </div>
+
+    <div class="water-distort draggable-media interactable spotlight-media">
+      <img src="link_anh_concept_detail.jpg" alt="Concept 4">
     </div>
   </section>
 
   <section id="page-3" class="page-section">
-    <div class="p3-container">
-      <div class="pressure-text">Áp lực tuyệt đối - Mất kiểm soát</div>
-      
-      <div class="dark-gallery">
-        <div class="dark-canvas interactable">
-          <video src="link_video_doc_o_day.mp4" autoplay loop muted playsinline></video>
-          <div class="dc-label">YOUNG_LIONS</div>
-        </div>
-        <div class="dark-canvas interactable" style="transform: translateY(30px);">
-          <img src="link_anh_remake_quai_1.jpg" alt="Poster">
-          <div class="dc-label">REMAKE_01</div>
-        </div>
-        <div class="dark-canvas interactable" style="transform: translateY(-20px);">
-          <img src="link_anh_remake_quai_2.jpg" alt="Poster">
-          <div class="dc-label">REMAKE_02</div>
-        </div>
-        <div class="dark-canvas interactable" style="transform: translateY(10px);">
-          <img src="link_anh_ngang_o_day.jpg" alt="Poster">
-          <div class="dc-label">CHAOS</div>
-        </div>
-      </div>
+    <div class="yl-header">
+      <h2>Vietnam Young Lions</h2>
+      <p>Sự ngớ ngẩn dưới áp lực nước</p>
+    </div>
 
-      <div class="quote-box">
-        <p>Ở độ sâu này, sự ngớ ngẩn và quậy phá là cơ chế phòng vệ duy nhất để linh hồn không bị nghiền nát.</p>
+    <div class="yl-media-grid">
+      <div class="yl-video-vert water-distort interactable double-clickable">
+        <video src="link_video_doc_o_day.mp4" autoplay loop muted playsinline></video>
       </div>
+      <div class="yl-img-horiz water-distort interactable double-clickable">
+        <img src="link_anh_ngang_o_day.jpg" alt="Young Lions Display">
+      </div>
+    </div>
+
+    <div class="reflection-chaos interactable">
+      <p contenteditable="true">Ghi chép hỗn mang. Nhập mớ suy nghĩ điên rồ của bạn vào đây. Càng phi logic càng tốt...</p>
     </div>
   </section>
 
   <section id="page-4" class="page-section">
-    <canvas id="bloom-canvas"></canvas> 
+    <canvas id="graffiti-canvas"></canvas> 
     
-    <div class="abyss-core-text" id="core-text">
-      <h2>Tái Sinh.</h2>
-      <p>Click, giữ và thả sự im lặng.</p>
+    <div class="graf-ui">
+      <div class="graf-ui-content">
+        <h1 class="graf-title">Tái Sinh.</h1>
+        <div class="graf-text">
+          Ở nơi tối tăm nhất, linh hồn tự tạo ra ánh sáng của riêng mình. <br><br>
+          <span class="highlight-text">Kéo chuột</span> để vẽ những dải lụa dạ quang. <br>
+          <span class="highlight-text">Click đúp (Double Click)</span> để tạo ra vụ nổ lân tinh.
+        </div>
+        
+        <div class="tools-panel">
+          <div class="tool-group">
+            <div class="tool-label">Dạ Quang</div>
+            <div class="color-btn interactable active" style="background: var(--ink); color: var(--ink);" onclick="setColor('var(--ink)', this)"></div>
+            <div class="color-btn interactable" style="background: #ffffff; color: #ffffff;" onclick="setColor('#ffffff', this)"></div>
+            <div class="color-btn interactable" style="background: #e6a8d7; color: #e6a8d7;" onclick="setColor('#e6a8d7', this)"></div> 
+            <div class="color-btn interactable" style="background: #5e35b1; color: #5e35b1;" onclick="setColor('#5e35b1', this)"></div>
+          </div>
+          <div class="tool-group">
+            <div class="action-btn interactable" onclick="clearWall()">[ XÓA BỎ ]</div>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="pulse-hint" id="pulse-hint"></div>
+
+    <div class="poster-gallery">
+      <div class="poster-container p-wrap-1"><div class="poster water-distort double-clickable interactable"><img src="link_anh_remake_quai_1.jpg" alt="Poster 1"></div></div>
+      <div class="poster-container p-wrap-2"><div class="poster water-distort double-clickable interactable"><img src="link_anh_remake_quai_2.jpg" alt="Poster 2"></div></div>
+      <div class="poster-container p-wrap-3"><div class="poster water-distort double-clickable interactable"><img src="link_anh_remake_quai_3.jpg" alt="Poster 3"></div></div>
+    </div>
   </section>
 
 </main>
 
 <script>
   /* =========================================
-     1. MINIMAL CURSOR
+     1. CUSTOM CURSOR
      ========================================= */
   const cursor = document.getElementById('custom-cursor');
   document.addEventListener('mousemove', (e) => {
     cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px';
   });
-
   document.querySelectorAll('.interactable').forEach(el => {
     el.addEventListener('mouseenter', () => cursor.classList.add('hovering'));
     el.addEventListener('mouseleave', () => cursor.classList.remove('hovering'));
   });
 
   /* =========================================
-     2. THE SINKING PROGRESSION (SỰ CHÌM XUỐNG)
+     2. MARINE SNOW (BỤI ĐẠI DƯƠNG)
+     ========================================= */
+  const abyssCanvas = document.getElementById('abyss-canvas');
+  const aCtx = abyssCanvas.getContext('2d');
+  const snowParticles = [];
+  
+  for(let i = 0; i < 100; i++) {
+    snowParticles.push({
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * window.innerHeight,
+      r: Math.random() * 2,
+      vy: -(Math.random() * 0.3 + 0.1), 
+      opacity: Math.random() * 0.5
+    });
+  }
+
+  window.addEventListener('resize', () => {
+    abyssCanvas.width = window.innerWidth; abyssCanvas.height = window.innerHeight;
+    const grafCanvas = document.getElementById('graffiti-canvas');
+    if(grafCanvas) { grafCanvas.width = document.getElementById('page-4').offsetWidth; grafCanvas.height = document.getElementById('page-4').offsetHeight; }
+  });
+  window.dispatchEvent(new Event('resize'));
+
+  function renderAbyss() {
+    aCtx.clearRect(0, 0, abyssCanvas.width, abyssCanvas.height);
+    for(let p of snowParticles) {
+      p.y += p.vy;
+      if(p.y < -10) { p.y = abyssCanvas.height + 10; p.x = Math.random() * abyssCanvas.width; }
+      aCtx.beginPath(); aCtx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+      aCtx.fillStyle = `rgba(150, 200, 255, ${p.opacity})`;
+      aCtx.fill();
+    }
+    requestAnimationFrame(renderAbyss);
+  }
+  renderAbyss();
+
+  /* =========================================
+     3. THE DEPTH SCROLL (ÁP SUẤT & TỐI DẦN)
      ========================================= */
   const mainScroll = document.getElementById('main-scroll');
-  const depthProgress = document.getElementById('depth-progress');
-  const depthIndicator = document.getElementById('depth-indicator');
-  const darknessVeil = document.getElementById('darkness-veil');
+  const depthFill = document.getElementById('depth-fill');
+  const markers = document.querySelectorAll('.marker');
+  const vignette = document.getElementById('vignette-layer');
+
+  function scrollToPage(pageId) {
+    document.getElementById(pageId).scrollIntoView({ behavior: 'smooth' });
+  }
 
   mainScroll.addEventListener('scroll', () => {
     let scrollPos = mainScroll.scrollTop;
     let maxScroll = mainScroll.scrollHeight - mainScroll.clientHeight;
-    let scrollPercent = scrollPos / maxScroll;
+    let scrollPercent = (scrollPos / maxScroll);
     
-    // Thanh độ sâu
-    depthProgress.style.height = `${scrollPercent * 100}%`;
-    
-    // Chỉ số độ sâu (0m xuống 10,000m)
-    let currentDepth = Math.floor(scrollPercent * 10000);
-    depthIndicator.innerText = `${currentDepth}.M`;
+    depthFill.style.height = `${scrollPercent * 100}%`;
 
     // Metaphor: Càng chìm, nền càng đen đặc
-    let lightness = 10 - (scrollPercent * 10); 
+    let lightness = 5 - (scrollPercent * 5); 
     document.body.style.backgroundColor = `hsl(215, 60%, ${lightness}%)`;
     
-    // Áp lực nước (Vignette ép hẹp lại)
-    let vSize = 100 - (scrollPercent * 100); // Từ rộng đến hẹp
-    let vDark = 150 - (scrollPercent * 50);
-    darknessVeil.style.background = `radial-gradient(circle at center, transparent ${vSize}%, #000 ${vDark}%)`;
+    // Áp lực nước
+    let vSize = 30 - (scrollPercent * 30); 
+    let vDark = 120 - (scrollPercent * 20);
+    vignette.style.background = `radial-gradient(circle at center, transparent ${vSize}%, #000000 ${vDark}%)`;
 
-    // Ẩn trục sâu ở trang cuối để tập trung vào bóng tối tuyệt đối
-    if(scrollPercent > 0.9) {
-      document.querySelector('.depth-thread').style.opacity = '0';
-      depthIndicator.style.opacity = '0';
-      cursor.classList.add('hidden'); // Ẩn luôn chuột mặc định
-    } else {
-      document.querySelector('.depth-thread').style.opacity = '1';
-      depthIndicator.style.opacity = '1';
-      cursor.classList.remove('hidden');
-    }
+    // Highlight markers
+    let activeIndex = Math.round(scrollPercent * 3);
+    markers.forEach((m, i) => {
+      if(i === activeIndex) m.classList.add('active');
+      else m.classList.remove('active');
+    });
+
+    if(activeIndex === 3) cursor.classList.add('brushing');
+    else cursor.classList.remove('brushing');
   });
 
   /* =========================================
-     3. AUDIO & INTRO
+     4. DRAGGABLE, INTRO, PARALLAX
      ========================================= */
   const intro = document.getElementById('cinematic-intro');
   window.onload = () => {
-    setTimeout(() => document.getElementById('intro-1').classList.add('show'), 800);
-    setTimeout(() => document.getElementById('intro-2').classList.add('show'), 3000);
-    setTimeout(() => { intro.style.opacity = '0'; setTimeout(() => { intro.style.display = 'none'; }, 2000); }, 6500);
+    setTimeout(() => document.getElementById('intro-1').classList.add('show'), 500);
+    setTimeout(() => document.getElementById('intro-2').classList.add('show'), 2500);
+    setTimeout(() => { intro.style.opacity = '0'; setTimeout(() => { intro.style.display = 'none'; }, 2000); }, 6000);
   };
 
   const audio = document.getElementById('bg-audio');
-  const audioToggle = document.getElementById('audio-toggle');
+  const playerBtn = document.getElementById('music-player');
+  const audioText = document.getElementById('audio-text');
   let isPlaying = false;
   function toggleAudio() {
-    if (isPlaying) { audio.pause(); audioToggle.classList.remove('playing'); audioToggle.innerText = '[ SILENCE ]'; } 
-    else { audio.play(); audioToggle.classList.add('playing'); audioToggle.innerText = '[ DROWNING ]'; }
+    if (isPlaying) { audio.pause(); playerBtn.classList.remove('playing'); audioText.innerText = 'silence'; } 
+    else { audio.play(); playerBtn.classList.add('playing'); audioText.innerText = 'drowning'; }
     isPlaying = !isPlaying;
   }
 
+  const pItems = document.querySelectorAll('.parallax-item');
+  mainScroll.addEventListener('mousemove', (e) => {
+    let x = (window.innerWidth - e.clientX * 2) / 100; let y = (window.innerHeight - e.clientY * 2) / 100;
+    pItems.forEach(item => { let speed = item.getAttribute('data-speed'); item.style.transform = `translate3d(${x * speed}px, ${y * speed}px, 0)`; });
+  });
+
+  const draggables = document.querySelectorAll('.draggable-media');
+  let activeDrag = null, oX = 0, oY = 0;
+  draggables.forEach(item => {
+    item.addEventListener('mousedown', (e) => {
+      activeDrag = item; 
+      oX = e.clientX - item.getBoundingClientRect().left; oY = e.clientY - item.getBoundingClientRect().top;
+      draggables.forEach(d => d.style.zIndex = '5'); activeDrag.style.zIndex = '100';
+    });
+  });
+  mainScroll.addEventListener('mousemove', (e) => {
+    if (!activeDrag) return;
+    activeDrag.style.left = `${e.clientX - oX}px`; activeDrag.style.top = `${e.clientY - oY + mainScroll.scrollTop}px`;
+  });
+  mainScroll.addEventListener('mouseup', () => { activeDrag = null; });
+
+  document.querySelectorAll('.double-clickable').forEach(el => {
+    el.addEventListener('dblclick', function(e) { 
+      this.classList.toggle('inverted'); 
+      e.stopPropagation(); // Ngăn không cho sự kiện dblclick truyền xuống canvas
+    });
+  });
+
   /* =========================================
-     4. BIOLUMINESCENT BLOOM (VỤ NỔ LÂN TINH - PAGE 4)
+     5. BIOLUMINESCENT CANVAS (VẼ LỤA + PHÁO HOA)
      ========================================= */
-  const bCanvas = document.getElementById('bloom-canvas');
-  const bCtx = bCanvas.getContext('2d');
-  const coreText = document.getElementById('core-text');
-  const pulseHint = document.getElementById('pulse-hint');
+  const grafCanvas = document.getElementById('graffiti-canvas');
+  const gCtx = grafCanvas.getContext('2d', { willReadFrequently: true });
+  gCtx.globalCompositeOperation = "lighter"; 
   
-  let particles = [];
-  let isPressing = false;
-  let pressIntensity = 0;
-  let emitX = 0, emitY = 0;
+  let isDrawing = false, lastX = 0, lastY = 0;
+  let paintColor = getComputedStyle(document.documentElement).getPropertyValue('--ink').trim(); 
+  let fireworksParticles = [];
 
-  function resizeCanvas() {
-    const p4 = document.getElementById('page-4');
-    bCanvas.width = p4.offsetWidth; bCanvas.height = p4.offsetHeight;
-  }
-  window.addEventListener('resize', resizeCanvas);
-  resizeCanvas();
+  window.setColor = function(color, btn) {
+    if(color.startsWith('var')) paintColor = getComputedStyle(document.documentElement).getPropertyValue(color.match(/\(([^)]+)\)/)[1]).trim();
+    else paintColor = color;
+    document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active');
+    document.documentElement.style.setProperty('--ink', paintColor); // Đổi luôn màu con trỏ chuột
+  };
+  window.clearWall = function() { gCtx.clearRect(0, 0, grafCanvas.width, grafCanvas.height); fireworksParticles = []; };
 
-  bCanvas.addEventListener('mousedown', (e) => {
-    if(mainScroll.scrollTop < (mainScroll.scrollHeight - mainScroll.clientHeight - 100)) return; // Chỉ active ở trang cuối
-    isPressing = true;
-    let rect = bCanvas.getBoundingClientRect();
-    emitX = e.clientX - rect.left; emitY = e.clientY - rect.top;
+  // --- LOGIC VẼ LỤA ---
+  grafCanvas.addEventListener('mousedown', (e) => {
+    isDrawing = true; let rect = grafCanvas.getBoundingClientRect(); lastX = e.clientX - rect.left; lastY = e.clientY - rect.top;
+  });
+  grafCanvas.addEventListener('mousemove', (e) => {
+    if(!isDrawing) return;
+    let rect = grafCanvas.getBoundingClientRect(); let currX = e.clientX - rect.left; let currY = e.clientY - rect.top;
+    let dx = currX - lastX; let dy = currY - lastY; let distance = Math.sqrt(dx*dx + dy*dy);
     
-    coreText.style.opacity = '0'; // Ẩn chữ khi bắt đầu tương tác
-    pulseHint.style.opacity = '0';
-    document.getElementById('page-4').style.cursor = 'none';
+    let lineWidth = Math.max(1, 15 - distance * 0.3); 
+    gCtx.beginPath(); gCtx.moveTo(lastX, lastY); gCtx.lineTo(currX, currY);
+    gCtx.lineCap = 'round'; gCtx.lineJoin = 'round'; gCtx.lineWidth = lineWidth;
+    
+    gCtx.strokeStyle = paintColor; 
+    gCtx.shadowBlur = 20; gCtx.shadowColor = paintColor; 
+    gCtx.stroke();
+    
+    lastX = currX; lastY = currY;
+  });
+  window.addEventListener('mouseup', () => { isDrawing = false; });
+
+  // --- LOGIC PHÁO HOA KHI NHẤN ĐÚP (DOUBLE CLICK) ---
+  grafCanvas.addEventListener('dblclick', (e) => {
+    let rect = grafCanvas.getBoundingClientRect();
+    createExplosion(e.clientX - rect.left, e.clientY - rect.top);
   });
 
-  bCanvas.addEventListener('mousemove', (e) => {
-    if(!isPressing) return;
-    let rect = bCanvas.getBoundingClientRect();
-    emitX = e.clientX - rect.left; emitY = e.clientY - rect.top;
-  });
-
-  bCanvas.addEventListener('mouseup', () => {
-    isPressing = false;
-    explodeParticles(emitX, emitY, pressIntensity);
-    pressIntensity = 0;
-  });
-
-  function explodeParticles(x, y, intensity) {
-    let count = Math.min(200, Math.max(50, intensity * 2)); // Tùy thuộc độ lâu giữ chuột
-    for(let i=0; i<count; i++) {
+  function createExplosion(x, y) {
+    for(let i=0; i<80; i++) {
       let angle = Math.random() * Math.PI * 2;
-      let speed = Math.random() * (intensity * 0.1 + 2);
-      particles.push({
+      let speed = Math.random() * 5 + 1;
+      fireworksParticles.push({
         x: x, y: y,
         vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
         life: 1, size: Math.random() * 3 + 1,
-        hue: Math.random() > 0.5 ? 210 : 280 // Xanh biển hoặc Tím nhạt
+        color: paintColor
       });
     }
   }
 
-  function renderBloom() {
-    // Tạo đuôi mờ ảo
-    bCtx.globalCompositeOperation = 'source-over';
-    bCtx.fillStyle = 'rgba(0, 0, 0, 0.1)';
-    bCtx.fillRect(0, 0, bCanvas.width, bCanvas.height);
-    
-    bCtx.globalCompositeOperation = 'lighter';
-
-    // Hiệu ứng tụ năng lượng khi giữ chuột
-    if(isPressing) {
-      pressIntensity = Math.min(100, pressIntensity + 1);
-      bCtx.beginPath();
-      bCtx.arc(emitX, emitY, pressIntensity * 0.5, 0, Math.PI*2);
-      bCtx.fillStyle = `rgba(139, 195, 255, ${pressIntensity/200})`;
-      bCtx.shadowBlur = pressIntensity; bCtx.shadowColor = '#8bc3ff';
-      bCtx.fill();
-    }
-
-    // Render các hạt bung nở
-    for(let i=0; i<particles.length; i++) {
-      let p = particles[i];
+  function renderFireworks() {
+    for(let i=0; i<fireworksParticles.length; i++) {
+      let p = fireworksParticles[i];
       p.x += p.vx; p.y += p.vy;
-      p.life -= 0.01;
-      p.size *= 0.98; // Nhỏ dần
+      p.life -= 0.015;
+      p.size *= 0.96;
       
-      if(p.life <= 0) { particles.splice(i, 1); i--; continue; }
+      if(p.life <= 0) { fireworksParticles.splice(i, 1); i--; continue; }
 
-      bCtx.beginPath();
-      bCtx.arc(p.x, p.y, p.size, 0, Math.PI*2);
-      bCtx.fillStyle = `hsla(${p.hue}, 100%, 70%, ${p.life})`;
-      bCtx.shadowBlur = 10; bCtx.shadowColor = `hsl(${p.hue}, 100%, 70%)`;
-      bCtx.fill();
+      gCtx.beginPath();
+      gCtx.arc(p.x, p.y, p.size, 0, Math.PI*2);
+      gCtx.fillStyle = p.color;
+      gCtx.shadowBlur = 15; gCtx.shadowColor = p.color;
+      gCtx.fill();
     }
-    requestAnimationFrame(renderBloom);
+    requestAnimationFrame(renderFireworks);
   }
-  renderBloom();
-
+  renderFireworks();
+  
 </script>
 </body>
 </html>
