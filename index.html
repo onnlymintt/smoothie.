@@ -3,20 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Silent Voice - Drowning Love</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<title>Silent Voice - Drowning</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #030303;
-    --grid-c: #ffffff;
-    --text-main: #b0b0b0;
-    --text-dim: #555555;
-    --accent: #003366; 
-    --graffiti: #0066cc; 
-    --border: rgba(255, 255, 255, 0.08);
+    --bg: #000000;
+    --text-main: #a0a0a0;
+    --text-dim: #444444;
+    --accent: #2a4b7c; 
+    --ink: #b3c6ff;
   }
 
-  /* RESET */
   * { box-sizing: border-box; cursor: none !important; }
   body, html {
     margin: 0; padding: 0; background-color: var(--bg);
@@ -26,77 +23,96 @@
 
   /* CUSTOM CURSOR */
   #custom-cursor {
-    position: fixed; top: 0; left: 0; width: 8px; height: 8px;
+    position: fixed; top: 0; left: 0; width: 6px; height: 6px;
     background: #fff; border-radius: 50%; pointer-events: none;
     transform: translate(-50%, -50%); z-index: 100000;
-    transition: width 0.3s cubic-bezier(0.25, 1, 0.5, 1), height 0.3s cubic-bezier(0.25, 1, 0.5, 1), background 0.3s;
+    transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1), height 0.4s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s;
     mix-blend-mode: difference;
   }
-  #custom-cursor.hovering { width: 45px; height: 45px; background: transparent; border: 1px solid rgba(255,255,255,0.5); mix-blend-mode: normal; }
-  #custom-cursor.brushing { width: 20px; height: 20px; background: rgba(255,255,255,0.9); box-shadow: 0 0 20px #fff; mix-blend-mode: normal; border: none; }
+  #custom-cursor.hovering { width: 50px; height: 50px; background: transparent; border: 1px solid rgba(255,255,255,0.4); }
+  #custom-cursor.brushing { width: 15px; height: 15px; background: rgba(255,255,255,0.9); box-shadow: 0 0 25px var(--ink); border: none; }
 
   /* OVERLAYS & CANVAS */
-  .grid-overlay {
-    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-    background-image: linear-gradient(var(--grid-c) 1px, transparent 1px), linear-gradient(90deg, var(--grid-c) 1px, transparent 1px);
-    background-size: 4vw 4vh; opacity: 0.03; z-index: 2; pointer-events: none; /* Giảm nhiễu mạnh */
+  #abyss-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1; pointer-events: none; opacity: 0.6; mix-blend-mode: screen; }
+  
+  .vignette {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 2; pointer-events: none;
+    background: radial-gradient(circle at center, transparent 30%, #000000 100%);
   }
-  #ink-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1; pointer-events: none; opacity: 0.7; }
 
   /* CINEMATIC INTRO */
   #cinematic-intro {
     position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
     background: #000; z-index: 99999; display: flex; align-items: center; justify-content: center;
-    flex-direction: column; transition: opacity 2s ease;
+    flex-direction: column; transition: opacity 2.5s ease;
   }
   .intro-text {
-    font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; font-style: italic;
-    color: transparent; opacity: 0; transition: opacity 2.5s, color 2.5s; text-align: center; line-height: 2; -webkit-text-stroke: 1px rgba(255,255,255,0.15); letter-spacing: 2px;
+    font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-style: italic;
+    color: transparent; opacity: 0; transition: opacity 3s, color 3s, filter 3s; text-align: center; line-height: 2; 
+    -webkit-text-stroke: 1px rgba(255,255,255,0.1); filter: blur(10px);
   }
-  .intro-text.show { opacity: 1; color: #fff; -webkit-text-stroke: 0px; }
+  .intro-text.show { opacity: 1; color: #fff; -webkit-text-stroke: 0px; filter: blur(0px); }
+
+  /* =========================================
+     TRỤC LIÊN KẾT (THE DEPTH LINE)
+     ========================================= */
+  .depth-container {
+    position: fixed; top: 0; left: 60px; width: 80px; height: 100vh; z-index: 99991;
+    display: flex; flex-direction: column; align-items: center; pointer-events: none;
+  }
+  .depth-track {
+    position: absolute; top: 15vh; bottom: 15vh; width: 1px; background: rgba(255,255,255,0.1);
+  }
+  .depth-fill {
+    position: absolute; top: 0; left: -1px; width: 3px; background: var(--accent);
+    box-shadow: 0 0 15px var(--accent); height: 0%; transition: height 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+  .depth-markers {
+    position: absolute; top: 15vh; bottom: 15vh; width: 100%; display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .marker {
+    display: flex; align-items: center; justify-content: flex-start; gap: 15px; cursor: pointer; pointer-events: auto;
+  }
+  .marker-line { width: 15px; height: 1px; background: rgba(255,255,255,0.3); transition: 0.3s; }
+  .marker-text { 
+    font-size: 0.65rem; letter-spacing: 4px; color: var(--text-dim); transition: 0.4s;
+    writing-mode: vertical-rl; transform: rotate(180deg);
+  }
+  .marker:hover .marker-line, .marker.active .marker-line { width: 30px; background: #fff; }
+  .marker:hover .marker-text, .marker.active .marker-text { color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.5); letter-spacing: 8px;}
 
   /* MUSIC PLAYER */
-  .music-player { position: fixed; bottom: 40px; right: 50px; z-index: 99991; display: flex; align-items: center; gap: 20px; }
-  .record {
-    width: 35px; height: 35px; border-radius: 50%; border: 1px solid var(--text-dim);
-    background: repeating-radial-gradient(#111, #111 2px, #222 3px, #222 4px);
-    animation: spin 3s linear infinite paused; display: flex; align-items: center; justify-content: center;
-  }
-  .record::after { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
-  .record.playing { animation-play-state: running; border-color: #fff; box-shadow: 0 0 15px rgba(255,255,255,0.2); }
-  .track-info { font-size: 0.7rem; letter-spacing: 5px; color: var(--text-dim); text-transform: uppercase; transition: 0.4s; }
-  .music-player:hover .track-info { color: #fff; }
+  .music-player { position: fixed; bottom: 40px; right: 60px; z-index: 99991; display: flex; align-items: center; gap: 15px; }
+  .music-bars { display: flex; gap: 3px; align-items: flex-end; height: 15px; }
+  .bar { width: 2px; background: var(--text-dim); transition: 0.2s; }
+  .music-player.playing .bar { background: var(--accent); box-shadow: 0 0 8px var(--accent); animation: equalize 1s infinite alternate; }
+  .music-player.playing .bar:nth-child(1) { animation-delay: 0.1s; }
+  .music-player.playing .bar:nth-child(2) { animation-delay: 0.4s; }
+  .music-player.playing .bar:nth-child(3) { animation-delay: 0.2s; }
+  .music-player.playing .bar:nth-child(4) { animation-delay: 0.5s; }
+  @keyframes equalize { 0% { height: 2px; } 100% { height: 15px; } }
+  .track-info { font-size: 0.65rem; letter-spacing: 5px; color: var(--text-dim); text-transform: uppercase; transition: 0.4s; }
 
-  /* NAVIGATION */
-  nav { position: fixed; top: 50vh; left: 50px; transform: translateY(-50%); display: flex; flex-direction: column; gap: 70px; z-index: 99991; }
-  nav a {
-    color: var(--text-dim); text-decoration: none; font-size: 0.75rem; letter-spacing: 6px;
-    writing-mode: vertical-rl; transform: rotate(180deg); transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1); cursor: pointer;
+  /* =========================================
+     WATER DISTORTION EFFECT (Điệu Nghệ)
+     ========================================= */
+  .water-distort { transition: filter 1s ease; position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,0.05); }
+  .water-distort img, .water-distort video {
+    width: 100%; height: 100%; object-fit: cover; filter: grayscale(100%) brightness(0.6);
+    transition: all 1.5s cubic-bezier(0.19, 1, 0.22, 1); transform: scale(1.05); pointer-events: none;
   }
-  nav a.active { color: #fff; letter-spacing: 14px; text-shadow: 0 0 20px rgba(255,255,255,0.5); }
-
-  /* 3D TILT EFFECT & MEDIA BOXES */
-  .tilt-element { transition: transform 0.1s ease-out; transform-style: preserve-3d; }
-  
-  .media-box {
-    background: #000; border: 1px solid var(--border);
-    position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center;
-    transition: filter 0.5s ease, box-shadow 0.5s ease;
+  .water-distort:hover { z-index: 50 !important; border-color: rgba(255,255,255,0.2); box-shadow: 0 20px 50px rgba(0,0,0,0.9); }
+  .water-distort:hover img, .water-distort:hover video {
+    filter: url(#water-ripple) grayscale(20%) brightness(1); /* KÍCH HOẠT SVG MÀNG NƯỚC */
+    transform: scale(1.1);
   }
-  .media-box img, .media-box video {
-    width: 100%; height: 100%; object-fit: cover; opacity: 0.4;
-    transition: all 1s cubic-bezier(0.25, 1, 0.5, 1); filter: grayscale(100%) contrast(1.2); position: absolute; top: 0; left: 0; pointer-events: none;
-  }
-  .media-box:hover { box-shadow: 0 20px 40px rgba(0,0,0,0.9); z-index: 50 !important; border-color: rgba(255,255,255,0.3); }
-  .media-box:hover img, .media-box:hover video { opacity: 0.9; filter: grayscale(0%) contrast(1); transform: scale(1.05); z-index: 2;}
-  .inverted { filter: invert(1) hue-rotate(180deg) !important; border-color: #fff !important; }
 
   /* =========================================
      MAIN LAYOUT
      ========================================= */
   main { 
     position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; 
-    padding-left: 120px; z-index: 10; 
+    padding-left: 150px; z-index: 10; 
     overflow-y: scroll; overflow-x: hidden; 
     scroll-behavior: smooth; scroll-snap-type: y mandatory; 
   }
@@ -107,172 +123,149 @@
     scroll-snap-align: start; 
     overflow: hidden; display: flex; flex-direction: column; justify-content: center;
   }
-  h1, h2, h3 { font-family: 'Cormorant Garamond', serif; font-weight: normal; color: #fff; margin: 0; }
+  h1, h2, h3 { font-family: 'Cormorant Garamond', serif; font-weight: 300; color: #fff; margin: 0; }
 
   /* =========================================
      PAGE 1: ĐÁY SÂU (BẢN NGÃ)
      ========================================= */
-  #page-1 { align-items: center; justify-content: center; flex-direction: row;}
-  .abyss-content { display: flex; align-items: center; justify-content: space-between; gap: 8vw; max-width: 1300px; z-index: 5; width: 100%; padding-right: 5vw;}
+  #page-1 { flex-direction: row; }
+  .abyss-content { display: flex; align-items: center; justify-content: space-between; gap: 5vw; max-width: 1400px; z-index: 5; width: 100%; padding-right: 8vw;}
   
   .abyss-text-zone { flex: 1; display: flex; flex-direction: column; justify-content: center; }
-  .abyss-title { font-size: 5.5rem; font-style: italic; letter-spacing: -2px; margin-bottom: 40px; text-shadow: 0 10px 30px rgba(0,0,0,0.8); }
-  .abyss-text { font-size: 0.95rem; line-height: 2.2; color: #999; margin-bottom: 30px; max-width: 550px; font-weight: 300;}
+  .abyss-title { font-size: 6rem; font-style: italic; letter-spacing: -3px; margin-bottom: 30px; }
+  .abyss-text { font-size: 0.9rem; line-height: 2.5; color: #777; margin-bottom: 30px; max-width: 500px; font-weight: 300;}
   
-  .redacted { background-color: #1a1a1a; color: #1a1a1a; padding: 2px 8px; transition: 0.8s ease; display: inline-block;}
-  .redacted:hover { background-color: transparent; color: #fff; text-shadow: 0 0 15px rgba(255,255,255,0.8); }
+  .redacted { background-color: #111; color: #111; padding: 2px 10px; transition: 1s ease; display: inline-block;}
+  .redacted:hover { background-color: transparent; color: #fff; text-shadow: 0 0 20px rgba(255,255,255,0.8); letter-spacing: 1px;}
 
-  .about-flow { margin-top: 40px; display: flex; flex-direction: column; gap: 20px; border-left: 1px solid rgba(255,255,255,0.2); padding-left: 25px; }
-  .flow-item { font-size: 0.85rem; color: #888; transition: 0.4s ease; display: flex; align-items: center; gap: 15px; }
-  .flow-item:hover { color: #fff; transform: translateX(8px); }
-  .flow-dot { width: 5px; height: 5px; background: #fff; border-radius: 50%; opacity: 0.5; transition: 0.4s; }
-  .flow-item:hover .flow-dot { opacity: 1; background: var(--accent); box-shadow: 0 0 10px var(--accent); transform: scale(1.5);}
+  .flow-group { margin-top: 30px; display: flex; flex-direction: column; gap: 20px; border-left: 1px solid rgba(255,255,255,0.1); padding-left: 25px; }
+  .flow-item { font-size: 0.8rem; color: #666; transition: 0.5s ease; display: flex; align-items: center; gap: 15px; }
+  .flow-item:hover { color: #fff; transform: translateX(10px); }
+  .flow-dot { width: 4px; height: 4px; background: #fff; border-radius: 50%; opacity: 0.3; transition: 0.4s; }
+  .flow-item:hover .flow-dot { opacity: 1; background: var(--accent); box-shadow: 0 0 15px var(--accent); transform: scale(2);}
 
-  @keyframes sinkDeep {
-    0% { transform: translateY(0px); opacity: 1; filter: blur(0px); }
-    50% { transform: translateY(40px); opacity: 0.6; filter: blur(3px); }
-    100% { transform: translateY(0px); opacity: 1; filter: blur(0px); }
-  }
-  .abyss-visual-zone { flex: 1; position: relative; height: 80vh; animation: sinkDeep 15s ease-in-out infinite; perspective: 1200px; display: flex; align-items: center; justify-content: center;}
-  
-  .p1-img { position: absolute; box-shadow: 0 10px 40px rgba(0,0,0,0.8); }
-  .p1-img-1 { width: 32vh; height: 45vh; top: 10%; right: 10%; z-index: 2; }
-  .p1-img-2 { width: 25vh; height: 25vh; bottom: 15%; left: 5%; z-index: 1; opacity: 0.7; }
-  .p1-img-3 { width: 20vh; height: 28vh; top: 30%; left: 30%; z-index: 3;}
+  .abyss-visual-zone { flex: 1; position: relative; height: 80vh; }
+  .p1-img { position: absolute; background: #050505; }
+  .p1-img-1 { width: 35vh; height: 50vh; top: 5%; right: 5%; z-index: 2; }
+  .p1-img-2 { width: 28vh; height: 28vh; bottom: 10%; left: 0%; z-index: 1; }
+  .p1-img-3 { width: 22vh; height: 30vh; top: 35%; left: 25%; z-index: 3;}
   
   /* =========================================
-     PAGE 2: SÂN KHẤU (ĐÃ DỌN DẸP BỐ CỤC)
+     PAGE 2: SÂN KHẤU
      ========================================= */
-  #page-2 { background: #020202; align-items: center;} 
-  .stage-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.08; filter: grayscale(100%) contrast(150%); z-index: 1; pointer-events: none;}
-  .stage-title { position: absolute; top: 15%; z-index: 1; font-size: 9rem; color: transparent; -webkit-text-stroke: 1px rgba(255,255,255,0.03); letter-spacing: 40px; text-transform: uppercase; pointer-events: none; }
+  #page-2 { align-items: center;} 
+  .stage-title { position: absolute; top: 15%; z-index: 1; font-size: 10rem; color: transparent; -webkit-text-stroke: 1px rgba(255,255,255,0.02); letter-spacing: 50px; text-transform: uppercase; pointer-events: none; }
   
   .reflection-box {
-    position: absolute; z-index: 10; border-left: 2px solid var(--accent); border-top: 1px solid rgba(255,255,255,0.05); border-right: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05);
-    padding: 30px; background: rgba(5,5,5,0.6); backdrop-filter: blur(12px); transition: 0.4s ease; box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    position: absolute; z-index: 10; border-left: 1px solid var(--accent); 
+    padding: 30px; background: linear-gradient(90deg, rgba(5,5,5,0.8) 0%, transparent 100%); backdrop-filter: blur(8px); transition: 0.5s ease;
   }
-  .reflection-box:focus-within { border-color: rgba(255,255,255,0.4); border-left-color: var(--accent); box-shadow: 0 0 30px rgba(255, 255, 255, 0.05); }
-  .reflection-box h3 { font-style: italic; font-size: 2rem; margin-bottom: 20px; color: #fff; letter-spacing: 1px;}
-  .reflection-box p { color: #999; font-size: 0.9rem; line-height: 1.8; margin: 0; outline: none; min-height: 60px;}
-  .stage-reflect { bottom: 12%; left: 10%; width: 400px; } /* Đưa box về góc trái dưới */
+  .reflection-box h3 { font-style: italic; font-size: 2.2rem; margin-bottom: 20px; color: #fff; opacity: 0.8;}
+  .reflection-box p { color: #888; font-size: 0.85rem; line-height: 2; margin: 0; outline: none; min-width: 300px; max-width: 450px;}
+  .stage-reflect { bottom: 15%; left: 8%; } 
 
-  .draggable-media { position: absolute; cursor: grab; z-index: 5; transition: filter 0.3s; }
+  .draggable-media { position: absolute; cursor: grab; z-index: 5; }
   .draggable-media:active { cursor: grabbing; z-index: 100; }
   
-  .film-strip { width: 380px; background: #080808; padding: 15px; padding-bottom: 35px; border: 1px solid #1a1a1a; box-shadow: 0 15px 30px rgba(0,0,0,0.9);}
-  .film-img-zone { width: 100%; height: 240px; background: #000; overflow: hidden; position: relative; }
-  .film-img-zone img, .spotlight-media img { width: 100%; height: 100%; object-fit: cover; opacity: 0.25; filter: grayscale(100%); transition: opacity 0.6s, filter 0.6s; pointer-events: none;}
-  .draggable-media:hover .film-img-zone img, .draggable-media:hover.spotlight-media img { 
-    opacity: 1; filter: grayscale(0%);
-    mask-image: radial-gradient(circle 250px at var(--lx, 50%) var(--ly, 50%), black 0%, rgba(0,0,0,0.05) 100%);
-    -webkit-mask-image: radial-gradient(circle 250px at var(--lx, 50%) var(--ly, 50%), black 0%, rgba(0,0,0,0.05) 100%);
-  }
-  .film-holes { display: flex; justify-content: space-between; margin-bottom: 10px; }
+  .film-strip { width: 400px; background: #050505; padding: 15px; padding-bottom: 40px; border: 1px solid rgba(255,255,255,0.05); }
+  .film-img-zone { width: 100%; height: 260px; background: #000; overflow: hidden; position: relative; }
+  .film-holes { display: flex; justify-content: space-between; margin-bottom: 12px; }
   .hole { width: 8px; height: 8px; background: #000; border-radius: 2px; }
 
-  /* Sắp xếp lại khung hình trang 2 cho ngăn nắp */
-  .film-1 { top: 10%; left: 20%; transform: rotate(-3deg); }
-  .film-2 { top: 25%; right: 15%; transform: rotate(4deg); }
-  .spotlight-media { width: 450px; height: 320px; bottom: 15%; right: 35%; transform: rotate(-2deg);}
+  .film-1 { top: 15%; left: 20%; transform: rotate(-2deg); }
+  .film-2 { top: 30%; right: 15%; transform: rotate(3deg); }
+  .spotlight-media { width: 500px; height: 350px; bottom: 15%; right: 25%; transform: rotate(-1deg);}
 
   /* =========================================
      PAGE 3: YOUNG LIONS 
      ========================================= */
-  #page-3 { background: #020202; align-items: center;}
+  #page-3 { align-items: center;}
+  .yl-header { text-align: center; z-index: 10; margin-bottom: 8vh; }
+  .yl-header h2 { font-size: clamp(3rem, 6vw, 5rem); letter-spacing: 10px; text-transform: uppercase; margin: 0; opacity: 0.9;}
+  .yl-header p { color: var(--text-dim); letter-spacing: 15px; font-size: 0.75rem; text-transform: uppercase; margin-top: 20px;}
+
+  .yl-media-grid { display: flex; gap: 6vw; align-items: center; justify-content: center; z-index: 10; max-height: 60vh; }
   
-  .yl-header { text-align: center; z-index: 10; margin-bottom: 6vh; }
-  .yl-header h2 { font-size: clamp(2.5rem, 5vw, 4rem); letter-spacing: 8px; text-transform: uppercase; margin: 0; text-shadow: 0 10px 20px rgba(0,0,0,0.5);}
-  .yl-header p { color: var(--text-dim); letter-spacing: 12px; font-size: 0.8rem; text-transform: uppercase; margin-top: 15px;}
-
-  .yl-media-grid { display: flex; gap: 5vw; align-items: center; justify-content: center; z-index: 10; max-height: 55vh; perspective: 1200px; }
-  
-  .yl-video-vert { height: 50vh; aspect-ratio: 9/16; border: 1px solid var(--border); position: relative; overflow: hidden; background: #000;}
-  .yl-video-vert video { width: 100%; height: 100%; object-fit: cover; opacity: 0.6; transition: 1s ease; pointer-events: none; filter: grayscale(50%);}
-  .yl-video-vert:hover video { opacity: 1; filter: grayscale(0%); transform: scale(1.03);}
-
-  .yl-img-horiz { height: 40vh; aspect-ratio: 16/9; border: 1px solid var(--border); position: relative; overflow: hidden; background: #000;}
-  .yl-img-horiz img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(80%); opacity: 0.6; transition: 1s ease; pointer-events: none; }
-  .yl-img-horiz:hover img { filter: grayscale(0%); opacity: 1; transform: scale(1.03); }
-
-  .yl-reflect { position: relative; margin-top: 6vh; width: 65vw; max-width: 700px; border: 1px solid rgba(255,255,255,0.05); border-left: 2px solid var(--accent); text-align: left; padding: 25px;}
-  .yl-reflect p { font-size: 0.9rem;}
+  .yl-video-vert { height: 55vh; aspect-ratio: 9/16; background: #000;}
+  .yl-img-horiz { height: 45vh; aspect-ratio: 16/9; background: #000;}
 
   /* =========================================
-     PAGE 4: TÁI SINH (TÁCH BIỆT BỐ CỤC CHỮ & ẢNH)
+     PAGE 4: TÁI SINH (MỰC LỤA & KHÔNG GIAN)
      ========================================= */
-  #page-4 { background: #020202; flex-direction: row; align-items: center;}
+  #page-4 { flex-direction: row; align-items: center;}
+  #graffiti-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 20; pointer-events: auto; opacity: 0.9;}
   
-  #graffiti-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 20; pointer-events: auto;}
-  
-  /* Khung Glassmorphism chứa UI bên trái */
   .graf-ui {
-    position: relative; z-index: 60; width: 35%; height: 100%;
-    background: rgba(5, 5, 5, 0.4); backdrop-filter: blur(15px); border-right: 1px solid rgba(255,255,255,0.05);
-    display: flex; flex-direction: column; justify-content: center; padding: 0 4vw;
-    box-shadow: 20px 0 50px rgba(0,0,0,0.5);
+    position: relative; z-index: 60; width: 40%; height: 100%;
+    display: flex; flex-direction: column; justify-content: center; padding: 0 5vw;
+    background: linear-gradient(90deg, rgba(0,0,0,0.9) 0%, transparent 100%); pointer-events: none;
   }
   .graf-ui-content { pointer-events: all; }
-  .graf-title { font-size: 5.5rem; margin-bottom: 25px; font-style: italic; letter-spacing: -2px; text-shadow: 0 5px 15px rgba(0,0,0,0.5);}
-  .graf-text { font-size: 0.9rem; line-height: 2.2; color: #999; margin-bottom: 50px; font-weight: 300; }
+  .graf-title { font-size: 6.5rem; margin-bottom: 30px; font-style: italic; letter-spacing: -4px; color: #fff;}
+  .graf-text { font-size: 0.85rem; line-height: 2.5; color: #888; margin-bottom: 60px; font-weight: 300; max-width: 400px; }
   
-  /* Triển lãm Poster lơ lửng bên phải (Không đè lên chữ) */
-  .poster-gallery {
-    position: absolute; top: 0; right: 0; width: 65%; height: 100%;
-    z-index: 10; perspective: 1200px; pointer-events: none; /* Tránh cản nét cọ */
-  }
+  .poster-gallery { position: absolute; top: 0; right: 0; width: 60%; height: 100%; z-index: 10; pointer-events: none; }
   .poster-container { position: absolute; pointer-events: auto; }
-  .poster { background: #111; padding: 6px; padding-bottom: 25px; box-shadow: 0 20px 40px rgba(0,0,0,0.8); width: 100%; height: 100%; transform-style: preserve-3d; border: 1px solid rgba(255,255,255,0.05); transition: 0.4s ease;}
-  .poster:hover { border-color: rgba(255,255,255,0.3); }
-  .poster img { width: 100%; height: 100%; object-fit: cover; filter: sepia(10%) grayscale(60%) contrast(1.1); pointer-events: none; transition: 0.5s ease;}
-  .poster:hover img { filter: sepia(0%) grayscale(0%) contrast(1); }
+  .poster { background: #0a0a0a; padding: 8px; padding-bottom: 35px; width: 100%; height: 100%; border: 1px solid rgba(255,255,255,0.03); transition: 0.8s cubic-bezier(0.19, 1, 0.22, 1);}
+  .poster:hover { border-color: rgba(255,255,255,0.2); background: #fff;}
+  .poster img { width: 100%; height: 100%; object-fit: cover; filter: sepia(30%) grayscale(80%) brightness(0.5); pointer-events: none; transition: 1s ease;}
+  .poster:hover img { filter: sepia(0%) grayscale(0%) brightness(1); }
   
-  /* Quy hoạch lại vị trí không đè lấn */
-  .p-wrap-1 { top: 12%; right: 10%; width: 28vh; height: 38vh; transform: rotate(3deg); }
-  .p-wrap-2 { top: 45%; right: 35%; width: 32vh; height: 22vh; transform: rotate(-4deg); }
-  .p-wrap-3 { bottom: 12%; right: 15%; width: 24vh; height: 32vh; transform: rotate(5deg); }
+  .p-wrap-1 { top: 10%; right: 15%; width: 30vh; height: 42vh; transform: rotate(2deg); }
+  .p-wrap-2 { top: 50%; right: 40%; width: 35vh; height: 25vh; transform: rotate(-3deg); }
+  .p-wrap-3 { bottom: 10%; right: 20%; width: 26vh; height: 35vh; transform: rotate(4deg); }
 
-  /* Bảng màu và Tools */
-  .tools-panel { display: flex; flex-direction: column; gap: 25px; max-width: 300px;}
-  .tool-group { display: flex; align-items: center; gap: 15px; }
-  .tool-label { font-size: 0.7rem; color: #666; letter-spacing: 4px; text-transform: uppercase; width: 90px; }
-  .color-btn { width: 22px; height: 22px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.2); transition: 0.3s ease; cursor: pointer; }
-  .color-btn.active { transform: scale(1.3); border-color: #fff; box-shadow: 0 0 15px currentColor; }
-  .size-slider { -webkit-appearance: none; width: 100%; height: 1px; background: rgba(255,255,255,0.2); outline: none; cursor: pointer; }
-  .size-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 10px; height: 10px; background: #fff; border-radius: 50%; transition: 0.3s; box-shadow: 0 0 10px #fff;}
-  .size-slider::-webkit-slider-thumb:hover { transform: scale(1.5); }
+  .tools-panel { display: flex; flex-direction: column; gap: 30px;}
+  .tool-group { display: flex; align-items: center; gap: 20px; }
+  .tool-label { font-size: 0.65rem; color: #555; letter-spacing: 5px; text-transform: uppercase; width: 100px; }
+  .color-btn { width: 18px; height: 18px; border-radius: 50%; transition: 0.4s ease; cursor: pointer; opacity: 0.4;}
+  .color-btn.active { transform: scale(1.5); opacity: 1; box-shadow: 0 0 20px currentColor; }
   
   .action-btn { 
-    background: transparent; border: 1px solid rgba(255,255,255,0.1); color: #888; padding: 10px 20px; 
-    font-family: 'Space Mono'; font-size: 0.75rem; letter-spacing: 3px; transition: 0.4s ease; cursor: pointer; text-transform: uppercase;
+    background: transparent; border: 1px solid rgba(255,255,255,0.1); color: #666; padding: 12px 25px; 
+    font-family: 'Space Mono'; font-size: 0.7rem; letter-spacing: 4px; transition: 0.5s ease; cursor: pointer; text-transform: uppercase;
   }
-  .action-btn:hover { border-color: #fff; color: #fff; background: rgba(255,255,255,0.05); box-shadow: 0 0 20px rgba(255,255,255,0.1); letter-spacing: 5px;}
+  .action-btn:hover { border-color: #fff; color: #fff; background: rgba(255,255,255,0.05); letter-spacing: 8px;}
 
 </style>
 </head>
 <body>
 
+<svg style="width:0; height:0; position:absolute;">
+  <filter id="water-ripple">
+    <feTurbulence type="fractalNoise" baseFrequency="0.015" numOctaves="3" result="noise">
+      <animate attributeName="baseFrequency" values="0.015;0.02;0.015" dur="4s" repeatCount="indefinite" />
+    </feTurbulence>
+    <feDisplacementMap in="SourceGraphic" in2="noise" scale="20" xChannelSelector="R" yChannelSelector="G" />
+  </filter>
+</svg>
+
 <div id="custom-cursor"></div>
-<div class="grid-overlay"></div>
-<canvas id="ink-canvas"></canvas>
+<canvas id="abyss-canvas"></canvas>
+<div class="vignette"></div>
+
+<div class="depth-container">
+  <div class="depth-track"><div class="depth-fill" id="depth-fill"></div></div>
+  <div class="depth-markers">
+    <div class="marker interactable active" onclick="scrollToPage('page-1', 0)"><div class="marker-line"></div><div class="marker-text">0m_MẶT_NƯỚC</div></div>
+    <div class="marker interactable" onclick="scrollToPage('page-2', 1)"><div class="marker-line"></div><div class="marker-text">-100m_PHẢN_CHIẾU</div></div>
+    <div class="marker interactable" onclick="scrollToPage('page-3', 2)"><div class="marker-line"></div><div class="marker-text">-500m_HỖN_MANG</div></div>
+    <div class="marker interactable" onclick="scrollToPage('page-4', 3)"><div class="marker-line"></div><div class="marker-text">VÔ_TẬN</div></div>
+  </div>
+</div>
 
 <div id="cinematic-intro">
-  <div class="intro-text" id="intro-1">i have all and then,</div>
-  <div class="intro-text" id="intro-2">most of me, some</div>
-  <div class="intro-text" id="intro-3" style="color: var(--accent); font-size: 3.5rem; margin-top: 30px; -webkit-text-stroke: 0px; text-shadow: 0 0 30px rgba(0, 51, 102, 0.8);">and now, none of you.</div>
+  <div class="intro-text" id="intro-1">hãy nín thở.</div>
+  <div class="intro-text" id="intro-2">và để bản thân chìm xuống.</div>
 </div>
 
 <audio id="bg-audio" loop><source src="drowninglove.mp3" type="audio/mpeg"></audio>
-<div class="music-player interactable" onclick="toggleAudio()">
+<div class="music-player interactable" onclick="toggleAudio()" id="music-player">
   <div class="track-info" id="audio-text">silence</div>
-  <div class="record" id="record-disc"></div>
+  <div class="music-bars">
+    <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+  </div>
 </div>
-
-<nav id="navbar">
-  <a class="interactable active" onclick="scrollToPage('page-1')" id="nav-page-1">đáy_sâu</a>
-  <a class="interactable" onclick="scrollToPage('page-2')" id="nav-page-2">sân_khấu</a>
-  <a class="interactable" onclick="scrollToPage('page-3')" id="nav-page-3">hỗn_mang</a>
-  <a class="interactable" onclick="scrollToPage('page-4')" id="nav-page-4">tái_sinh</a>
-</nav>
 
 <main id="main-scroll">
   
@@ -289,43 +282,42 @@
           Phải học cách thở dưới nước. <br><br><span class="redacted interactable">Sự thăng hoa sinh ra từ trạng thái kiệt quệ nhất.</span>
         </div>
         
-        <div class="about-flow">
-          <div class="flow-item interactable"><span class="flow-dot"></span> Tọa độ: Sinh viên FTU2 (nhưng không khoái đọc nhiều data)</div>
-          <div class="flow-item interactable"><span class="flow-dot"></span> Vibe: Hay lang thang, nghe Tchaikovsky x BTS, thi thoảng cày tiếng Trung</div>
-          <div class="flow-item interactable"><span class="flow-dot"></span> Ambition: Kéo vali đi khắp <span class="redacted interactable">100 quốc gia</span></div>
+        <div class="flow-group">
+          <div class="flow-item interactable"><span class="flow-dot"></span> Tọa độ: Sinh viên FTU2 (nhưng không khoái nhồi nhét data)</div>
+          <div class="flow-item interactable"><span class="flow-dot"></span> Vibe: Kẻ lang thang, nghe Tchaikovsky giao thoa BTS</div>
+          <div class="flow-item interactable"><span class="flow-dot"></span> Ambition: Kéo vali đi mòn gót qua <span class="redacted interactable">100 quốc gia</span></div>
         </div>
       </div>
       
       <div class="abyss-visual-zone" id="parallax-area">
-        <div class="media-box tilt-element p1-img p1-img-1 interactable parallax-item" data-speed="15"><img src="link_anh_abyss_1.jpg" alt="Memory 1"></div>
-        <div class="media-box tilt-element p1-img p1-img-2 interactable parallax-item" data-speed="-8"><img src="link_anh_abyss_2.jpg" alt="Memory 2"></div>
-        <div class="media-box tilt-element p1-img p1-img-3 interactable parallax-item" data-speed="5"><img src="link_anh_abyss_3.jpg" alt="Memory 3"></div>
+        <div class="water-distort p1-img p1-img-1 interactable parallax-item" data-speed="12"><img src="link_anh_abyss_1.jpg" alt="Memory 1"></div>
+        <div class="water-distort p1-img p1-img-2 interactable parallax-item" data-speed="-5"><img src="link_anh_abyss_2.jpg" alt="Memory 2"></div>
+        <div class="water-distort p1-img p1-img-3 interactable parallax-item" data-speed="8"><img src="link_anh_abyss_3.jpg" alt="Memory 3"></div>
       </div>
     </div>
   </section>
 
   <section id="page-2" class="page-section">
-    <img src="link_anh_san_khau_large.jpg" alt="" class="stage-bg">
     <div class="stage-title">TEDxFTU</div>
 
     <div class="reflection-box stage-reflect interactable">
-      <h3>Reflection.</h3>
-      <p contenteditable="true">Những góc nhìn ẩn giấu sau ánh đèn sân khấu. Vỡ vụn và ghép lại...</p>
+      <h3>Phản Chiếu.</h3>
+      <p contenteditable="true">Những góc nhìn méo mó ẩn giấu sau rạn san hô. Gõ vào đây những lời chưa nói...</p>
     </div>
     
-    <div class="film-strip tilt-element draggable-media interactable film-1">
+    <div class="film-strip water-distort draggable-media interactable film-1">
       <div class="film-holes"><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div></div>
       <div class="film-img-zone"><img src="link_anh_performance_1.jpg" alt="Footage 1"></div>
-      <div class="film-holes" style="margin-top: 10px;"><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div></div>
+      <div class="film-holes" style="margin-top: 15px;"><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div></div>
     </div>
 
-    <div class="film-strip tilt-element draggable-media interactable film-2">
+    <div class="film-strip water-distort draggable-media interactable film-2">
       <div class="film-holes"><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div></div>
       <div class="film-img-zone"><img src="link_anh_performance_2.jpg" alt="Footage 2"></div>
-      <div class="film-holes" style="margin-top: 10px;"><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div></div>
+      <div class="film-holes" style="margin-top: 15px;"><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div><div class="hole"></div></div>
     </div>
 
-    <div class="tilt-element draggable-media interactable media-box spotlight-media">
+    <div class="water-distort draggable-media interactable spotlight-media">
       <img src="link_anh_concept_detail.jpg" alt="Concept 4">
     </div>
   </section>
@@ -333,21 +325,16 @@
   <section id="page-3" class="page-section">
     <div class="yl-header">
       <h2>Vietnam Young Lions</h2>
-      <p>Sự ngớ ngẩn có mục đích</p>
+      <p>Sự ngớ ngẩn dưới áp lực nước</p>
     </div>
 
     <div class="yl-media-grid">
-      <div class="yl-video-vert tilt-element interactable double-clickable">
+      <div class="yl-video-vert water-distort interactable double-clickable">
         <video src="link_video_doc_o_day.mp4" autoplay loop muted playsinline></video>
       </div>
-      <div class="yl-img-horiz tilt-element interactable double-clickable">
+      <div class="yl-img-horiz water-distort interactable double-clickable">
         <img src="link_anh_ngang_o_day.jpg" alt="Young Lions Display">
       </div>
-    </div>
-
-    <div class="reflection-box yl-reflect interactable">
-      <h3>Ghi chép hỗn mang.</h3>
-      <p contenteditable="true">Nhập mớ suy nghĩ điên rồ của bạn vào đây. Càng phi logic càng tốt...</p>
     </div>
   </section>
 
@@ -358,291 +345,193 @@
       <div class="graf-ui-content">
         <h1 class="graf-title">Tái Sinh.</h1>
         <div class="graf-text">
-          Thay vì phá hủy, hãy để lại dấu ấn. Những dải mực phát sáng chảy tràn qua bóng tối, hàn gắn lại những rạn vỡ không tên. <br><br>
-          Kéo chuột để phóng nét cọ lụa. Nét đưa càng nhanh, mực càng thanh mảnh. Double-click vào tranh để đảo ngược thực tại.
+          Ở nơi tối tăm nhất, mực sáng tự họa lên đường đi. Mọi thứ lơ lửng, không trọng lượng. <br><br>
+          Kéo chuột để vẽ nên những dải lụa sứa biển. Double-click vào tranh để xé tan sự tĩnh lặng.
         </div>
         
         <div class="tools-panel">
           <div class="tool-group">
-            <div class="tool-label">Ánh Sáng</div>
-            <div class="color-btn interactable active" style="background: var(--graffiti); color: var(--graffiti);" onclick="setColor('var(--graffiti)', this)"></div>
+            <div class="tool-label">Sắc Thái</div>
+            <div class="color-btn interactable active" style="background: var(--ink); color: var(--ink);" onclick="setColor('var(--ink)', this)"></div>
             <div class="color-btn interactable" style="background: #ffffff; color: #ffffff;" onclick="setColor('#ffffff', this)"></div>
             <div class="color-btn interactable" style="background: #e6a8d7; color: #e6a8d7;" onclick="setColor('#e6a8d7', this)"></div> 
-            <div class="color-btn interactable" style="background: #00ffcc; color: #00ffcc;" onclick="setColor('#00ffcc', this)"></div>
+            <div class="color-btn interactable" style="background: #111111; color: #111111;" onclick="setColor('#111111', this)"></div>
           </div>
           <div class="tool-group">
-            <div class="tool-label">Độ Loang</div>
-            <input type="range" class="size-slider interactable" id="brush-size" min="3" max="50" value="20">
-          </div>
-          <div class="tool-group" style="margin-top: 20px;">
-            <button type="button" class="action-btn interactable" onclick="clearWall()">[ Xóa Bỏ Ký Ức ]</button>
+            <div class="action-btn interactable" onclick="clearWall()">[ ĐỂ DÒNG NƯỚC CUỐN ĐI ]</div>
           </div>
         </div>
       </div>
     </div>
 
     <div class="poster-gallery">
-      <div class="poster-container p-wrap-1"><div class="poster tilt-element double-clickable interactable"><img src="link_anh_remake_quai_1.jpg" alt="Poster 1"></div></div>
-      <div class="poster-container p-wrap-2"><div class="poster tilt-element double-clickable interactable"><img src="link_anh_remake_quai_2.jpg" alt="Poster 2"></div></div>
-      <div class="poster-container p-wrap-3"><div class="poster tilt-element double-clickable interactable"><img src="link_anh_remake_quai_3.jpg" alt="Poster 3"></div></div>
+      <div class="poster-container p-wrap-1"><div class="poster water-distort double-clickable interactable"><img src="link_anh_remake_quai_1.jpg" alt="Poster 1"></div></div>
+      <div class="poster-container p-wrap-2"><div class="poster water-distort double-clickable interactable"><img src="link_anh_remake_quai_2.jpg" alt="Poster 2"></div></div>
+      <div class="poster-container p-wrap-3"><div class="poster water-distort double-clickable interactable"><img src="link_anh_remake_quai_3.jpg" alt="Poster 3"></div></div>
     </div>
-
   </section>
 
 </main>
 
 <script>
   /* =========================================
-     1. CUSTOM CURSOR & MAGNETIC MENU
+     1. CUSTOM CURSOR
      ========================================= */
   const cursor = document.getElementById('custom-cursor');
   document.addEventListener('mousemove', (e) => {
     cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px';
   });
-
   document.querySelectorAll('.interactable').forEach(el => {
     el.addEventListener('mouseenter', () => cursor.classList.add('hovering'));
     el.addEventListener('mouseleave', () => cursor.classList.remove('hovering'));
   });
 
-  const navLinks = document.querySelectorAll('nav a');
-  navLinks.forEach(link => {
-    link.addEventListener('mousemove', e => {
-      let rect = link.getBoundingClientRect();
-      let x = (e.clientX - rect.left - rect.width/2) * 0.4; 
-      let y = (e.clientY - rect.top - rect.height/2) * 0.4;
-      link.style.transform = `rotate(180deg) translate(${-x}px, ${y}px)`; 
+  /* =========================================
+     2. TUYẾT ĐẠI DƯƠNG (MARINE SNOW - SINKING EFFECT)
+     ========================================= */
+  const abyssCanvas = document.getElementById('abyss-canvas');
+  const aCtx = abyssCanvas.getContext('2d');
+  const particles = [];
+  
+  for(let i = 0; i < 150; i++) {
+    particles.push({
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * window.innerHeight,
+      r: Math.random() * 2 + 0.5,
+      vy: -(Math.random() * 0.5 + 0.1), // Trôi ngược lên trên
+      opacity: Math.random() * 0.5 + 0.1
     });
-    link.addEventListener('mouseleave', () => {
-      link.style.transform = `rotate(180deg) translate(0px, 0px)`;
+  }
+
+  window.addEventListener('resize', () => {
+    abyssCanvas.width = window.innerWidth; abyssCanvas.height = window.innerHeight;
+    const grafCanvas = document.getElementById('graffiti-canvas');
+    if(grafCanvas) { grafCanvas.width = document.getElementById('page-4').offsetWidth; grafCanvas.height = document.getElementById('page-4').offsetHeight; }
+  });
+  window.dispatchEvent(new Event('resize'));
+
+  function renderAbyss() {
+    aCtx.clearRect(0, 0, abyssCanvas.width, abyssCanvas.height);
+    for(let p of particles) {
+      p.y += p.vy;
+      if(p.y < -10) { p.y = abyssCanvas.height + 10; p.x = Math.random() * abyssCanvas.width; }
+      
+      aCtx.beginPath();
+      aCtx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+      aCtx.fillStyle = `rgba(200, 220, 255, ${p.opacity})`;
+      aCtx.shadowBlur = 8;
+      aCtx.shadowColor = 'rgba(200, 220, 255, 0.8)';
+      aCtx.fill();
+    }
+    requestAnimationFrame(renderAbyss);
+  }
+  renderAbyss();
+
+  /* =========================================
+     3. THE DEPTH SCROLL (TRỤC SÂU)
+     ========================================= */
+  const mainScroll = document.getElementById('main-scroll');
+  const depthFill = document.getElementById('depth-fill');
+  const markers = document.querySelectorAll('.marker');
+
+  function scrollToPage(pageId, index) {
+    document.getElementById(pageId).scrollIntoView({ behavior: 'smooth' });
+  }
+
+  mainScroll.addEventListener('scroll', () => {
+    let scrollPos = mainScroll.scrollTop;
+    let maxScroll = mainScroll.scrollHeight - mainScroll.clientHeight;
+    let scrollPercent = (scrollPos / maxScroll) * 100;
+    depthFill.style.height = `${scrollPercent}%`;
+
+    // Highlight marker dựa trên vị trí cuộn
+    let activeIndex = Math.round((scrollPos / maxScroll) * 3);
+    markers.forEach((m, i) => {
+      if(i === activeIndex) m.classList.add('active');
+      else m.classList.remove('active');
     });
+
+    if(activeIndex === 3) cursor.classList.add('brushing');
+    else cursor.classList.remove('brushing');
   });
 
   /* =========================================
-     2. MẠNG TINH TÚ (CONSTELLATION BACKGROUND)
+     4. DRAGGABLE & INTRO & AUDIO
      ========================================= */
-  const inkCanvas = document.getElementById('ink-canvas');
-  const iCtx = inkCanvas.getContext('2d');
-  const points = [];
+  const intro = document.getElementById('cinematic-intro');
+  window.onload = () => {
+    setTimeout(() => document.getElementById('intro-1').classList.add('show'), 500);
+    setTimeout(() => document.getElementById('intro-2').classList.add('show'), 3000);
+    setTimeout(() => { intro.style.opacity = '0'; setTimeout(() => { intro.style.display = 'none'; }, 2500); }, 6500);
+  };
 
-  document.addEventListener('mousemove', (e) => {
-    if(document.getElementById('cinematic-intro').style.display !== 'none') return;
-    points.push({ x: e.clientX, y: e.clientY, life: 1 });
+  const audio = document.getElementById('bg-audio');
+  const playerBtn = document.getElementById('music-player');
+  const audioText = document.getElementById('audio-text');
+  let isPlaying = false;
+  function toggleAudio() {
+    if (isPlaying) { audio.pause(); playerBtn.classList.remove('playing'); audioText.innerText = 'silence'; } 
+    else { audio.play(); playerBtn.classList.add('playing'); audioText.innerText = 'drowning'; }
+    isPlaying = !isPlaying;
+  }
+
+  // Parallax nhẹ
+  const pItems = document.querySelectorAll('.parallax-item');
+  mainScroll.addEventListener('mousemove', (e) => {
+    let x = (window.innerWidth - e.clientX * 2) / 100; let y = (window.innerHeight - e.clientY * 2) / 100;
+    pItems.forEach(item => { let speed = item.getAttribute('data-speed'); item.style.transform = `translate3d(${x * speed}px, ${y * speed}px, 0)`; });
   });
 
-  function resizeCanvases() {
-    inkCanvas.width = window.innerWidth; inkCanvas.height = window.innerHeight;
-    const grafCanvas = document.getElementById('graffiti-canvas');
-    if(grafCanvas) { 
-        grafCanvas.width = document.getElementById('page-4').offsetWidth; 
-        grafCanvas.height = document.getElementById('page-4').offsetHeight; 
-    }
-  }
-  window.addEventListener('resize', resizeCanvases);
+  // Draggable cho page 2
+  const draggables = document.querySelectorAll('.draggable-media');
+  let activeDrag = null, oX = 0, oY = 0;
+  draggables.forEach(item => {
+    item.addEventListener('mousedown', (e) => {
+      activeDrag = item; 
+      oX = e.clientX - item.getBoundingClientRect().left; oY = e.clientY - item.getBoundingClientRect().top;
+      draggables.forEach(d => d.style.zIndex = '5'); activeDrag.style.zIndex = '100';
+    });
+  });
+  mainScroll.addEventListener('mousemove', (e) => {
+    if (!activeDrag) return;
+    activeDrag.style.left = `${e.clientX - oX}px`; activeDrag.style.top = `${e.clientY - oY + mainScroll.scrollTop}px`;
+  });
+  mainScroll.addEventListener('mouseup', () => { activeDrag = null; });
 
-  function renderConstellation() {
-    iCtx.clearRect(0, 0, inkCanvas.width, inkCanvas.height);
-    for(let i=0; i<points.length; i++) {
-        let p = points[i];
-        p.life -= 0.012; 
-        p.y -= 0.4; 
-
-        if(p.life <= 0) { points.splice(i, 1); i--; continue; }
-
-        iCtx.beginPath();
-        iCtx.arc(p.x, p.y, 1.2, 0, Math.PI*2);
-        iCtx.fillStyle = `rgba(200, 200, 200, ${p.life})`;
-        iCtx.fill();
-
-        for(let j=i+1; j<points.length; j++) {
-            let p2 = points[j];
-            let dist = Math.hypot(p.x-p2.x, p.y-p2.y);
-            if(dist < 70) { 
-                iCtx.beginPath();
-                iCtx.moveTo(p.x, p.y);
-                iCtx.lineTo(p2.x, p2.y);
-                iCtx.strokeStyle = `rgba(200, 200, 200, ${p.life * 0.3})`; 
-                iCtx.lineWidth = 0.5;
-                iCtx.stroke();
-            }
-        }
-    }
-    requestAnimationFrame(renderConstellation);
-  }
-  renderConstellation();
-
-  document.querySelectorAll('.double-clickable, .draggable-media').forEach(el => {
+  document.querySelectorAll('.double-clickable').forEach(el => {
     el.addEventListener('dblclick', function() { this.classList.toggle('inverted'); });
   });
 
   /* =========================================
-     3. 3D TILT TƯƠNG TÁC VẬT LÝ
-     ========================================= */
-  document.querySelectorAll('.tilt-element').forEach(el => {
-    el.addEventListener('mousemove', e => {
-      let rect = el.getBoundingClientRect();
-      let xNorm = ((e.clientX - rect.left) / rect.width - 0.5) * 2; 
-      let yNorm = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
-      el.style.transform = `rotateX(${yNorm * -12}deg) rotateY(${xNorm * 12}deg) scale3d(1.02, 1.02, 1.02)`;
-    });
-    el.addEventListener('mouseleave', () => {
-      // Check if it's a pre-rotated film strip or poster to keep original rotation
-      let originalTransform = "rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)";
-      if(el.classList.contains('film-1')) originalTransform = "rotate(-3deg)";
-      else if(el.classList.contains('film-2')) originalTransform = "rotate(4deg)";
-      else if(el.parentElement.classList.contains('p-wrap-1')) originalTransform = "rotate(3deg)";
-      else if(el.parentElement.classList.contains('p-wrap-2')) originalTransform = "rotate(-4deg)";
-      else if(el.parentElement.classList.contains('p-wrap-3')) originalTransform = "rotate(5deg)";
-      
-      el.style.transform = originalTransform;
-    });
-  });
-
-  /* =========================================
-     4. SCROLL NAVIGATION & AUDIO & PARALLAX
-     ========================================= */
-  const mainScroll = document.getElementById('main-scroll');
-  const sections = document.querySelectorAll('.page-section');
-
-  function scrollToPage(pageId) {
-    document.getElementById(pageId).scrollIntoView({ behavior: 'smooth' });
-  }
-
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        navLinks.forEach(link => link.classList.remove('active'));
-        let activeLink = document.getElementById('nav-' + entry.target.id);
-        if(activeLink) activeLink.classList.add('active');
-        
-        if(entry.target.id === 'page-4') cursor.classList.add('brushing');
-        else cursor.classList.remove('brushing');
-      }
-    });
-  }, { threshold: 0.5 }); 
-  sections.forEach(sec => observer.observe(sec));
-
-  // INTRO & AUDIO
-  const intro = document.getElementById('cinematic-intro');
-  window.onload = () => {
-    resizeCanvases();
-    setTimeout(() => document.getElementById('intro-1').classList.add('show'), 800);
-    setTimeout(() => document.getElementById('intro-2').classList.add('show'), 2800);
-    setTimeout(() => document.getElementById('intro-3').classList.add('show'), 5000);
-    setTimeout(() => {
-      intro.style.opacity = '0';
-      setTimeout(() => { intro.style.display = 'none'; }, 2000);
-    }, 8500);
-  };
-
-  const audio = document.getElementById('bg-audio');
-  const recordDisc = document.getElementById('record-disc');
-  const audioText = document.getElementById('audio-text');
-  let isPlaying = false;
-  function toggleAudio() {
-    if (isPlaying) { audio.pause(); recordDisc.classList.remove('playing'); audioText.innerText = 'silence';
-    } else { audio.play(); recordDisc.classList.add('playing'); audioText.innerText = 'drowninglove'; }
-    isPlaying = !isPlaying;
-  }
-
-  // PARALLAX
-  const pItems = document.querySelectorAll('.parallax-item');
-  mainScroll.addEventListener('mousemove', (e) => {
-    let x = (window.innerWidth - e.clientX * 2) / 100; let y = (window.innerHeight - e.clientY * 2) / 100;
-    pItems.forEach(item => {
-      let speed = item.getAttribute('data-speed');
-      item.style.transform = `translate3d(${x * speed}px, ${y * speed}px, 0)`; 
-    });
-  });
-
-  // DRAGGABLE
-  const draggables = document.querySelectorAll('.draggable-media');
-  let activeDrag = null, oX = 0, oY = 0;
-  
-  draggables.forEach(item => {
-    item.addEventListener('mousedown', (e) => {
-      activeDrag = item; 
-      oX = e.clientX - item.getBoundingClientRect().left; 
-      oY = e.clientY - item.getBoundingClientRect().top;
-      draggables.forEach(d => d.style.zIndex = '5'); 
-      activeDrag.style.zIndex = '100';
-    });
-    
-    item.addEventListener('mousemove', (e) => {
-      let rect = item.getBoundingClientRect();
-      let localX = e.clientX - rect.left;
-      let localY = e.clientY - rect.top;
-      item.style.setProperty('--lx', `${localX}px`);
-      item.style.setProperty('--ly', `${localY}px`);
-    });
-  });
-
-  mainScroll.addEventListener('mousemove', (e) => {
-    if (!activeDrag) return;
-    activeDrag.style.left = `${e.clientX - oX}px`; 
-    activeDrag.style.top = `${e.clientY - oY + mainScroll.scrollTop}px`;
-  });
-  mainScroll.addEventListener('mouseup', () => { activeDrag = null; });
-
-  /* =========================================
-     5. PAGE 4: CỌ LỤA PHÁT SÁNG (ELEGANT INK)
+     5. ELEGANT INK BRUSH (PAGE 4)
      ========================================= */
   const grafCanvas = document.getElementById('graffiti-canvas');
   const gCtx = grafCanvas.getContext('2d', { willReadFrequently: true });
-  
-  let isDrawing = false;
-  let lastX = 0, lastY = 0;
-  let paintColor = getComputedStyle(document.documentElement).getPropertyValue('--graffiti').trim(); 
-  let bSizeInput = document.getElementById('brush-size');
+  let isDrawing = false, lastX = 0, lastY = 0;
+  let paintColor = getComputedStyle(document.documentElement).getPropertyValue('--ink').trim(); 
 
   window.setColor = function(color, btn) {
-    if(color.startsWith('var')) {
-        paintColor = getComputedStyle(document.documentElement).getPropertyValue(color.match(/\(([^)]+)\)/)[1]).trim();
-    } else { paintColor = color; }
-    document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
+    if(color.startsWith('var')) paintColor = getComputedStyle(document.documentElement).getPropertyValue(color.match(/\(([^)]+)\)/)[1]).trim();
+    else paintColor = color;
+    document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active');
   };
-
-  window.clearWall = function() { 
-    gCtx.clearRect(0, 0, grafCanvas.width, grafCanvas.height); 
-  };
+  window.clearWall = function() { gCtx.clearRect(0, 0, grafCanvas.width, grafCanvas.height); };
 
   grafCanvas.addEventListener('mousedown', (e) => {
-    isDrawing = true;
-    let rect = grafCanvas.getBoundingClientRect();
-    lastX = e.clientX - rect.left;
-    lastY = e.clientY - rect.top;
+    isDrawing = true; let rect = grafCanvas.getBoundingClientRect(); lastX = e.clientX - rect.left; lastY = e.clientY - rect.top;
   });
-  
   grafCanvas.addEventListener('mousemove', (e) => {
     if(!isDrawing) return;
-    let rect = grafCanvas.getBoundingClientRect();
-    let currX = e.clientX - rect.left;
-    let currY = e.clientY - rect.top;
-
-    let dx = currX - lastX;
-    let dy = currY - lastY;
-    let distance = Math.sqrt(dx*dx + dy*dy);
-    let baseSize = parseInt(bSizeInput.value);
+    let rect = grafCanvas.getBoundingClientRect(); let currX = e.clientX - rect.left; let currY = e.clientY - rect.top;
+    let dx = currX - lastX; let dy = currY - lastY; let distance = Math.sqrt(dx*dx + dy*dy);
     
-    let lineWidth = Math.max(1, baseSize - distance * 0.3); 
-
-    gCtx.beginPath();
-    gCtx.moveTo(lastX, lastY);
-    gCtx.lineTo(currX, currY);
-    gCtx.lineCap = 'round';
-    gCtx.lineJoin = 'round';
-    gCtx.lineWidth = lineWidth;
-    gCtx.strokeStyle = paintColor;
-    
-    gCtx.shadowBlur = 15;
-    gCtx.shadowColor = paintColor;
-    gCtx.stroke();
-
-    lastX = currX;
-    lastY = currY;
+    // Nét lụa êm ái: Nhanh = thanh mảnh
+    let lineWidth = Math.max(0.5, 20 - distance * 0.4); 
+    gCtx.beginPath(); gCtx.moveTo(lastX, lastY); gCtx.lineTo(currX, currY);
+    gCtx.lineCap = 'round'; gCtx.lineJoin = 'round'; gCtx.lineWidth = lineWidth;
+    gCtx.strokeStyle = paintColor; gCtx.shadowBlur = 20; gCtx.shadowColor = paintColor; gCtx.stroke();
+    lastX = currX; lastY = currY;
   });
-
   window.addEventListener('mouseup', () => { isDrawing = false; });
   
 </script>
