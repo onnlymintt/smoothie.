@@ -4,14 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Silent Voice - Oboreru Knife</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400;1,600&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg-surface: #040914; /* Xanh biển sâu thẳm, không phải đen kịt */
-    --text-main: #b8c2d1;
+    --bg-surface: #0a192f; /* Xanh nước biển có ánh sáng mặt trời */
+    --text-main: #cbd5e1;
     --text-dim: #64748b;
-    --accent: #f8fafc;     /* Trắng ngọc trai lóa mắt */
-    --ink: #e2e8f0;        /* Mực lụa ánh bạc */
+    --accent: #ffffff;     /* Trắng chói lòa */
+    --ink: #e2e8f0;        /* Mực ánh kim */
+    --blood: #8b0000;      /* Điểm xuyết rất nhỏ sự bạo liệt */
   }
 
   * { box-sizing: border-box; cursor: none !important; }
@@ -20,88 +21,96 @@
     background-color: var(--bg-surface);
     color: var(--text-main); font-family: 'Space Mono', monospace;
     overflow: hidden; width: 100vw; height: 100vh;
-    transition: background-color 1.2s ease-out;
+    transition: background-color 1.5s cubic-bezier(0.25, 1, 0.5, 1);
   }
 
   /* CUSTOM CURSOR */
   #custom-cursor {
-    position: fixed; top: 0; left: 0; width: 6px; height: 6px;
+    position: fixed; top: 0; left: 0; width: 4px; height: 4px;
     background: #fff; border-radius: 50%; pointer-events: none;
     transform: translate(-50%, -50%); z-index: 100000;
     transition: width 0.3s ease, height 0.3s ease, background 0.3s;
     mix-blend-mode: difference;
-    box-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
   }
-  #custom-cursor.hovering { width: 45px; height: 45px; background: transparent; border: 1px solid var(--accent); mix-blend-mode: normal; box-shadow: none;}
-  #custom-cursor.brushing { width: 12px; height: 12px; background: rgba(255,255,255,1); box-shadow: 0 0 30px var(--ink); border: none; mix-blend-mode: normal;}
+  #custom-cursor.hovering { width: 50px; height: 50px; background: transparent; border: 1px solid var(--accent); mix-blend-mode: normal; box-shadow: none;}
+  #custom-cursor.brushing { width: 10px; height: 10px; background: rgba(255,255,255,1); box-shadow: 0 0 40px var(--ink); border: none; mix-blend-mode: normal;}
 
   /* OVERLAYS & CANVAS */
-  #abyss-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1; pointer-events: none; mix-blend-mode: screen; opacity: 0.6;}
+  #abyss-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1; pointer-events: none; mix-blend-mode: screen; opacity: 0.7;}
   
+  /* Hiệu ứng chói nắng từ trên mặt nước */
+  .sun-glare {
+    position: fixed; top: -20vh; left: 50%; transform: translateX(-50%);
+    width: 150vw; height: 80vh; z-index: 0; pointer-events: none;
+    background: radial-gradient(ellipse at top, rgba(255,255,255,0.15) 0%, transparent 70%);
+    transition: opacity 1s ease-out;
+  }
+
   .vignette {
     position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 2; pointer-events: none;
-    background: radial-gradient(circle at center, transparent 20%, #000000 130%);
-    transition: background 0.8s ease-out;
+    background: radial-gradient(circle at center, transparent 30%, #000000 130%);
+    transition: background 1s ease-out;
   }
 
   /* CINEMATIC INTRO */
   #cinematic-intro {
     position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-    background: #020408; z-index: 99999; display: flex; align-items: center; justify-content: center;
+    background: #000; z-index: 99999; display: flex; align-items: center; justify-content: center;
     flex-direction: column; transition: opacity 3s ease;
   }
   .intro-text {
-    font-family: 'Cormorant Garamond', serif; font-size: 2.2rem; font-style: italic;
+    font-family: 'Cormorant Garamond', serif; font-size: 2.5rem; font-style: italic;
     color: transparent; opacity: 0; transition: opacity 3s, color 3s, filter 3s; text-align: center; line-height: 2; 
-    -webkit-text-stroke: 1px rgba(255,255,255,0.15); filter: blur(10px); letter-spacing: 2px;
+    -webkit-text-stroke: 1px rgba(255,255,255,0.2); filter: blur(10px); letter-spacing: 3px;
   }
-  .intro-text.show { opacity: 1; color: #fff; -webkit-text-stroke: 0px; filter: blur(0px); text-shadow: 0 0 20px rgba(255, 255, 255, 0.4);}
+  .intro-text.show { opacity: 1; color: #fff; -webkit-text-stroke: 0px; filter: blur(0px); text-shadow: 0 0 30px rgba(255, 255, 255, 0.6);}
 
-  /* TRỤC LIÊN KẾT (THE DEPTH LINE) - FIX LỖI MẤT CHỮ */
+  /* TRỤC LIÊN KẾT (THE DEPTH LINE) */
   .depth-container {
-    position: fixed; top: 0; left: 40px; width: 120px; height: 100vh; z-index: 99991;
+    position: fixed; top: 0; left: 40px; width: 140px; height: 100vh; z-index: 99991;
     display: flex; flex-direction: column; align-items: flex-start; pointer-events: none;
   }
   .depth-track {
-    position: absolute; top: 15vh; bottom: 15vh; left: 20px; width: 1px; background: rgba(255,255,255,0.1);
+    position: absolute; top: 10vh; bottom: 10vh; left: 20px; width: 1px; background: rgba(255,255,255,0.1);
   }
   .depth-fill {
-    position: absolute; top: 0; left: -1px; width: 2px; background: var(--accent);
-    box-shadow: 0 0 15px var(--accent); height: 0%; transition: height 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+    position: absolute; top: 0; left: -1px; width: 3px; background: var(--accent);
+    box-shadow: 0 0 20px var(--accent); height: 0%; transition: height 0.6s cubic-bezier(0.25, 1, 0.5, 1);
   }
   .depth-markers {
-    position: absolute; top: 15vh; bottom: 15vh; left: 20px; width: 100%; display: flex; flex-direction: column; justify-content: space-between;
+    position: absolute; top: 10vh; bottom: 10vh; left: 20px; width: 100%; display: flex; flex-direction: column; justify-content: space-between;
   }
   .marker {
-    display: flex; align-items: center; justify-content: flex-start; gap: 12px; cursor: pointer; pointer-events: auto; transform: translateX(-15px);
+    display: flex; align-items: center; justify-content: flex-start; gap: 15px; cursor: pointer; pointer-events: auto; transform: translateX(-15px);
   }
-  .marker-line { width: 15px; height: 1px; background: rgba(255,255,255,0.3); transition: 0.4s; }
+  .marker-line { width: 15px; height: 1px; background: rgba(255,255,255,0.2); transition: 0.4s; }
   .marker-text { 
-    font-size: 0.65rem; letter-spacing: 4px; color: var(--text-dim); transition: 0.4s; text-transform: uppercase;
-    writing-mode: vertical-rl; transform: rotate(180deg); opacity: 0.6; /* Luôn hiện chữ mờ mờ */
+    font-size: 0.6rem; letter-spacing: 4px; color: var(--text-dim); transition: 0.4s; text-transform: uppercase;
+    writing-mode: vertical-rl; transform: rotate(180deg); opacity: 0.5; 
   }
-  .marker:hover .marker-line, .marker.active .marker-line { width: 35px; background: var(--accent); box-shadow: 0 0 10px var(--accent);}
-  .marker:hover .marker-text, .marker.active .marker-text { color: #fff; text-shadow: 0 0 12px var(--accent); letter-spacing: 6px; opacity: 1;}
+  .marker:hover .marker-line, .marker.active .marker-line { width: 40px; background: var(--accent); box-shadow: 0 0 15px var(--accent);}
+  .marker:hover .marker-text, .marker.active .marker-text { color: #fff; text-shadow: 0 0 15px var(--accent); letter-spacing: 6px; opacity: 1;}
 
   /* MUSIC PLAYER */
   .music-player { position: fixed; bottom: 40px; right: 50px; z-index: 99991; display: flex; align-items: center; gap: 15px; }
   .music-bars { display: flex; gap: 3px; align-items: flex-end; height: 15px; }
   .bar { width: 2px; background: var(--text-dim); transition: 0.2s; }
-  .music-player.playing .bar { background: var(--accent); box-shadow: 0 0 8px var(--accent); animation: equalize 1s infinite alternate; }
+  .music-player.playing .bar { background: var(--accent); box-shadow: 0 0 10px var(--accent); animation: equalize 1s infinite alternate; }
   .music-player.playing .bar:nth-child(1) { animation-delay: 0.1s; }
   .music-player.playing .bar:nth-child(2) { animation-delay: 0.4s; }
   .music-player.playing .bar:nth-child(3) { animation-delay: 0.2s; }
   .music-player.playing .bar:nth-child(4) { animation-delay: 0.5s; }
   @keyframes equalize { 0% { height: 2px; } 100% { height: 15px; } }
-  .track-info { font-size: 0.6rem; letter-spacing: 4px; color: var(--text-dim); text-transform: uppercase; transition: 0.4s; }
+  .track-info { font-size: 0.6rem; letter-spacing: 5px; color: var(--text-dim); text-transform: uppercase; transition: 0.4s; }
 
   /* WATER DISTORTION EFFECT */
-  .water-distort { transition: filter 0.8s ease, box-shadow 0.8s ease, transform 0.8s ease; position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); background: #000;}
+  .water-distort { transition: filter 0.8s ease, box-shadow 0.8s ease, transform 0.8s ease; position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,0.05); background: #000;}
   .water-distort img, .water-distort video {
-    width: 100%; height: 100%; object-fit: cover; filter: grayscale(80%) brightness(0.6);
+    width: 100%; height: 100%; object-fit: cover; filter: grayscale(70%) brightness(0.6);
     transition: all 1.5s cubic-bezier(0.19, 1, 0.22, 1); transform: scale(1.05); pointer-events: none;
   }
-  .water-distort:hover { z-index: 50 !important; border-color: rgba(255, 255, 255, 0.5); box-shadow: 0 20px 50px rgba(0,0,0,0.9); transform: translateY(-5px); }
+  .water-distort:hover { z-index: 50 !important; border-color: rgba(255, 255, 255, 0.8); box-shadow: 0 20px 50px rgba(0,0,0,0.9); transform: translateY(-5px) scale(1.02); }
   .water-distort:hover img, .water-distort:hover video {
     filter: url(#water-ripple) grayscale(0%) brightness(1.1);
     transform: scale(1.1);
@@ -121,131 +130,140 @@
     scroll-snap-align: start; 
     overflow: hidden; display: flex; flex-direction: column; justify-content: center;
   }
-  h1, h2, h3 { font-family: 'Cormorant Garamond', serif; font-weight: 300; color: #fff; margin: 0; }
+  h1, h2, h3 { font-family: 'Cormorant Garamond', serif; font-weight: 400; color: #fff; margin: 0; }
+
+  /* TEXT UTILS */
+  .poetic-text { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.2rem; color: #fff; opacity: 0.9; letter-spacing: 1px;}
+  .mono-text { font-family: 'Space Mono', monospace; font-size: 0.8rem; color: #94a3b8; line-height: 2.2; font-weight: 300;}
 
   /* =========================================
-     PAGE 1: ĐÁY SÂU (BẢN NGÃ)
+     PAGE 1: CHÓI LÒA (BẢN NGÃ)
      ========================================= */
   #page-1 { align-items: center; justify-content: center;}
-  .abyss-content { display: flex; align-items: center; justify-content: space-between; gap: 5vw; max-width: 1300px; width: 100%; padding-right: 5vw; z-index: 5;}
+  .abyss-content { display: flex; align-items: center; justify-content: space-between; gap: 4vw; max-width: 1400px; width: 100%; padding-right: 5vw; z-index: 5;}
   
   .abyss-text-zone { flex: 1; display: flex; flex-direction: column; justify-content: center; }
-  .abyss-title { font-size: 6rem; font-style: italic; letter-spacing: -2px; margin-bottom: 30px; text-shadow: 0 5px 20px rgba(0,0,0,0.8);}
-  .abyss-text { font-size: 0.9rem; line-height: 2.2; color: #94a3b8; margin-bottom: 25px; max-width: 500px; font-weight: 300;}
+  .abyss-title { font-size: 6.5rem; font-style: italic; letter-spacing: -2px; margin-bottom: 20px; text-shadow: 0 5px 30px rgba(255,255,255,0.4);}
+  .abyss-text { max-width: 550px; margin-bottom: 20px; }
   
-  .redacted { background-color: #0f172a; color: #0f172a; padding: 2px 8px; transition: 0.8s ease; display: inline-block;}
-  .redacted:hover { background-color: transparent; color: #fff; text-shadow: 0 0 15px var(--accent); letter-spacing: 1px;}
+  .redacted { background-color: #ffffff; color: #000; padding: 2px 10px; transition: 0.8s ease; display: inline-block; font-weight: bold;}
+  .redacted:hover { background-color: transparent; color: #fff; text-shadow: 0 0 20px var(--accent); letter-spacing: 1px;}
 
-  .flow-group { margin-top: 30px; display: flex; flex-direction: column; gap: 15px; border-left: 1px solid rgba(255,255,255,0.2); padding-left: 20px; }
-  .flow-item { font-size: 0.8rem; color: #cbd5e1; transition: 0.4s ease; display: flex; align-items: center; gap: 12px; }
-  .flow-item:hover { color: #fff; transform: translateX(8px); }
-  .flow-dot { width: 5px; height: 5px; background: #fff; border-radius: 50%; opacity: 0.3; transition: 0.4s; }
-  .flow-item:hover .flow-dot { opacity: 1; background: var(--accent); box-shadow: 0 0 10px var(--accent); transform: scale(1.5);}
+  .flow-group { margin-top: 40px; display: flex; flex-direction: column; gap: 20px; border-left: 1px solid rgba(255,255,255,0.3); padding-left: 25px; }
+  .flow-item { transition: 0.4s ease; display: flex; align-items: center; gap: 15px; }
+  .flow-item:hover { color: #fff; transform: translateX(10px); }
+  .flow-dot { width: 6px; height: 6px; background: #fff; border-radius: 50%; opacity: 0.5; transition: 0.4s; }
+  .flow-item:hover .flow-dot { opacity: 1; background: var(--accent); box-shadow: 0 0 15px var(--accent); transform: scale(1.5);}
 
-  .abyss-visual-zone { flex: 1; position: relative; height: 75vh; }
+  .abyss-visual-zone { flex: 1; position: relative; height: 80vh; }
   .p1-img { position: absolute; }
-  .p1-img-1 { width: 32vh; height: 45vh; top: 10%; right: 5%; z-index: 2; }
-  .p1-img-2 { width: 25vh; height: 25vh; bottom: 10%; left: 5%; z-index: 1; }
-  .p1-img-3 { width: 20vh; height: 28vh; top: 30%; left: 30%; z-index: 3;}
+  .p1-img-1 { width: 35vh; height: 50vh; top: 5%; right: 5%; z-index: 2; }
+  .p1-img-2 { width: 28vh; height: 28vh; bottom: 10%; left: 0%; z-index: 1; }
+  .p1-img-3 { width: 22vh; height: 32vh; top: 35%; left: 30%; z-index: 3;}
   
   /* =========================================
-     PAGE 2: SÂN KHẤU
+     PAGE 2: LẶN NGỤP (TEDx)
      ========================================= */
   #page-2 { align-items: center;} 
-  .stage-title { position: absolute; top: 15%; z-index: 1; font-size: 9rem; color: transparent; -webkit-text-stroke: 1px rgba(255,255,255,0.05); letter-spacing: 40px; text-transform: uppercase; pointer-events: none; }
+  .stage-title { position: absolute; top: 10%; z-index: 1; font-size: 11rem; color: transparent; -webkit-text-stroke: 1px rgba(255,255,255,0.04); letter-spacing: 50px; text-transform: uppercase; pointer-events: none; white-space: nowrap;}
   
   .reflection-box {
     position: absolute; z-index: 10; border-left: 2px solid var(--accent); 
-    padding: 25px; background: rgba(2, 6, 15, 0.7); backdrop-filter: blur(10px); transition: 0.4s ease; box-shadow: 0 15px 30px rgba(0,0,0,0.8);
+    padding: 30px; background: rgba(4, 9, 20, 0.6); backdrop-filter: blur(12px); transition: 0.4s ease; box-shadow: 0 20px 40px rgba(0,0,0,0.8);
   }
-  .reflection-box h3 { font-style: italic; font-size: 2rem; margin-bottom: 15px; color: #fff; opacity: 0.9;}
-  .reflection-box p { color: #94a3b8; font-size: 0.85rem; line-height: 1.8; margin: 0; outline: none; min-width: 300px; max-width: 400px;}
-  .stage-reflect { bottom: 15%; left: 10%; } 
+  .reflection-box h3 { font-size: 2.2rem; margin-bottom: 15px; }
+  .reflection-box p { margin: 0; outline: none; min-width: 350px; max-width: 450px;}
+  .stage-reflect { bottom: 15%; left: 8%; } 
 
   .draggable-media { position: absolute; cursor: grab; z-index: 5; }
   .draggable-media:active { cursor: grabbing; z-index: 100; }
   
-  .film-strip { width: 380px; background: #050505; padding: 12px; padding-bottom: 35px; border: 1px solid rgba(255,255,255,0.08); }
-  .film-img-zone { width: 100%; height: 240px; background: #000; overflow: hidden; position: relative; }
-  .film-holes { display: flex; justify-content: space-between; margin-bottom: 10px; }
+  .film-strip { width: 400px; background: #050505; padding: 12px; padding-bottom: 40px; border: 1px solid rgba(255,255,255,0.05); }
+  .film-img-zone { width: 100%; height: 260px; background: #000; overflow: hidden; position: relative; }
+  .film-holes { display: flex; justify-content: space-between; margin-bottom: 12px; }
   .hole { width: 6px; height: 6px; background: #000; border-radius: 2px; }
 
   .film-1 { top: 20%; left: 20%; transform: rotate(-3deg); }
-  .film-2 { top: 30%; right: 15%; transform: rotate(4deg); }
-  .spotlight-media { width: 450px; height: 320px; bottom: 15%; right: 30%; transform: rotate(-1deg);}
+  .film-2 { top: 28%; right: 12%; transform: rotate(5deg); }
+  .spotlight-media { width: 480px; height: 340px; bottom: 15%; right: 30%; transform: rotate(-2deg);}
 
   /* =========================================
-     PAGE 3: YOUNG LIONS 
+     PAGE 3: BẠO LIỆT (YOUNG LIONS)
      ========================================= */
   #page-3 { align-items: center;}
   .yl-header { text-align: center; z-index: 10; margin-bottom: 6vh; }
-  .yl-header h2 { font-size: clamp(2.5rem, 5vw, 4rem); letter-spacing: 10px; text-transform: uppercase; margin: 0; text-shadow: 0 5px 15px rgba(0,0,0,0.8); color: #fff;}
-  .yl-header p { color: #94a3b8; letter-spacing: 12px; font-size: 0.75rem; text-transform: uppercase; margin-top: 15px;}
+  .yl-header h2 { font-size: clamp(3rem, 6vw, 5rem); letter-spacing: 12px; text-transform: uppercase; margin: 0; text-shadow: 0 10px 30px rgba(0,0,0,0.8);}
+  .yl-header p { letter-spacing: 15px; text-transform: uppercase; margin-top: 20px;}
 
-  .yl-media-grid { display: flex; gap: 5vw; align-items: center; justify-content: center; z-index: 10; max-height: 55vh; }
+  .yl-media-grid { display: flex; gap: 6vw; align-items: center; justify-content: center; z-index: 10; max-height: 55vh; }
   
   .yl-video-vert { height: 50vh; aspect-ratio: 9/16; background: #000;}
   .yl-img-horiz { height: 40vh; aspect-ratio: 16/9; background: #000;}
 
-  .reflection-chaos { position: relative; margin-top: 5vh; width: 60vw; max-width: 600px; border-left: 2px solid var(--accent); padding: 20px; background: rgba(2, 6, 15, 0.5);}
-  .reflection-chaos p { font-size: 0.85rem; color: #cbd5e1; line-height: 1.8; margin: 0; outline: none;}
+  .reflection-chaos { position: relative; margin-top: 8vh; width: 65vw; max-width: 700px; border-left: 2px solid var(--blood); padding: 25px; background: rgba(0, 0, 0, 0.5);}
 
   /* =========================================
-     PAGE 4: TÁI SINH (BỐ CỤC CHỐNG ĐÈ 100%)
+     PAGE 4: TẾ THẦN (REMAKE GALLERY)
      ========================================= */
   #page-4 { 
     display: flex; flex-direction: row; align-items: center; justify-content: space-between; 
-    padding: 0 5vw 0 0; /* Padding bù cho menu trái */
+    padding: 0 5vw 0 0; 
   }
   
-  #graffiti-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 20; pointer-events: auto; mix-blend-mode: screen;}
-  
-  /* Cột Chữ (40%) */
   .graf-ui {
     position: relative; z-index: 60; width: 40%; height: 100%;
     display: flex; flex-direction: column; justify-content: center; padding: 0 4vw;
-    pointer-events: none;
   }
-  .graf-ui-content { pointer-events: all; }
-  .graf-title { font-size: 6rem; margin-bottom: 20px; font-style: italic; letter-spacing: -2px; color: #fff;}
-  .graf-text { font-size: 0.85rem; line-height: 2.2; color: #94a3b8; margin-bottom: 40px; font-weight: 300; max-width: 400px; }
-  .highlight-text { color: #fff; font-weight: bold; }
+  .graf-title { font-size: 6rem; margin-bottom: 20px; font-style: italic; letter-spacing: -2px;}
+  .graf-text { margin-bottom: 40px; max-width: 450px; }
+  .highlight-text { color: #fff; font-weight: bold; background: rgba(255,255,255,0.1); padding: 2px 5px;}
   
-  /* Cột Ảnh (60%) - Dùng Flex để tự động chia khoảng cách, không lấn lướt */
   .poster-gallery { 
     position: relative; z-index: 10; width: 60%; height: 80vh; 
-    display: flex; align-items: center; justify-content: center; gap: 2vw;
-    pointer-events: none; /* Tránh cản nét cọ */
+    display: flex; align-items: center; justify-content: center; gap: 3vw;
   }
   
-  .poster-container { 
-    position: relative; pointer-events: auto; 
-    flex: 1; max-width: 30%; aspect-ratio: 2/3; /* Ép tỷ lệ tự động */
-  }
+  .poster-container { position: relative; flex: 1; max-width: 32%; aspect-ratio: 2/3; }
   .poster { 
-    background: #050a12; padding: 6px; padding-bottom: 30px; width: 100%; height: 100%; 
+    background: #020408; padding: 8px; padding-bottom: 35px; width: 100%; height: 100%; 
     border: 1px solid rgba(255,255,255,0.05); transition: 0.5s ease;
   }
-  .poster:hover { border-color: rgba(255, 255, 255, 0.6); box-shadow: 0 20px 40px rgba(0,0,0,0.9);}
-  .poster img { width: 100%; height: 100%; object-fit: cover; filter: sepia(10%) grayscale(70%) brightness(0.6); pointer-events: none; transition: 0.8s ease;}
-  .poster:hover img { filter: sepia(0%) grayscale(0%) brightness(1); }
+  .poster:hover { border-color: rgba(255, 255, 255, 0.8); box-shadow: 0 20px 50px rgba(0,0,0,0.9); transform: scale(1.05);}
+  .poster img { width: 100%; height: 100%; object-fit: cover; filter: sepia(20%) grayscale(60%) brightness(0.5); pointer-events: none; transition: 0.8s ease;}
+  .poster:hover img { filter: sepia(0%) grayscale(0%) brightness(1.1); }
   
-  /* Xoay nhẹ từng ảnh để tạo nghệ thuật nhưng không xê dịch vị trí Flex */
-  .p-wrap-1 { transform: translateY(-10%) rotate(3deg); }
-  .p-wrap-2 { transform: translateY(10%) rotate(-4deg); }
-  .p-wrap-3 { transform: translateY(-5%) rotate(5deg); }
+  .p-wrap-1 { transform: translateY(-8%) rotate(2deg); }
+  .p-wrap-2 { transform: translateY(12%) rotate(-3deg); }
+  .p-wrap-3 { transform: translateY(-5%) rotate(4deg); }
 
-  .tools-panel { display: flex; flex-direction: column; gap: 25px;}
+  /* =========================================
+     PAGE 5: VỰC TỬ THẦN (ÁNH SÁNG TỰ THÂN)
+     ========================================= */
+  #page-5 { background: transparent; position: relative; cursor: none;}
+  #graffiti-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 20; pointer-events: auto; mix-blend-mode: screen;}
+  
+  .canvas-ui {
+    position: absolute; bottom: 50px; left: 50px; z-index: 60;
+    display: flex; flex-direction: row; align-items: center; gap: 40px; pointer-events: none;
+  }
+  
+  .canvas-hint {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 10;
+    text-align: center; pointer-events: none; transition: opacity 1s ease;
+  }
+  .canvas-hint h2 { font-size: 3rem; margin-bottom: 15px; opacity: 0.2; letter-spacing: 10px; text-transform: uppercase;}
+  
+  .tools-panel { display: flex; flex-direction: row; gap: 40px; align-items: center; pointer-events: auto;}
   .tool-group { display: flex; align-items: center; gap: 15px; }
-  .tool-label { font-size: 0.65rem; color: #64748b; letter-spacing: 3px; text-transform: uppercase; width: 80px; }
-  .color-btn { width: 20px; height: 20px; border-radius: 50%; transition: 0.3s ease; cursor: pointer; opacity: 0.3; border: 1px solid rgba(255,255,255,0.2);}
-  .color-btn.active { transform: scale(1.5); opacity: 1; box-shadow: 0 0 15px currentColor; border-color: #fff;}
+  .tool-label { font-size: 0.65rem; color: #64748b; letter-spacing: 4px; text-transform: uppercase; }
+  .color-btn { width: 18px; height: 18px; border-radius: 50%; transition: 0.3s ease; cursor: pointer; opacity: 0.3; border: 1px solid rgba(255,255,255,0.2);}
+  .color-btn.active { transform: scale(1.6); opacity: 1; box-shadow: 0 0 20px currentColor; border-color: #fff;}
   
   .action-btn { 
-    background: transparent; border: 1px solid rgba(255,255,255,0.15); color: #94a3b8; padding: 10px 20px; 
-    font-family: 'Space Mono'; font-size: 0.7rem; letter-spacing: 3px; transition: 0.4s ease; cursor: pointer; text-transform: uppercase;
+    background: transparent; border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 12px 25px; 
+    font-family: 'Space Mono'; font-size: 0.7rem; letter-spacing: 4px; transition: 0.4s ease; cursor: pointer; text-transform: uppercase;
   }
-  .action-btn:hover { border-color: #fff; color: #000; background: #fff; letter-spacing: 5px; box-shadow: 0 0 15px rgba(255,255,255,0.4);}
+  .action-btn:hover { background: #fff; color: #000; box-shadow: 0 0 20px rgba(255,255,255,0.6); letter-spacing: 6px;}
 
 </style>
 </head>
@@ -254,12 +272,13 @@
 <svg style="width:0; height:0; position:absolute;">
   <filter id="water-ripple">
     <feTurbulence type="fractalNoise" baseFrequency="0.01" numOctaves="3" result="noise">
-      <animate attributeName="baseFrequency" values="0.01;0.015;0.01" dur="5s" repeatCount="indefinite" />
+      <animate attributeName="baseFrequency" values="0.01;0.015;0.01" dur="6s" repeatCount="indefinite" />
     </feTurbulence>
-    <feDisplacementMap in="SourceGraphic" in2="noise" scale="15" xChannelSelector="R" yChannelSelector="G" />
+    <feDisplacementMap in="SourceGraphic" in2="noise" scale="20" xChannelSelector="R" yChannelSelector="G" />
   </filter>
 </svg>
 
+<div class="sun-glare" id="sun-glare"></div>
 <div id="custom-cursor"></div>
 <canvas id="abyss-canvas"></canvas>
 <div class="vignette" id="vignette-layer"></div>
@@ -267,16 +286,17 @@
 <div class="depth-container">
   <div class="depth-track"><div class="depth-fill" id="depth-fill"></div></div>
   <div class="depth-markers">
-    <div class="marker interactable active" onclick="scrollToPage('page-1')"><div class="marker-line"></div><div class="marker-text">0m_Nổi</div></div>
-    <div class="marker interactable" onclick="scrollToPage('page-2')"><div class="marker-line"></div><div class="marker-text">-100m_Ảo</div></div>
-    <div class="marker interactable" onclick="scrollToPage('page-3')"><div class="marker-line"></div><div class="marker-text">-500m_Nghẹt</div></div>
-    <div class="marker interactable" onclick="scrollToPage('page-4')"><div class="marker-line"></div><div class="marker-text">Vực_Sâu</div></div>
+    <div class="marker interactable active" onclick="scrollToPage('page-1')"><div class="marker-line"></div><div class="marker-text">0m_Chói</div></div>
+    <div class="marker interactable" onclick="scrollToPage('page-2')"><div class="marker-line"></div><div class="marker-text">-50m_Ngạt</div></div>
+    <div class="marker interactable" onclick="scrollToPage('page-3')"><div class="marker-line"></div><div class="marker-text">-200m_Cuồng</div></div>
+    <div class="marker interactable" onclick="scrollToPage('page-4')"><div class="marker-line"></div><div class="marker-text">-1000m_Tế</div></div>
+    <div class="marker interactable" onclick="scrollToPage('page-5')"><div class="marker-line"></div><div class="marker-text">Đáy_Vực</div></div>
   </div>
 </div>
 
 <div id="cinematic-intro">
   <div class="intro-text" id="intro-1">Tuổi trẻ giống như con dao giấu trong nước.</div>
-  <div class="intro-text" id="intro-2">Sáng lòa, đẹp đẽ, và cắt đứt tay người chạm vào.</div>
+  <div class="intro-text" id="intro-2">Sáng lòa, sắc lẹm, và cắt đứt tay kẻ nào dám chạm vào.</div>
 </div>
 
 <audio id="bg-audio" loop><source src="drowninglove.mp3" type="audio/mpeg"></audio>
@@ -293,19 +313,19 @@
     <div class="abyss-content">
       <div class="abyss-text-zone">
         <h1 class="abyss-title">vỏ ốc rỗng.</h1>
-        <div class="abyss-text">
-          Chìm xuống. Không phải để trốn tránh, mà để đối diện với đáy sâu của chính mình. 
-          Áp lực nước càng lớn, tiếng ồn của thế giới ngoài kia càng bị bóp nghẹt. 
+        <div class="abyss-text mono-text">
+          <span class="poetic-text">"Vùng biển này là của tao. Và mày... cũng là của tao."</span><br><br>
+          Những điểm tựa ngỡ là vĩnh cửu hóa ra chỉ là ảo ảnh khúc xạ trên mặt biển. Ánh sáng chói lòa tàn nhẫn gõ nhịp trên mí mắt.
         </div>
-        <div class="abyss-text">
-          Những điểm tựa ngỡ là vĩnh cửu hóa ra chỉ là ảo ảnh khúc xạ trên mặt biển.
+        <div class="abyss-text mono-text">
+          Chìm xuống. Không phải để trốn tránh, mà để trốn khỏi sự phán xét của mặt trời. 
           <br><br><span class="redacted interactable">Sự thăng hoa sinh ra từ trạng thái kiệt quệ nhất.</span>
         </div>
         
         <div class="flow-group">
-          <div class="flow-item interactable"><span class="flow-dot"></span> Tọa độ: Sinh viên FTU2 (nhưng dị ứng với nhồi nhét data)</div>
-          <div class="flow-item interactable"><span class="flow-dot"></span> Nhịp thở: Kẻ lang thang nghe Tchaikovsky x BTS x Tiếng Trung</div>
-          <div class="flow-item interactable"><span class="flow-dot"></span> Khát vọng: Kéo vali đi mòn gót qua <span class="redacted interactable">100 quốc gia</span></div>
+          <div class="flow-item interactable"><span class="flow-dot"></span> <span class="mono-text">Tọa độ: SV FTU2 (dị ứng với những con số vô hồn)</span></div>
+          <div class="flow-item interactable"><span class="flow-dot"></span> <span class="mono-text">Tôn giáo: Kẻ lang thang thờ phụng Tchaikovsky & BTS</span></div>
+          <div class="flow-item interactable"><span class="flow-dot"></span> <span class="mono-text">Nghi thức: Xách vali mòn gót qua <span class="redacted interactable">100 quốc gia</span></span></div>
         </div>
       </div>
       
@@ -321,8 +341,8 @@
     <div class="stage-title">TEDxFTU</div>
 
     <div class="reflection-box stage-reflect interactable">
-      <h3>Vùng Chạng Vạng.</h3>
-      <p contenteditable="true">Những góc nhìn méo mó ẩn giấu sau rạn san hô ký ức. Lời chưa nói sẽ tan vào bọt nước...</p>
+      <h3 class="poetic-text" style="font-size:2.5rem; letter-spacing:0;">Nín thở.</h3>
+      <p class="mono-text" contenteditable="true">Duy trì một vỏ bọc hoàn hảo dưới áp lực nước. Phổi gào thét nhưng khuôn mặt vẫn phải tĩnh lặng. Gõ lời thú tội vào bọt biển...</p>
     </div>
     
     <div class="film-strip water-distort draggable-media interactable film-1">
@@ -344,8 +364,8 @@
 
   <section id="page-3" class="page-section">
     <div class="yl-header">
-      <h2>Vietnam Young Lions</h2>
-      <p>Sự ngớ ngẩn để sinh tồn dưới áp lực nước</p>
+      <h2 class="poetic-text" style="font-size: 4rem;">Vietnam Young Lions</h2>
+      <p class="mono-text">Chạy thục mạng đến rách cả phổi</p>
     </div>
 
     <div class="yl-media-grid">
@@ -358,33 +378,18 @@
     </div>
 
     <div class="reflection-chaos interactable">
-      <p contenteditable="true">Ghi chép hỗn mang. Nhập mớ suy nghĩ điên rồ của bạn vào đây. Càng phi logic càng tốt...</p>
+      <p class="mono-text" contenteditable="true">Ở độ sâu này, sự ngớ ngẩn và phá vỡ quy tắc là cách duy nhất để máu tiếp tục chảy. Nhập mớ suy nghĩ điên rồ của bạn vào đây...</p>
     </div>
   </section>
 
   <section id="page-4" class="page-section">
-    <canvas id="graffiti-canvas"></canvas> 
-    
     <div class="graf-ui">
       <div class="graf-ui-content">
-        <h1 class="graf-title">Tái Sinh.</h1>
-        <div class="graf-text">
-          Ở nơi tối tăm nhất, linh hồn tự tạo ra ánh sáng của riêng mình. Giống như một con dao cắt xé làn nước kìm kẹp. <br><br>
-          <span class="highlight-text">Kéo chuột</span> để vẽ những dải lụa phát sáng. <br>
-          <span class="highlight-text">Click đúp (2 lần)</span> vào không gian để châm ngòi pháo hoa lân tinh.
-        </div>
-        
-        <div class="tools-panel">
-          <div class="tool-group">
-            <div class="tool-label">Sắc Phát Quang</div>
-            <div class="color-btn interactable active" style="background: var(--ink); color: var(--ink);" onclick="setColor('var(--ink)', this)"></div>
-            <div class="color-btn interactable" style="background: #ffffff; color: #ffffff;" onclick="setColor('#ffffff', this)"></div>
-            <div class="color-btn interactable" style="background: #ffb6c1; color: #ffb6c1;" onclick="setColor('#ffb6c1', this)"></div> 
-            <div class="color-btn interactable" style="background: #a78bfa; color: #a78bfa;" onclick="setColor('#a78bfa', this)"></div>
-          </div>
-          <div class="tool-group">
-            <div class="action-btn interactable" onclick="clearWall()">[ THANH TẨY ]</div>
-          </div>
+        <h1 class="graf-title">Tế Thần.</h1>
+        <div class="graf-text mono-text">
+          <span class="poetic-text">"Mày là vị thần của tao. Tàn nhẫn nhưng rực rỡ."</span><br><br>
+          Kéo tuột mọi định kiến xuống đáy sâu. Những mảng tường, những bức ảnh giờ đây chỉ là vật hiến tế cho cái đẹp bạo liệt. 
+          <br><br>Góc nhìn bị đảo lộn. Không còn đúng sai.
         </div>
       </div>
     </div>
@@ -393,6 +398,33 @@
       <div class="poster-container p-wrap-1"><div class="poster water-distort double-clickable interactable"><img src="link_anh_remake_quai_1.jpg" alt="Poster 1"></div></div>
       <div class="poster-container p-wrap-2"><div class="poster water-distort double-clickable interactable"><img src="link_anh_remake_quai_2.jpg" alt="Poster 2"></div></div>
       <div class="poster-container p-wrap-3"><div class="poster water-distort double-clickable interactable"><img src="link_anh_remake_quai_3.jpg" alt="Poster 3"></div></div>
+    </div>
+  </section>
+
+  <section id="page-5" class="page-section">
+    <canvas id="graffiti-canvas"></canvas> 
+    
+    <div class="canvas-hint" id="canvas-hint">
+      <h2 class="poetic-text">Đáy Vực</h2>
+      <p class="mono-text">
+        <span class="highlight-text">Kéo chuột</span> để thắp sáng dòng chảy.<br>
+        <span class="highlight-text">Click đúp</span> để nổ tung sự kìm kẹp.
+      </p>
+    </div>
+
+    <div class="canvas-ui">
+      <div class="tools-panel">
+        <div class="tool-group">
+          <div class="tool-label">Tia Chớp</div>
+          <div class="color-btn interactable active" style="background: var(--ink); color: var(--ink);" onclick="setColor('var(--ink)', this)"></div>
+          <div class="color-btn interactable" style="background: #ffffff; color: #ffffff;" onclick="setColor('#ffffff', this)"></div>
+          <div class="color-btn interactable" style="background: #e11d48; color: #e11d48;" onclick="setColor('#e11d48', this)"></div> 
+          <div class="color-btn interactable" style="background: #3b82f6; color: #3b82f6;" onclick="setColor('#3b82f6', this)"></div>
+        </div>
+        <div class="tool-group">
+          <div class="action-btn interactable" onclick="clearWall()">[ TĨNH LẶNG ]</div>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -412,26 +444,26 @@
   });
 
   /* =========================================
-     2. BỤI ĐẠI DƯƠNG (SINKING DUST)
+     2. BỤI ĐẠI DƯƠNG (MARINE SNOW)
      ========================================= */
   const abyssCanvas = document.getElementById('abyss-canvas');
   const aCtx = abyssCanvas.getContext('2d');
   const snowParticles = [];
   
-  for(let i = 0; i < 80; i++) {
+  for(let i = 0; i < 120; i++) {
     snowParticles.push({
       x: Math.random() * window.innerWidth,
       y: Math.random() * window.innerHeight,
-      r: Math.random() * 2,
-      vy: -(Math.random() * 0.2 + 0.1), 
-      opacity: Math.random() * 0.4
+      r: Math.random() * 2.5,
+      vy: -(Math.random() * 0.4 + 0.1), 
+      opacity: Math.random() * 0.6
     });
   }
 
   window.addEventListener('resize', () => {
     abyssCanvas.width = window.innerWidth; abyssCanvas.height = window.innerHeight;
     const grafCanvas = document.getElementById('graffiti-canvas');
-    if(grafCanvas) { grafCanvas.width = document.getElementById('page-4').offsetWidth; grafCanvas.height = document.getElementById('page-4').offsetHeight; }
+    if(grafCanvas) { grafCanvas.width = document.getElementById('page-5').offsetWidth; grafCanvas.height = document.getElementById('page-5').offsetHeight; }
   });
   window.dispatchEvent(new Event('resize'));
 
@@ -439,6 +471,8 @@
     aCtx.clearRect(0, 0, abyssCanvas.width, abyssCanvas.height);
     for(let p of snowParticles) {
       p.y += p.vy;
+      // Trôi ngang nhẹ
+      p.x += Math.sin(p.y * 0.01) * 0.5;
       if(p.y < -10) { p.y = abyssCanvas.height + 10; p.x = Math.random() * abyssCanvas.width; }
       aCtx.beginPath(); aCtx.arc(p.x, p.y, p.r, 0, Math.PI*2);
       aCtx.fillStyle = `rgba(255, 255, 255, ${p.opacity})`;
@@ -449,12 +483,13 @@
   renderAbyss();
 
   /* =========================================
-     3. THE DEPTH SCROLL (ÁP SUẤT & TỐI DẦN)
+     3. SCROLL LOGIC: 5 TẦNG SÂU & MÀU SẮC
      ========================================= */
   const mainScroll = document.getElementById('main-scroll');
   const depthFill = document.getElementById('depth-fill');
   const markers = document.querySelectorAll('.marker');
   const vignette = document.getElementById('vignette-layer');
+  const sunGlare = document.getElementById('sun-glare');
 
   function scrollToPage(pageId) {
     document.getElementById(pageId).scrollIntoView({ behavior: 'smooth' });
@@ -467,28 +502,35 @@
     
     depthFill.style.height = `${scrollPercent * 100}%`;
 
-    // Nền tối dần xuống vực thẳm
-    let lightness = 5 - (scrollPercent * 5); 
-    document.body.style.backgroundColor = `hsl(215, 60%, ${lightness}%)`;
+    // Màu biển tối dần (Từ #0a192f về đen tuyệt đối)
+    let lightness = 10 - (scrollPercent * 10); 
+    document.body.style.backgroundColor = `hsl(215, 65%, ${Math.max(0, lightness)}%)`;
     
+    // Tắt ánh sáng mặt trời khi qua trang 1
+    if(scrollPercent > 0.1) {
+      sunGlare.style.opacity = '0';
+    } else {
+      sunGlare.style.opacity = '1';
+    }
+
     // Áp lực nước (Vignette)
-    let vSize = 30 - (scrollPercent * 25); 
-    let vDark = 120 - (scrollPercent * 20);
+    let vSize = 40 - (scrollPercent * 40); 
+    let vDark = 130 - (scrollPercent * 30);
     vignette.style.background = `radial-gradient(circle at center, transparent ${vSize}%, #000000 ${vDark}%)`;
 
-    // Highlight markers
-    let activeIndex = Math.round(scrollPercent * 3);
+    // 5 Tầng = Index từ 0 đến 4
+    let activeIndex = Math.round(scrollPercent * 4);
     markers.forEach((m, i) => {
       if(i === activeIndex) m.classList.add('active');
       else m.classList.remove('active');
     });
 
-    if(activeIndex === 3) cursor.classList.add('brushing');
+    if(activeIndex === 4) cursor.classList.add('brushing');
     else cursor.classList.remove('brushing');
   });
 
   /* =========================================
-     4. DRAGGABLE, INTRO, PARALLAX
+     4. DRAGGABLE, INTRO, AUDIO
      ========================================= */
   const intro = document.getElementById('cinematic-intro');
   window.onload = () => {
@@ -503,7 +545,7 @@
   let isPlaying = false;
   function toggleAudio() {
     if (isPlaying) { audio.pause(); playerBtn.classList.remove('playing'); audioText.innerText = 'silence'; } 
-    else { audio.play(); playerBtn.classList.add('playing'); audioText.innerText = 'oboreru'; }
+    else { audio.play(); playerBtn.classList.add('playing'); audioText.innerText = 'drowning'; }
     isPlaying = !isPlaying;
   }
 
@@ -536,7 +578,7 @@
   });
 
   /* =========================================
-     5. MỰC VẼ + PHÁO HOA (PAGE 4)
+     5. ĐÁY VỰC: VẼ LỤA NƯỚC & PHÁO HOA
      ========================================= */
   const grafCanvas = document.getElementById('graffiti-canvas');
   const gCtx = grafCanvas.getContext('2d', { willReadFrequently: true });
@@ -545,6 +587,7 @@
   let isDrawing = false, lastX = 0, lastY = 0;
   let paintColor = getComputedStyle(document.documentElement).getPropertyValue('--ink').trim(); 
   let fireworksParticles = [];
+  let hintHidden = false;
 
   window.setColor = function(color, btn) {
     if(color.startsWith('var')) paintColor = getComputedStyle(document.documentElement).getPropertyValue(color.match(/\(([^)]+)\)/)[1]).trim();
@@ -554,56 +597,69 @@
   };
   window.clearWall = function() { gCtx.clearRect(0, 0, grafCanvas.width, grafCanvas.height); fireworksParticles = []; };
 
-  // VẼ LỤA (Kéo chuột)
+  // VẼ LỤA NƯỚC
   grafCanvas.addEventListener('mousedown', (e) => {
-    isDrawing = true; let rect = grafCanvas.getBoundingClientRect(); lastX = e.clientX - rect.left; lastY = e.clientY - rect.top;
+    isDrawing = true; 
+    let rect = grafCanvas.getBoundingClientRect(); lastX = e.clientX - rect.left; lastY = e.clientY - rect.top;
+    if(!hintHidden) { document.getElementById('canvas-hint').style.opacity = '0'; hintHidden = true; }
   });
   grafCanvas.addEventListener('mousemove', (e) => {
     if(!isDrawing) return;
     let rect = grafCanvas.getBoundingClientRect(); let currX = e.clientX - rect.left; let currY = e.clientY - rect.top;
     let dx = currX - lastX; let dy = currY - lastY; let distance = Math.sqrt(dx*dx + dy*dy);
     
-    let lineWidth = Math.max(1, 15 - distance * 0.3); 
-    gCtx.beginPath(); gCtx.moveTo(lastX, lastY); gCtx.lineTo(currX, currY);
+    // Nét lụa nước bồng bềnh
+    let lineWidth = Math.max(2, 20 - distance * 0.4); 
+    gCtx.beginPath(); gCtx.moveTo(lastX, lastY); 
+    // Đường cong quadratic cho cảm giác uốn lượn dưới nước
+    gCtx.quadraticCurveTo(lastX + dx/2, lastY + dy/2, currX, currY);
     gCtx.lineCap = 'round'; gCtx.lineJoin = 'round'; gCtx.lineWidth = lineWidth;
     
     gCtx.strokeStyle = paintColor; 
-    gCtx.shadowBlur = 20; gCtx.shadowColor = paintColor; 
+    gCtx.shadowBlur = 25; gCtx.shadowColor = paintColor; 
     gCtx.stroke();
     
     lastX = currX; lastY = currY;
   });
   window.addEventListener('mouseup', () => { isDrawing = false; });
 
-  // PHÁO HOA LÂN TINH (Double Click)
+  // PHÁO HOA NỔ TRONG NƯỚC (Double Click)
   grafCanvas.addEventListener('dblclick', (e) => {
     let rect = grafCanvas.getBoundingClientRect();
     createExplosion(e.clientX - rect.left, e.clientY - rect.top);
   });
 
   function createExplosion(x, y) {
-    for(let i=0; i<80; i++) {
+    for(let i=0; i<100; i++) {
       let angle = Math.random() * Math.PI * 2;
-      let speed = Math.random() * 6 + 2;
+      let speed = Math.random() * 8 + 2;
       fireworksParticles.push({
         x: x, y: y,
         vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
-        life: 1, size: Math.random() * 4 + 1, color: paintColor
+        life: 1, size: Math.random() * 5 + 1, color: paintColor
       });
     }
   }
 
   function renderFireworks() {
+    // Tích hợp phai nhòe để nét vẽ không tồn tại vĩnh viễn (bay hơi dưới nước)
+    gCtx.globalCompositeOperation = 'source-over';
+    gCtx.fillStyle = 'rgba(0, 0, 0, 0.005)'; 
+    gCtx.fillRect(0, 0, grafCanvas.width, grafCanvas.height);
+    gCtx.globalCompositeOperation = 'lighter';
+
     for(let i=0; i<fireworksParticles.length; i++) {
       let p = fireworksParticles[i];
+      // Lực cản của nước (giảm tốc)
+      p.vx *= 0.95; p.vy *= 0.95;
       p.x += p.vx; p.y += p.vy;
-      p.life -= 0.015; p.size *= 0.95;
+      p.life -= 0.015; p.size *= 0.96;
       
       if(p.life <= 0) { fireworksParticles.splice(i, 1); i--; continue; }
 
       gCtx.beginPath(); gCtx.arc(p.x, p.y, p.size, 0, Math.PI*2);
       gCtx.fillStyle = p.color;
-      gCtx.shadowBlur = 15; gCtx.shadowColor = p.color;
+      gCtx.shadowBlur = 20; gCtx.shadowColor = p.color;
       gCtx.fill();
     }
     requestAnimationFrame(renderFireworks);
