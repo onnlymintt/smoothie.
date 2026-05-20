@@ -7,17 +7,17 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400;1,600&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg-surface: #040f1f; /* Xanh biển sâu thẳm hắt sáng nhẹ */
+    --bg-surface: #040f1f;
     --text-main: #cbd5e1;
     --text-dim: #64748b;
-    --accent: #ffffff;     /* Trắng chói lòa ngọc trai */
-    --ink: #e2e8f0;        
-    --blood: #8b0000;      
+    --accent: #ffffff;
+    --ink: #e2e8f0;
+    --blood: #8b0000;
   }
 
   * { box-sizing: border-box; cursor: none !important; }
   body, html {
-    margin: 0; padding: 0; 
+    margin: 0; padding: 0;
     background-color: var(--bg-surface);
     color: var(--text-main); font-family: 'Space Mono', monospace;
     overflow: hidden; width: 100vw; height: 100vh;
@@ -39,7 +39,6 @@
   /* OVERLAYS & CANVAS */
   #abyss-canvas { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1; pointer-events: none; mix-blend-mode: screen; opacity: 0.7;}
   
-  /* Ánh chớp mặt trời (Sun Glare) */
   .sun-glare {
     position: fixed; top: -30vh; left: 50%; transform: translateX(-50%);
     width: 150vw; height: 90vh; z-index: 0; pointer-events: none;
@@ -104,15 +103,18 @@
   @keyframes equalize { 0% { height: 2px; } 100% { height: 15px; } }
   .track-info { font-size: 0.55rem; letter-spacing: 5px; color: var(--text-dim); text-transform: uppercase; transition: 0.4s; }
 
-  /* WATER DISTORTION EFFECT */
-  .water-distort { transition: filter 0.8s ease, box-shadow 0.8s ease, transform 0.8s ease; position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,0.03); background: #000;}
+  /* SMOOTH HOVER EFFECT - NO DISTORTION */
+  .water-distort { 
+    transition: border-color 0.8s ease, box-shadow 0.8s ease, transform 0.8s ease; 
+    position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,0.03); background: #000;
+  }
   .water-distort img, .water-distort video {
     width: 100%; height: 100%; object-fit: cover; filter: grayscale(80%) brightness(0.5);
-    transition: all 1.5s cubic-bezier(0.19, 1, 0.22, 1); transform: scale(1.05); pointer-events: none;
+    transition: all 1.2s cubic-bezier(0.19, 1, 0.22, 1); transform: scale(1.05); pointer-events: none;
   }
-  .water-distort:hover { z-index: 50 !important; border-color: rgba(255, 255, 255, 0.6); box-shadow: 0 20px 50px rgba(0,0,0,0.9); transform: translateY(-5px) scale(1.02); }
+  .water-distort:hover { z-index: 50 !important; border-color: rgba(255, 255, 255, 0.4); box-shadow: 0 20px 50px rgba(0,0,0,0.8); transform: translateY(-5px) scale(1.02); }
   .water-distort:hover img, .water-distort:hover video {
-    filter: url(#water-ripple) grayscale(0%) brightness(1.1);
+    filter: grayscale(0%) brightness(1.05);
     transform: scale(1.1);
   }
 
@@ -132,7 +134,7 @@
   }
   h1, h2, h3 { font-family: 'Cormorant Garamond', serif; font-weight: 400; color: #fff; margin: 0; }
 
-  /* TEXT UTILS & ĐIỆU NGHỆ VIBE */
+  /* TEXT UTILS */
   .poetic-text { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.3rem; color: #fff; opacity: 0.9; letter-spacing: 1px;}
   .mono-text { font-family: 'Space Mono', monospace; font-size: 0.8rem; color: #a1b2c7; line-height: 2.4; font-weight: 300;}
   
@@ -156,9 +158,7 @@
     transform: scale(1.02);
   }
 
-  /* =========================================
-     PAGE 1: CHÓI LÒA (BẢN NGÃ)
-     ========================================= */
+  /* PAGE 1 */
   #page-1 { align-items: center; justify-content: center;}
   .abyss-content { display: flex; align-items: center; justify-content: space-between; gap: 4vw; max-width: 1400px; width: 100%; padding-right: 5vw; z-index: 5;}
   
@@ -172,9 +172,7 @@
   .p1-img-2 { width: 28vh; height: 28vh; bottom: 10%; left: 0%; z-index: 1; }
   .p1-img-3 { width: 22vh; height: 32vh; top: 35%; left: 30%; z-index: 3;}
   
-  /* =========================================
-     PAGE 2: LẶN NGỤP (TEDx)
-     ========================================= */
+  /* PAGE 2 */
   #page-2 { align-items: center;} 
   .stage-title { position: absolute; top: 10%; z-index: 1; font-size: 12rem; color: transparent; -webkit-text-stroke: 1px rgba(255,255,255,0.03); letter-spacing: 50px; text-transform: uppercase; pointer-events: none; white-space: nowrap;}
   
@@ -198,9 +196,7 @@
   .film-2 { top: 28%; right: 10%; transform: rotate(5deg); }
   .spotlight-media { width: 500px; height: 350px; bottom: 15%; right: 30%; transform: rotate(-2deg);}
 
-  /* =========================================
-     PAGE 3: BẠO LIỆT (YOUNG LIONS)
-     ========================================= */
+  /* PAGE 3 */
   #page-3 { align-items: center;}
   .yl-header { text-align: center; z-index: 10; margin-bottom: 6vh; }
   .yl-header h2 { margin: 0; text-shadow: 0 10px 30px rgba(0,0,0,0.8);}
@@ -213,9 +209,7 @@
 
   .reflection-chaos { position: relative; margin-top: 8vh; width: 65vw; max-width: 700px; border-left: 2px solid var(--blood); padding: 25px; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(5px);}
 
-  /* =========================================
-     PAGE 4: TẾ THẦN (REMAKE GALLERY)
-     ========================================= */
+  /* PAGE 4 */
   #page-4 { 
     display: flex; flex-direction: row; align-items: center; justify-content: space-between; 
     padding: 0 5vw 0 0; 
@@ -238,17 +232,15 @@
     background: #020408; padding: 8px; padding-bottom: 35px; width: 100%; height: 100%; 
     border: 1px solid rgba(255,255,255,0.03); transition: 0.6s cubic-bezier(0.19, 1, 0.22, 1);
   }
-  .poster:hover { border-color: rgba(255, 255, 255, 0.8); box-shadow: 0 20px 50px rgba(0,0,0,0.9); transform: scale(1.05) translateY(-10px);}
+  .poster:hover { border-color: rgba(255, 255, 255, 0.6); box-shadow: 0 20px 50px rgba(0,0,0,0.9); transform: scale(1.05) translateY(-10px);}
   .poster img { width: 100%; height: 100%; object-fit: cover; filter: sepia(20%) grayscale(70%) brightness(0.5); pointer-events: none; transition: 0.8s ease;}
-  .poster:hover img { filter: sepia(0%) grayscale(0%) brightness(1.1); }
+  .poster:hover img { filter: sepia(0%) grayscale(0%) brightness(1.05); }
   
   .p-wrap-1 { transform: translateY(-8%) rotate(2deg); }
   .p-wrap-2 { transform: translateY(12%) rotate(-3deg); }
   .p-wrap-3 { transform: translateY(-5%) rotate(4deg); }
 
-  /* =========================================
-     PAGE 5: VỰC TỬ THẦN (ÁNH SÁNG TỰ THÂN)
-     ========================================= */
+  /* PAGE 5 */
   #page-5 { background: transparent; position: relative; cursor: none;}
   #graffiti-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 20; pointer-events: auto; mix-blend-mode: screen;}
   
@@ -279,15 +271,6 @@
 </head>
 <body>
 
-<svg style="width:0; height:0; position:absolute;">
-  <filter id="water-ripple">
-    <feTurbulence type="fractalNoise" baseFrequency="0.01" numOctaves="3" result="noise">
-      <animate attributeName="baseFrequency" values="0.01;0.015;0.01" dur="6s" repeatCount="indefinite" />
-    </feTurbulence>
-    <feDisplacementMap in="SourceGraphic" in2="noise" scale="20" xChannelSelector="R" yChannelSelector="G" />
-  </filter>
-</svg>
-
 <div class="sun-glare" id="sun-glare"></div>
 <div id="custom-cursor"></div>
 <canvas id="abyss-canvas"></canvas>
@@ -305,8 +288,8 @@
 </div>
 
 <div id="cinematic-intro">
-  <div class="intro-text" id="intro-1"> nín thở, </div>
-  <div class="intro-text" id="intro-2"> và chìm sâu.</div>
+  <div class="intro-text" id="intro-1"> tĩnh lại, </div>
+  <div class="intro-text" id="intro-2"> và nhìn sâu.</div>
 </div>
 
 <audio id="bg-audio" loop><source src="drowninglove.mp3" type="audio/mpeg"></audio>
@@ -324,15 +307,13 @@
       <div class="abyss-text-zone">
         <h1 class="abyss-title"> mặt nước .</h1>
         <div class="abyss-text mono-text">
-          <span class="poetic-text">ở dưới ánh nắng mặt trời,<br>mặt nước vỡ ra thành những mảnh sáng li ti.</span><br><br>
-          thy đứng ở đó,<br>thấy mình nhẹ đi,<br>lơ lửng giữa lớp sáng chói và phần nước chưa chạm tới.
+          <span class="poetic-text">dưới vệt nắng, mặt nước vỡ vụn.</span><br><br>
+          đứng ở đó,<br>thấy mình nhẹ bẫng,<br>lơ lửng giữa vùng sáng chói và chiều sâu chưa chạm tới.
         </div>
         <div class="abyss-text mono-text">
-          mơ mộng giữa thực tại và ảo ảnh<br>
-          thy cho mình bay giữa những ý tưởng<br>
-          khi những đốm sáng chỉ là một vệt mờ,<br>
-          rồi dần dần hiện ra khi nhìn đủ lâu.<br><br>
-          <span class="wet-highlight interactable">và có lẽ,<br>chỉ khi đi sâu hơn một chút,<br>những gì còn lại<br>mới bắt đầu rõ hình.</span>
+          những đốm sáng ban đầu chỉ là vệt mờ,<br>
+          chờ được nhìn đủ lâu để hiện rõ.<br><br>
+          <span class="wet-highlight interactable">và có lẽ,<br>chỉ khi đủ sâu,<br>mọi thứ<br>mới thực sự thành hình.</span>
         </div>
       </div>
       
@@ -349,7 +330,7 @@
 
     <div class="reflection-box stage-reflect interactable">
       <h3 class="poetic-text" style="font-size:2.8rem; letter-spacing:0;"> dưới mặt sóng. </h3>
-      <p class="mono-text" contenteditable="true"> dưới mạch sóng ngầm, <br> thy uốn nắn concept cho đến khi nó thành hình, <br> nhắm nghiền mắt, <br> tưởng tượng ra từng phần sân khấu, <br> từng âm thanh, những mảnh ánh sáng... <br> dần rơi, vào đúng chỗ. </p>
+      <p class="mono-text" contenteditable="true"> dưới mạch sóng ngầm, <br> concept được uốn nắn thành hình. <br> từng phần sân khấu, <br> từng mảnh âm thanh, <br> dần rơi vào đúng vị trí. </p>
     </div>
     
     <div class="film-strip water-distort draggable-media interactable film-1">
@@ -372,20 +353,20 @@
   <section id="page-3" class="page-section">
     <div class="yl-header">
       <h2 class="poetic-text" style="font-size: 4.5rem;"> giữa dòng </h2>
-      <p class="mono-text"> thời gian co rút </p>
+      <p class="mono-text"> không gian giãn nở </p>
     </div>
 
     <div class="yl-media-grid">
-      <div class="yl-video-vert water-distort interactable double-clickable">
+      <div class="yl-video-vert water-distort interactable">
         <video src="haha.mp4" autoplay loop muted playsinline></video>
       </div>
-      <div class="yl-img-horiz water-distort interactable double-clickable">
+      <div class="yl-img-horiz water-distort interactable">
         <img src="haha.jpg" alt="Young Lions Display">
       </div>
     </div>
 
     <div class="reflection-chaos interactable">
-      <p class="mono-text" contenteditable="true"> giữa một mớ bòng bong <br> giữa dòng chảy không ngừng của những ý tưởng <br> thy "tách" khỏi nghĩ ngợi. </p>
+      <p class="mono-text" contenteditable="true"> giữa dòng chảy không ngừng, <br> tách mình khỏi những tầng suy nghĩ đặc quánh. </p>
     </div>
   </section>
 
@@ -394,22 +375,19 @@
       <div class="graf-ui-content">
         <h1 class="graf-title"> vùng sâu </h1>
         <div class="graf-text mono-text">
-          <span class="poetic-text"> lặn xuống vùng sâu, để tìm thấy ánh sáng </span><br><br>
-          giữa những vùng sáng tối,
-           <br> giữa những điều cũ/ mới
-           <br> vật lộn 
-          <br> để nhận ra
-          <br> luôn có gia vị cũ và nguyên liệu mới
-          <br> hay nguyên liệu cũ và gia vị mới 
-          <br><br>Góc nhìn đảo lộn. <span class="wet-highlight"> Không còn đúng sai.</span>
+          <span class="poetic-text"> chạm đáy, để thấy ánh sáng. </span><br><br>
+          giữa ranh giới sáng tối,
+           <br> cũ và mới đan xen.
+          <br> góc nhìn đảo lộn.
+          <br><br><span class="wet-highlight"> không còn đúng sai.</span>
         </div>
       </div>
     </div>
 
     <div class="poster-gallery">
-      <div class="poster-container p-wrap-1"><div class="poster water-distort double-clickable interactable"><img src="1remake.heic" alt="Poster 1"></div></div>
-      <div class="poster-container p-wrap-2"><div class="poster water-distort double-clickable interactable"><img src="2remake.jpg" alt="Poster 2"></div></div>
-      <div class="poster-container p-wrap-3"><div class="poster water-distort double-clickable interactable"><img src="3remake.jpg" alt="Poster 3"></div></div>
+      <div class="poster-container p-wrap-1"><div class="poster water-distort interactable"><img src="1remake.heic" alt="Poster 1"></div></div>
+      <div class="poster-container p-wrap-2"><div class="poster water-distort interactable"><img src="2remake.jpg" alt="Poster 2"></div></div>
+      <div class="poster-container p-wrap-3"><div class="poster water-distort interactable"><img src="3remake.jpg" alt="Poster 3"></div></div>
     </div>
   </section>
 
@@ -419,8 +397,8 @@
     <div class="canvas-hint" id="canvas-hint">
       <h2 class="poetic-text"> đáy vực </h2>
       <p class="mono-text">
-        <span class="highlight-text"> chạm nét </span> để thắp sáng dòng chảy.<br>
-        <span class="highlight-text"> nổ tung </span> để rực cháy vực sâu. 
+        <span class="highlight-text"> chạm nét </span> để vẽ nên dòng chảy.<br>
+        <span class="highlight-text"> nổ tung </span> để rực sáng vực sâu. 
       </p>
     </div>
 
@@ -494,7 +472,7 @@
   renderAbyss();
 
   /* =========================================
-     3. SCROLL LOGIC: 5 TẦNG SÂU & MÀU SẮC
+     3. SCROLL LOGIC
      ========================================= */
   const mainScroll = document.getElementById('main-scroll');
   const depthFill = document.getElementById('depth-fill');
@@ -513,23 +491,19 @@
     
     depthFill.style.height = `${scrollPercent * 100}%`;
 
-    // Màu biển tối dần (Từ #0a192f về đen tuyệt đối)
     let lightness = 12 - (scrollPercent * 12); 
     document.body.style.backgroundColor = `hsl(215, 65%, ${Math.max(0, lightness)}%)`;
     
-    // Tắt ánh sáng mặt trời khi qua trang 1
     if(scrollPercent > 0.1) {
       sunGlare.style.opacity = '0';
     } else {
       sunGlare.style.opacity = '1';
     }
 
-    // Áp lực nước (Vignette)
     let vSize = 40 - (scrollPercent * 40); 
     let vDark = 130 - (scrollPercent * 30);
     vignette.style.background = `radial-gradient(circle at center, transparent ${vSize}%, #000000 ${vDark}%)`;
 
-    // 5 Tầng = Index từ 0 đến 4
     let activeIndex = Math.round(scrollPercent * 4);
     markers.forEach((m, i) => {
       if(i === activeIndex) m.classList.add('active');
@@ -581,13 +555,6 @@
   });
   mainScroll.addEventListener('mouseup', () => { activeDrag = null; });
 
-  document.querySelectorAll('.double-clickable').forEach(el => {
-    el.addEventListener('dblclick', function(e) { 
-      this.classList.toggle('inverted'); 
-      e.stopPropagation(); 
-    });
-  });
-
   /* =========================================
      5. ĐÁY VỰC: VẼ LỤA NƯỚC & PHÁO HOA
      ========================================= */
@@ -608,7 +575,6 @@
   };
   window.clearWall = function() { gCtx.clearRect(0, 0, grafCanvas.width, grafCanvas.height); fireworksParticles = []; };
 
-  // VẼ LỤA NƯỚC
   grafCanvas.addEventListener('mousedown', (e) => {
     isDrawing = true; 
     let rect = grafCanvas.getBoundingClientRect(); lastX = e.clientX - rect.left; lastY = e.clientY - rect.top;
@@ -632,7 +598,6 @@
   });
   window.addEventListener('mouseup', () => { isDrawing = false; });
 
-  // PHÁO HOA NỔ TRONG NƯỚC
   grafCanvas.addEventListener('dblclick', (e) => {
     let rect = grafCanvas.getBoundingClientRect();
     createExplosion(e.clientX - rect.left, e.clientY - rect.top);
